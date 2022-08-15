@@ -1,13 +1,11 @@
-const express = require('express')
+const express = require('express');
+const v1TopicRoutes = require("./v1/routes/topicRoutes");
 
 const app = express()
 const PORT = process.env.PORT || 3080;
 
 app.use(express.json())
-
-app.get('/', (req, res) => {
-    res.json({info: 'Multi-choice Tests REST API'})
-});
+app.use("/api/v1/topics", v1TopicRoutes);
 
 app.listen(PORT, () => {
     console.log(`🌎 TIPOTEST running on port ${PORT}`)
