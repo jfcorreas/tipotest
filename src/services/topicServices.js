@@ -1,6 +1,15 @@
 const { v4: uuid } = require('uuid');
 const Topic = require("../database/Topic");
 
+const getAllTopics = () => {
+    try {
+        const allTopics = Topic.getAllTopics();
+        return allTopics;
+    } catch (error) {
+        throw error;
+    }
+};
+
 const createNewTopic = (newTopic) => {
     const topicToInsert = {
         ...newTopic,
@@ -17,5 +26,6 @@ const createNewTopic = (newTopic) => {
 };
 
 module.exports = {
+    getAllTopics,
     createNewTopic,
 };

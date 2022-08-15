@@ -1,5 +1,16 @@
 const topicService = require("../services/topicServices");
 
+const getAllTopics = (req, res) => {
+    try {
+        const allTopics = topicService.getAllTopics();
+        res.send({ status: "OK", data: allTopics});
+    } catch (error) {
+        res
+            .status(error?.status || 500)
+            .send({status: "FAILED", data: { error: error?.message || error }});
+    };
+};
+
 const createNewTopic = (req, res) => {
     const { body } = req;
 
@@ -37,5 +48,6 @@ const createNewTopic = (req, res) => {
 };
 
 module.exports = {
+    getAllTopics,
     createNewTopic,
 };

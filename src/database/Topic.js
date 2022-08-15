@@ -1,6 +1,18 @@
 const DB = require("./tipotestdb.json");
 const { saveToDatabase } = require("./utils");
 
+const getAllTopics = () => {
+    try {
+        const allTopics = DB.topics;
+        return allTopics;
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error,
+        }
+    }
+}
+
 const createNewTopic = (newTopic) => {
     try {
         const isAlreadyAdded = 
@@ -26,5 +38,6 @@ const createNewTopic = (newTopic) => {
 };
 
 module.exports = {
+    getAllTopics,
     createNewTopic
 };
