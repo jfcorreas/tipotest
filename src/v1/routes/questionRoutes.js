@@ -5,6 +5,7 @@ const router = express.Router();
 
 router
     .get("/", questionController.getAllQuestions)
-    .post("/", questionController.createNewQuestion);
+    .post("/", questionController.createNewQuestion)
+    .post("/:questionId",questionController.addNewAnswer);
 
 module.exports =  router;

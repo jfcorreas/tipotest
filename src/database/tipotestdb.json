@@ -11,11 +11,28 @@
   ],
   "questions": [
     {
+      "text": "El artículo 31 de la Constitución Española de 1978 regula el principio de capacidad económica y no confiscatoriedad y establece",
+      "topic": "cbcc2c5d-def9-449f-b075-baf6b49a9e43",
+      "answers": [],
+      "id": "c4b63bc1-36b5-42b9-a337-0e1f41bdb2da",
+      "createdAt": "8/16/2022, 4:28:04 PM",
+      "updatedAt": "8/16/2022, 4:28:04 PM"
+    },
+    {
       "text": "Según la regulación constitucional del derecho de asociación",
       "topic": "cbcc2c5d-def9-449f-b075-baf6b49a9e43",
-      "id": "18b3eec4-4c0f-49bf-80a0-344f9eac0550",
-      "createdAt": "8/16/2022, 4:17:19 PM",
-      "updatedAt": "8/16/2022, 4:17:19 PM"
+      "answers": [
+        {
+          "text": "Las asociaciones que se constituyan deben inscribirse en un registro a los efectos de publicidad",
+          "isCorrect": "true",
+          "id": "f03aff19-9c71-478b-9d4e-1c305fa06d78",
+          "createdAt": "8/16/2022, 11:17:39 PM",
+          "updatedAt": "8/16/2022, 11:17:39 PM"
+        }
+      ],
+      "id": "082e5d22-fddd-493c-b656-11c65e42f9fe",
+      "createdAt": "8/16/2022, 4:28:33 PM",
+      "updatedAt": "8/16/2022, 11:17:39 PM"
     }
   ],
   "answers": []

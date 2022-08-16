@@ -25,7 +25,23 @@ const createNewQuestion = (newQuestion) => {
     }
 };
 
+const addNewAnswer = (questionId, newAnswer) => {
+    const answerToInsert = {
+        ...newAnswer,
+        id: uuid(),
+        createdAt: new Date().toLocaleString("en-US", { timeZone: "UTC"}),
+        updatedAt: new Date().toLocaleString("en-US", { timeZone: "UTC"}),
+    }
+    try {
+        const createdAnswer = Question.addNewAnswer(questionId, answerToInsert);
+        return createdAnswer;
+    } catch (error) {
+        throw error;
+    }
+};
+
 module.exports = {
     getAllQuestions,
     createNewQuestion,
+    addNewAnswer
 };
