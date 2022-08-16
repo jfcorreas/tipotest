@@ -1,9 +1,10 @@
-const topicService = require("../services/topicServices");
+const questionService = require("../services/questionServices");
 
-const getAllTopics = (req, res) => {
+const getAllQuestions = (req, res) => {
+    const { topic } = req.query;
     try {
-        const allTopics = topicService.getAllTopics();
-        res.send({ status: "OK", data: allTopics});
+        const allQuestions = questionService.getAllQuestions({ topic });
+        res.send({ status: "OK", data: allQuestions});
     } catch (error) {
         res
             .status(error?.status || 500)
@@ -11,12 +12,12 @@ const getAllTopics = (req, res) => {
     };
 };
 
-const createNewTopic = (req, res) => {
+const createNewQuestion = (req, res) => {
     const { body } = req;
 
     if (
-        !body.title ||
-        !body.shorthand
+        !body.text ||
+        !body.topic
     ) {
         res
             .status(400)
@@ -25,21 +26,20 @@ const createNewTopic = (req, res) => {
                 data: {
                     error:
                         `One of the following keys is missing or is empty
-                        in request body: 'title', 'shorthand'`,
+                        in request body: 'text' or 'topic'`,
                 },
             });
         return;
     };
 
-    const newTopic = {
-        title: body.title,
-        shorthand: body.shorthand,
-        fullTitle: body.fullTitle
+    const newQuestion = {
+        text: body.text,
+        topic: body.topic,
     };
 
     try {
-        const createdTopic = topicService.createNewTopic(newTopic);
-        res.status(200).send({ status: "OK", data: createdTopic });
+        const createdQuestion = questionService.createNewQuestion(newQuestion);
+        res.status(200).send({ status: "OK", data: createdQuestion });
     } catch (error) {
         res
             .status(error?.status || 500)
@@ -48,6 +48,6 @@ const createNewTopic = (req, res) => {
 };
 
 module.exports = {
-    getAllTopics,
-    createNewTopic,
+    getAllQuestions,
+    createNewQuestion,
 };

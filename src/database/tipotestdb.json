@@ -8,5 +8,15 @@
       "createdAt": "8/15/2022, 5:18:58 PM",
       "updatedAt": "8/15/2022, 5:18:58 PM"
     }
-  ]
+  ],
+  "questions": [
+    {
+      "text": "Según la regulación constitucional del derecho de asociación",
+      "topic": "cbcc2c5d-def9-449f-b075-baf6b49a9e43",
+      "id": "18b3eec4-4c0f-49bf-80a0-344f9eac0550",
+      "createdAt": "8/16/2022, 4:17:19 PM",
+      "updatedAt": "8/16/2022, 4:17:19 PM"
+    }
+  ],
+  "answers": []
 }
