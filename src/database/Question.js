@@ -49,9 +49,9 @@ const createNewQuestion = (newQuestion) => {
     }
 };
 
-const getAnswers = (questionReq, numAnswers) => {
+const getQuestionAnswers = (questionId, numAnswers) => {
     try {
-        const allAnswers = (DB.questions.find((question) => question.id === questionReq )).answers;
+        const allAnswers = (DB.questions.find((question) => question.id === questionId )).answers;
 
         const { trueAnswers, falseAnswers } = 
             allAnswers.reduce((r, answer) => {
@@ -62,22 +62,30 @@ const getAnswers = (questionReq, numAnswers) => {
         if (!trueAnswers) {
             throw {
                 status: 400,
-                message: `Question with id: '${questionReq}' doesn't have any valid answer'`,
+                message: `Question with id: '${questionId}' doesn't have any valid answer'`,
             };             
         }            
 
         if (falseAnswers.length < (numAnswers - 1)) {
             throw {
                 status: 400,
-                message: `Question with id: '${questionReq}' doesn't have enough false answers'`,
+                message: `Question with id: '${questionId}' doesn't have enough false answers'`,
             };            
         }
-        
-        let answers = [].push(trueAnswers[[trueAnswers.length * Math.random() | 0]]);
+
+        let answers = new Array(trueAnswers[[trueAnswers.length * Math.random() | 0]]);
+
         let falseAnswersLeft = numAnswers - 1;
         while (falseAnswersLeft-- && falseAnswers.length > 0) {
-            answers.push(falseAnswers.splice[[falseAnswers.length * Math.random() | 0]], 1);
+            answers.push(falseAnswers.splice([[falseAnswers.length * Math.random() | 0]], 1).pop());
         }       
+
+        const suffleIndex = answers.length * Math.random() | 0;
+        if (suffleIndex > 0) {
+            const tempElem = answers[suffleIndex];
+            answers[suffleIndex] = answers[0];
+            answers[0] = tempElem;
+        }
 
         return answers;
 
@@ -128,6 +136,6 @@ const addNewAnswer = (questionId, newAnswer) => {
 module.exports = {
     getAllQuestions,
     createNewQuestion,
-    getAnswers,
+    getQuestionAnswers,
     addNewAnswer
 };

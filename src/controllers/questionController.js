@@ -1,4 +1,5 @@
 const questionService = require("../services/questionServices");
+const DEFAULT_NUM_ANSWERS = 4;
 
 const getAllQuestions = (req, res) => {
     const { topic } = req.query;
@@ -48,6 +49,20 @@ const createNewQuestion = (req, res) => {
     }
 };
 
+const getQuestionAnswers = (req, res) => {
+    const { questionId } = req.params;
+    const { numAnswers } = req.query;
+    
+    try {
+        const answers = questionService.getQuestionAnswers(questionId, (numAnswers > 1)? numAnswers : DEFAULT_NUM_ANSWERS);
+        res.send({ status: "OK", data: answers});
+    } catch (error) {
+        res
+            .status(error?.status || 500)
+            .send({status: "FAILED", data: { error: error?.message || error }});
+    };
+};
+
 const addNewAnswer = (req, res) => {
     const {
         params: { questionId },
@@ -83,7 +98,7 @@ const addNewAnswer = (req, res) => {
 
     const newAnswer = {
         text: body.text,
-        isCorrect: body.isCorrect,
+        isCorrect: Boolean(body.isCorrect),
     };
 
     try {
@@ -99,5 +114,6 @@ const addNewAnswer = (req, res) => {
 module.exports = {
     getAllQuestions,
     createNewQuestion,
+    getQuestionAnswers,
     addNewAnswer,
 };

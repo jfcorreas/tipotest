@@ -25,6 +25,15 @@ const createNewQuestion = (newQuestion) => {
     }
 };
 
+const getQuestionAnswers = (questionId, numAnswers) => {
+    try {
+        const answers = Question.getQuestionAnswers(questionId, numAnswers);
+        return answers;
+    } catch (error) {
+        throw error;
+    }
+};
+
 const addNewAnswer = (questionId, newAnswer) => {
     const answerToInsert = {
         ...newAnswer,
@@ -43,5 +52,6 @@ const addNewAnswer = (questionId, newAnswer) => {
 module.exports = {
     getAllQuestions,
     createNewQuestion,
+    getQuestionAnswers,
     addNewAnswer
 };

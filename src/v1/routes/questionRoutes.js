@@ -6,6 +6,7 @@ const router = express.Router();
 router
     .get("/", questionController.getAllQuestions)
     .post("/", questionController.createNewQuestion)
-    .post("/:questionId",questionController.addNewAnswer);
+    .get("/:questionId/answers", questionController.getQuestionAnswers)
+    .post("/:questionId/answers",questionController.addNewAnswer);
 
 module.exports =  router;

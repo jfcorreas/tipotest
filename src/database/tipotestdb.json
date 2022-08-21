@@ -24,16 +24,36 @@
       "answers": [
         {
           "text": "Las asociaciones que se constituyan deben inscribirse en un registro a los efectos de publicidad",
-          "isCorrect": "true",
+          "isCorrect": true,
           "id": "f03aff19-9c71-478b-9d4e-1c305fa06d78",
           "createdAt": "8/16/2022, 11:17:39 PM",
           "updatedAt": "8/16/2022, 11:17:39 PM"
+        },
+        {
+          "text": "Las asociaciones pueden ser suspendidas en virtud de resolución administrativa motivada",
+          "isCorrect": false,
+          "id": "5b4e66ac-59fc-427f-99b4-0d0a0f3c4f54",
+          "createdAt": "8/21/2022, 2:56:20 PM",
+          "updatedAt": "8/21/2022, 2:56:20 PM"
+        },
+        {
+          "text": "Este derecho aparece regulado en el Título Preliminar de la Constitución",
+          "isCorrect": false,
+          "id": "4e5df3bc-b797-4354-9b66-1a70183b65e6",
+          "createdAt": "8/21/2022, 3:03:15 PM",
+          "updatedAt": "8/21/2022, 3:03:15 PM"
+        },
+        {
+          "text": "Este derecho aparece regulado en la Sección 2ª del Capítulo 2º del Título I de la Constitución",
+          "isCorrect": true,
+          "id": "56855583-4f26-4d3e-a593-daca439c4e82",
+          "createdAt": "8/21/2022, 3:31:47 PM",
+          "updatedAt": "8/21/2022, 3:31:47 PM"
         }
       ],
       "id": "082e5d22-fddd-493c-b656-11c65e42f9fe",
       "createdAt": "8/16/2022, 4:28:33 PM",
-      "updatedAt": "8/16/2022, 11:17:39 PM"
+      "updatedAt": "8/21/2022, 3:31:47 PM"
     }
-  ],
-  "answers": []
+  ]
 }
