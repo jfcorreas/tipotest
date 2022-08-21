@@ -76,6 +76,33 @@ const updateOneQuestion = (req, res) => {
     }
 };
 
+const deleteOneQuestion = (req, res) => {
+    const {
+        params: { questionId },
+    } = req;
+
+    if (!questionId) {
+        res
+            .status(400)
+            .send({
+                status: "FAILED",
+                data: {
+                    error: "Parameter ':questionId' can not be empty",
+                },
+            }); 
+    }
+
+    try {
+        questionService.deleteOneQuestion(questionId);
+        res.status(204).send({ status: "OK" });
+    } catch (error) {
+        res
+            .status(error?.status || 500)
+            .send({
+                status: "FAILED", data: { error: error?.message || error }});            
+    }
+};
+
 const getQuestionAnswers = (req, res) => {
     const { questionId } = req.params;
     const { numAnswers } = req.query;
@@ -142,6 +169,7 @@ module.exports = {
     getAllQuestions,
     createNewQuestion,
     updateOneQuestion,
+    deleteOneQuestion,
     getQuestionAnswers,
     addNewAnswer,
 };

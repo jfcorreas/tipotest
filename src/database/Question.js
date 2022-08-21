@@ -104,6 +104,27 @@ const updateOneQuestion = (questionId, changes) => {
     }
 };
 
+const deleteOneQuestion = (questionId) => {
+    try {
+        const indexForDeletion = DB.questions.findIndex(
+            (question) => question.id === questionId
+        );
+        if (indexForDeletion === -1) {
+            throw {
+                status: 400,
+                message: `Can't find Question with the id '${questionId}'`,
+            }; 
+        }
+        DB.questions.splice(indexForDeletion, 1);
+        saveToDatabase(DB);
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error,
+        };
+    }
+};
+
 const getQuestionAnswers = (questionId, numAnswers) => {
     try {
         const allAnswers = (DB.questions.find((question) => question.id === questionId )).answers;
@@ -192,6 +213,7 @@ module.exports = {
     getAllQuestions,
     createNewQuestion,
     updateOneQuestion,
+    deleteOneQuestion,
     getQuestionAnswers,
     addNewAnswer
 };

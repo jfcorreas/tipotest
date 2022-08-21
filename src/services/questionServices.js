@@ -34,6 +34,14 @@ const updateOneQuestion = (questionId, changes) => {
     }
 };
 
+const deleteOneQuestion = (questionId) => {
+    try {
+        Question.deleteOneQuestion(questionId);
+    } catch (error) {
+        throw error;
+    }
+};
+
 const getQuestionAnswers = (questionId, numAnswers) => {
     try {
         const answers = Question.getQuestionAnswers(questionId, numAnswers);
@@ -62,6 +70,7 @@ module.exports = {
     getAllQuestions,
     createNewQuestion,
     updateOneQuestion,
+    deleteOneQuestion,
     getQuestionAnswers,
     addNewAnswer
 };
