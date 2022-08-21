@@ -142,6 +142,10 @@ const getQuestionAnswers = (questionId, numAnswers) => {
     try {
         const allAnswers = (DB.questions.find((question) => question.id === questionId )).answers;
 
+        if (!numAnswers || numAnswers < 2) {
+            return allAnswers;
+        }
+
         const { trueAnswers, falseAnswers } = 
             allAnswers.reduce((r, answer) => {
                 r[answer.isCorrect ? 'trueAnswers' : 'falseAnswers'].push(answer);

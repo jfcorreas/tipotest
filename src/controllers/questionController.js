@@ -1,5 +1,4 @@
 const questionService = require("../services/questionServices");
-const DEFAULT_NUM_ANSWERS = 4;
 
 const getAllQuestions = (req, res) => {
     const { topic } = req.query;
@@ -108,7 +107,7 @@ const getQuestionAnswers = (req, res) => {
     const { numAnswers } = req.query;
     
     try {
-        const answers = questionService.getQuestionAnswers(questionId, (numAnswers > 1)? numAnswers : DEFAULT_NUM_ANSWERS);
+        const answers = questionService.getQuestionAnswers(questionId, numAnswers);
         res.send({ status: "OK", data: answers});
     } catch (error) {
         res
