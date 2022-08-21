@@ -72,14 +72,27 @@ const updateOneQuestion = (questionId, changes) => {
             }            
         } 
 
-        const indexForUpdate = DB.questions.findIndex(
+        const indexQuestionForUpdate = DB.questions.findIndex(
             (question) => question.id === questionId
         );
-        if (indexForUpdate === -1) {
+        if (indexQuestionForUpdate === -1) {
             throw {
                 status: 400,
                 message: `Can't find Question with the id '${questionId}'`,
             };        
+        }
+
+        const currentTopic = DB.questions[indexQuestionForUpdate].topic;
+
+        const isAlreadyAdded = 
+        DB.questions.findIndex((question) => 
+            (question.text === text) && (question.topic === (topic ? topic : currentTopic))) > -1;
+
+        if (isAlreadyAdded) {
+            throw {
+                status: 400,
+                message: `Question with text: '${text}' already exists for topic: '${topic ? topic : currentTopic}'`,
+            };
         }
 
         const filteredChanges = Object.assign({},
@@ -88,12 +101,12 @@ const updateOneQuestion = (questionId, changes) => {
         );
 
         const updatedQuestion = {
-            ...DB.questions[indexForUpdate],
+            ...DB.questions[indexQuestionForUpdate],
             ...filteredChanges,
             updatedAt: new Date().toLocaleString("en-US", {timeZone: "UTC"}),
         };
     
-        DB.questions[indexForUpdate] = updatedQuestion;
+        DB.questions[indexQuestionForUpdate] = updatedQuestion;
         saveToDatabase(DB);
         return updatedQuestion;
     } catch (error) {
@@ -209,11 +222,82 @@ const addNewAnswer = (questionId, newAnswer) => {
     }
 };
 
+const updateOneAnswer = (questionId, answerId, changes) => {
+    try {
+        
+        const text = changes.text;
+        const isCorrect = changes.isCorrect === undefined ? undefined : Boolean(changes.isCorrect);
+
+        if (!text && isCorrect === undefined) {
+            throw {
+                status: 400,
+                message: `No valid changes requested`
+            };
+        } 
+        
+        const indexQuestionForUpdate = DB.questions.findIndex(
+            (question) => question.id === questionId
+        );
+        if (indexQuestionForUpdate === -1) {
+            throw {
+                status: 400,
+                message: `Can't find Question with the id '${questionId}'`,
+            };        
+        }
+
+        const indexForUpdate = DB.questions[indexQuestionForUpdate].answers.findIndex(
+            (answer) => answer.id === answerId
+        );
+        if (indexForUpdate === -1) {
+            throw {
+                status: 400,
+                message: `Can't find Answer with the id '${answerId}'`,
+            };        
+        }       
+        let updatedQuestion = DB.questions[indexQuestionForUpdate];
+        const isAlreadyAdded = updatedQuestion.answers.findIndex((answer) => (answer.text === text)) > -1;
+
+        if (isAlreadyAdded) {
+            throw {
+                status: 400,
+                message: `Answer with text: '${text}' already exists for question with id: '${questionId}'`,
+            };
+        } 
+
+        const filteredChanges = Object.assign({},
+            text === undefined ? null : {text},    
+            isCorrect === undefined ? null : {isCorrect},
+        );
+
+        const updatedAnswer = {
+            ...updatedQuestion.answers[indexForUpdate],
+            ...filteredChanges,
+            updatedAt: new Date().toLocaleString("en-US", {timeZone: "UTC"}),
+        };
+
+        updatedQuestion.answers[indexForUpdate] = updatedAnswer;
+        updatedQuestion = {
+            ...updatedQuestion,
+            updatedAt: new Date().toLocaleString("en-US", {timeZone: "UTC"}),
+        }
+    
+        DB.questions[indexQuestionForUpdate] = updatedQuestion;
+        saveToDatabase(DB);
+        return updatedAnswer;
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error,
+        };
+    }
+};
+
 module.exports = {
     getAllQuestions,
     createNewQuestion,
     updateOneQuestion,
     deleteOneQuestion,
     getQuestionAnswers,
-    addNewAnswer
+    addNewAnswer,
+    updateOneAnswer
 };

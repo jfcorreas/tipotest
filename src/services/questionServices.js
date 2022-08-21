@@ -66,11 +66,21 @@ const addNewAnswer = (questionId, newAnswer) => {
     }
 };
 
+const updateOneAnswer = (questionId, answerId, changes) => {
+    try {
+        const updatedAnswer = Question.updateOneAnswer(questionId, answerId, changes);
+        return updatedAnswer;
+    } catch (error) {
+        throw error;
+    }
+};
+
 module.exports = {
     getAllQuestions,
     createNewQuestion,
     updateOneQuestion,
     deleteOneQuestion,
     getQuestionAnswers,
-    addNewAnswer
+    addNewAnswer,
+    updateOneAnswer
 };

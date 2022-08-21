@@ -165,6 +165,33 @@ const addNewAnswer = (req, res) => {
     }
 };
 
+const updateOneAnswer = (req, res) => {
+    const {
+        body,
+        params: { questionId, answerId },
+    } = req;
+
+    if (!questionId || !answerId) {
+        res
+            .status(400)
+            .send({
+                status: "FAILED",
+                data: {
+                    error: "Parameters ':questionId' and ':answerId' can not be empty",
+                },
+            }); 
+    }
+    try {
+        const updatedAnswer = questionService.updateOneAnswer(questionId, answerId, body);
+        res.send({ status: "OK", data: updatedAnswer });
+    } catch (error) {
+        res
+            .status(error?.status || 500)
+            .send({
+                status: "FAILED", data: { error: error?.message || error }});        
+    }
+};
+
 module.exports = {
     getAllQuestions,
     createNewQuestion,
@@ -172,4 +199,5 @@ module.exports = {
     deleteOneQuestion,
     getQuestionAnswers,
     addNewAnswer,
+    updateOneAnswer
 };
