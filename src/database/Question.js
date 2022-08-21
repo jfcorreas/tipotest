@@ -51,6 +51,27 @@ const createNewQuestion = (newQuestion) => {
 
 const updateOneQuestion = (questionId, changes) => {
     try {
+        const topic = changes.topic;
+        const text = changes.text;
+
+        if (!text && !topic) {
+            throw {
+                status: 400,
+                message: `No valid changes requested`
+            };
+        } 
+
+        if (topic) {
+            const topicExists = DB.topics.findIndex((topicIndex) => topicIndex.id === topic) > -1;
+
+            if (!topicExists) {
+                throw {
+                    status: 400,
+                    message: `Does not exists any topic with id: ${topic}`
+                };
+            }            
+        } 
+
         const indexForUpdate = DB.questions.findIndex(
             (question) => question.id === questionId
         );
@@ -60,9 +81,15 @@ const updateOneQuestion = (questionId, changes) => {
                 message: `Can't find Question with the id '${questionId}'`,
             };        
         }
+
+        const filteredChanges = Object.assign({},
+            text === undefined ? null : {text},    
+            topic === undefined ? null : {topic},
+        );
+
         const updatedQuestion = {
             ...DB.questions[indexForUpdate],
-            ...changes,
+            ...filteredChanges,
             updatedAt: new Date().toLocaleString("en-US", {timeZone: "UTC"}),
         };
     
