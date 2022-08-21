@@ -49,6 +49,34 @@ const createNewQuestion = (newQuestion) => {
     }
 };
 
+const updateOneQuestion = (questionId, changes) => {
+    try {
+        const indexForUpdate = DB.questions.findIndex(
+            (question) => question.id === questionId
+        );
+        if (indexForUpdate === -1) {
+            throw {
+                status: 400,
+                message: `Can't find Question with the id '${questionId}'`,
+            };        
+        }
+        const updatedQuestion = {
+            ...DB.questions[indexForUpdate],
+            ...changes,
+            updatedAt: new Date().toLocaleString("en-US", {timeZone: "UTC"}),
+        };
+    
+        DB.questions[indexForUpdate] = updatedQuestion;
+        saveToDatabase(DB);
+        return updatedQuestion;
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error,
+        };
+    }
+};
+
 const getQuestionAnswers = (questionId, numAnswers) => {
     try {
         const allAnswers = (DB.questions.find((question) => question.id === questionId )).answers;
@@ -136,6 +164,7 @@ const addNewAnswer = (questionId, newAnswer) => {
 module.exports = {
     getAllQuestions,
     createNewQuestion,
+    updateOneQuestion,
     getQuestionAnswers,
     addNewAnswer
 };

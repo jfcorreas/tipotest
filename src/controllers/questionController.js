@@ -49,6 +49,33 @@ const createNewQuestion = (req, res) => {
     }
 };
 
+const updateOneQuestion = (req, res) => {
+    const {
+        body,
+        params: { questionId },
+    } = req;
+
+    if (!questionId) {
+        res
+            .status(400)
+            .send({
+                status: "FAILED",
+                data: {
+                    error: "Parameter ':questionId' can not be empty",
+                },
+            }); 
+    }
+    try {
+        const updatedQuestion = questionService.updateOneQuestion(questionId, body);
+        res.send({ status: "OK", data: updatedQuestion });
+    } catch (error) {
+        res
+            .status(error?.status || 500)
+            .send({
+                status: "FAILED", data: { error: error?.message || error }});        
+    }
+};
+
 const getQuestionAnswers = (req, res) => {
     const { questionId } = req.params;
     const { numAnswers } = req.query;
@@ -114,6 +141,7 @@ const addNewAnswer = (req, res) => {
 module.exports = {
     getAllQuestions,
     createNewQuestion,
+    updateOneQuestion,
     getQuestionAnswers,
     addNewAnswer,
 };

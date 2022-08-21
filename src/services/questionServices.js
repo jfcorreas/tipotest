@@ -25,6 +25,15 @@ const createNewQuestion = (newQuestion) => {
     }
 };
 
+const updateOneQuestion = (questionId, changes) => {
+    try {
+        const updatedQuestion = Question.updateOneQuestion(questionId, changes);
+        return updatedQuestion;
+    } catch (error) {
+        throw error;
+    }
+};
+
 const getQuestionAnswers = (questionId, numAnswers) => {
     try {
         const answers = Question.getQuestionAnswers(questionId, numAnswers);
@@ -52,6 +61,7 @@ const addNewAnswer = (questionId, newAnswer) => {
 module.exports = {
     getAllQuestions,
     createNewQuestion,
+    updateOneQuestion,
     getQuestionAnswers,
     addNewAnswer
 };

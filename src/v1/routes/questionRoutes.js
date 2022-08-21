@@ -6,6 +6,7 @@ const router = express.Router();
 router
     .get("/", questionController.getAllQuestions)
     .post("/", questionController.createNewQuestion)
+    .patch("/:questionId", questionController.updateOneQuestion)
     .get("/:questionId/answers", questionController.getQuestionAnswers)
     .post("/:questionId/answers",questionController.addNewAnswer);
 
