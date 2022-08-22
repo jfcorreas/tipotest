@@ -47,7 +47,35 @@ const createNewTopic = (req, res) => {
     }
 };
 
+const updateOneTopic = (req, res) => {
+    const {
+        body,
+        params: { topicId },
+    } = req;
+
+    if (!topicId) {
+        res
+            .status(400)
+            .send({
+                status: "FAILED",
+                data: {
+                    error: "Parameter ':topicId' can not be empty",
+                },
+            }); 
+    }
+    try {
+        const updatedTopic = topicService.updateOneTopic(topicId, body);
+        res.send({ status: "OK", data: updatedTopic });
+    } catch (error) {
+        res
+            .status(error?.status || 500)
+            .send({
+                status: "FAILED", data: { error: error?.message || error }});        
+    }
+};
+
 module.exports = {
     getAllTopics,
     createNewTopic,
+    updateOneTopic
 };

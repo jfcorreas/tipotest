@@ -25,7 +25,17 @@ const createNewTopic = (newTopic) => {
     }
 };
 
+const updateOneTopic = (topicId, changes) => {
+    try {
+        const updatedTopic = Topic.updateOneTopic(topicId, changes);
+        return updatedTopic;
+    } catch (error) {
+        throw error;
+    }
+};
+
 module.exports = {
     getAllTopics,
     createNewTopic,
+    updateOneTopic
 };
