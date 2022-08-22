@@ -34,8 +34,17 @@ const updateOneTopic = (topicId, changes) => {
     }
 };
 
+const deleteOneTopic = (topicId) => {
+    try {
+        Topic.deleteOneTopic(topicId);
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     getAllTopics,
     createNewTopic,
-    updateOneTopic
+    updateOneTopic,
+    deleteOneTopic
 };

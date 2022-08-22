@@ -74,8 +74,36 @@ const updateOneTopic = (req, res) => {
     }
 };
 
+const deleteOneTopic = (req, res) => {
+    const {
+        params: { topicId },
+    } = req;
+
+    if (!topicId) {
+        res
+            .status(400)
+            .send({
+                status: "FAILED",
+                data: {
+                    error: "Parameter ':topicId' can not be empty",
+                },
+            }); 
+    }
+
+    try {
+        topicService.deleteOneTopic(topicId);
+        res.status(204).send({ status: "OK" });
+    } catch (error) {
+        res
+            .status(error?.status || 500)
+            .send({
+                status: "FAILED", data: { error: error?.message || error }});            
+    }
+};
+
 module.exports = {
     getAllTopics,
     createNewTopic,
-    updateOneTopic
+    updateOneTopic,
+    deleteOneTopic
 };

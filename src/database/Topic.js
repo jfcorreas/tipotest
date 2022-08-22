@@ -94,8 +94,30 @@ const updateOneTopic = (topicId, changes) => {
     }
 };
 
+const deleteOneTopic = (topicId) => {
+    try {
+        const indexForDeletion = DB.topics.findIndex(
+            (topic) => topic.id === topicId
+        );
+        if (indexForDeletion === -1) {
+            throw {
+                status: 400,
+                message: `Can't find Topic with the id '${topicId}'`,
+            }; 
+        }
+        DB.topics.splice(indexForDeletion, 1);
+        saveToDatabase(DB);
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error,
+        };
+    }
+};
+
 module.exports = {
     getAllTopics,
     createNewTopic,
-    updateOneTopic
+    updateOneTopic,
+    deleteOneTopic
 };
