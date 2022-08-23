@@ -13,22 +13,11 @@ const getAllConvocations = () => {
     }
 };
 
-/* const createNewTopic = (newTopic) => {
+const createNewConvocation = (newConvocation) => {
     try {
-        const isAlreadyAdded = 
-            (DB.topics.findIndex((topic) => topic.title === newTopic.title ) > -1) ||
-            (DB.topics.findIndex((topic) => topic.shorthand === newTopic.shorthand ) > -1);
-
-        if (isAlreadyAdded) {
-            throw {
-                status: 400,
-                message: `Topic with title: '${newTopic.title}' or shorthand: '${newTopic.shorthand}' already exists`,
-            };
-        }
-
-        DB.topics.push(newTopic);
+        DB.convocations.push(newConvocation);
         saveToDatabase(DB);
-        return newTopic;
+        return newConvocation;
     } catch (error) {
         throw {
             status: error?.status || 500,
@@ -36,7 +25,7 @@ const getAllConvocations = () => {
         }
     }
 };
-
+/*
 const updateOneTopic = (topicId, changes) => {
     try {
         const title = changes.title;
@@ -117,7 +106,7 @@ const updateOneTopic = (topicId, changes) => {
 
 module.exports = {
     getAllConvocations,
-/*     createNewTopic,
-    updateOneTopic,
+    createNewConvocation,
+    /*updateOneTopic,
     deleteOneTopic */
 };

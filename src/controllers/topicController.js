@@ -24,8 +24,7 @@ const createNewTopic = (req, res) => {
                 status: "FAILED",
                 data: {
                     error:
-                        `One of the following keys is missing or is empty
-                        in request body: 'title', 'shorthand'`,
+                        "One of the following keys is missing or is empty in request body: 'title', 'shorthand'",
                 },
             });
         return;

@@ -25,8 +25,7 @@ const createNewQuestion = (req, res) => {
                 status: "FAILED",
                 data: {
                     error:
-                        `One of the following keys is missing or is empty
-                        in request body: 'text' or 'topic'`,
+                        "One of the following keys is missing or is empty in request body: 'text' or 'topic'",
                 },
             });
         return;

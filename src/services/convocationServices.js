@@ -10,22 +10,22 @@ const getAllConvocations = () => {
     }
 };
 
-/* const createNewTopic = (newTopic) => {
-    const topicToInsert = {
-        ...newTopic,
+const createNewConvocation = (newConvocation) => {
+    const convocationToInsert = {
+        ...newConvocation,
         id: uuid(),
         createdAt: new Date().toLocaleString("en-US", { timeZone: "UTC"}),
         updatedAt: new Date().toLocaleString("en-US", { timeZone: "UTC"}),
     }
     try {
-        const createdTopic = Convocation.createNewTopic(topicToInsert);
-        return createdTopic;
+        const createdConvocation = Convocation.createNewConvocation(convocationToInsert);
+        return createdConvocation;
     } catch (error) {
         throw error;
     }
 };
 
-const updateOneTopic = (topicId, changes) => {
+/*const updateOneTopic = (topicId, changes) => {
     try {
         const updatedTopic = Convocation.updateOneTopic(topicId, changes);
         return updatedTopic;
@@ -44,7 +44,7 @@ const deleteOneTopic = (topicId) => {
 
 module.exports = {
     getAllConvocations,
-/*     createNewTopic,
-    updateOneTopic,
+    createNewConvocation,
+/*    updateOneTopic,
     deleteOneTopic */
 };

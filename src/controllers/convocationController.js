@@ -11,12 +11,14 @@ const getAllConvocations = (req, res) => {
     };
 };
 
-/* const createNewTopic = (req, res) => {
+const createNewConvocation = (req, res) => {
     const { body } = req;
 
     if (
-        !body.title ||
-        !body.shorthand
+        !body.name ||
+        !body.year ||
+        !body.institution ||
+        !body.category
     ) {
         res
             .status(400)
@@ -24,22 +26,23 @@ const getAllConvocations = (req, res) => {
                 status: "FAILED",
                 data: {
                     error:
-                        `One of the following keys is missing or is empty
-                        in request body: 'title', 'shorthand'`,
+                        "One of the following keys is missing or is empty in request body: 'name', 'year', 'institution', 'category'",
                 },
             });
         return;
     };
 
-    const newTopic = {
-        title: body.title,
-        shorthand: body.shorthand,
-        fullTitle: body.fullTitle
+    const newConvocation = {
+        name: body.name,
+        year: body.year,
+        institution: body.institution,
+        category: body.category,
+        topicList: []
     };
 
     try {
-        const createdTopic = convocationService.createNewTopic(newTopic);
-        res.status(200).send({ status: "OK", data: createdTopic });
+        const createdConvocation = convocationService.createNewConvocation(newConvocation);
+        res.status(200).send({ status: "OK", data: createdConvocation });
     } catch (error) {
         res
             .status(error?.status || 500)
@@ -47,7 +50,7 @@ const getAllConvocations = (req, res) => {
     }
 };
 
-const updateOneTopic = (req, res) => {
+/*const updateOneTopic = (req, res) => {
     const {
         body,
         params: { topicId },
@@ -103,7 +106,7 @@ const deleteOneTopic = (req, res) => {
 
 module.exports = {
     getAllConvocations,
-/*     createNewTopic,
-    updateOneTopic,
+    createNewConvocation,
+/*    updateOneTopic,
     deleteOneTopic */
 };
