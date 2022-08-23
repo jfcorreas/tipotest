@@ -6,7 +6,7 @@ const router = express.Router();
 router
     .get("/", convocationController.getAllConvocations)
     .post("/", convocationController.createNewConvocation)
-/*    .patch("/:topicId", convocationController.updateOneTopic)
-    .delete("/:topicId", convocationController.deleteOneTopic); */
+    .patch("/:convocationId", convocationController.updateOneConvocation)
+/*    .delete("/:topicId", convocationController.deleteOneTopic); */
 
 module.exports =  router;

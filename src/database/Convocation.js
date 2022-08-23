@@ -25,73 +25,64 @@ const createNewConvocation = (newConvocation) => {
         }
     }
 };
-/*
-const updateOneTopic = (topicId, changes) => {
-    try {
-        const title = changes.title;
-        const shorthand = changes.shorthand;
-        const fullTitle = changes.fullTitle;
 
-        if (!shorthand && !title && !fullTitle) {
+const updateOneConvocation = (convocationId, changes) => {
+    try {
+        const name = changes.name;
+        const year = changes.year;
+        const institution = changes.institution;
+        const category = changes.category;
+
+        if (!year && !name && !institution && !category) {
             throw {
                 status: 400,
                 message: `No valid changes requested`
             };
         }
 
-        const indexTopicForUpdate = DB.topics.findIndex(
-            (topic) => topic.id === topicId
+        const indexConvocationForUpdate = DB.convocations.findIndex(
+            (convocation) => convocation.id === convocationId
         );
-        if (indexTopicForUpdate === -1) {
+        if (indexConvocationForUpdate === -1) {
             throw {
                 status: 400,
-                message: `Can't find Topic with the id '${topicId}'`,
+                message: `Can't find Convocation with the id '${convocationId}'`,
             };        
         }        
 
-        const isAlreadyAdded = 
-            (DB.topics.findIndex((topic) => topic.title === title ) > -1) ||
-            (DB.topics.findIndex((topic) => topic.shorthand === shorthand ) > -1);
-
-        if (isAlreadyAdded) {
-            throw {
-                status: 400,
-                message: `Topic with title: '${title}' or shorthand: '${shorthand}' already exists`,
-            };
-        }
-
         const filteredChanges = Object.assign({},
-            shorthand === undefined ? null : {shorthand},    
-            title === undefined ? null : {title},
-            fullTitle === undefined ? null : {fullTitle}
+            year === undefined ? null : {year},    
+            name === undefined ? null : {name},
+            institution === undefined ? null : {institution},
+            category === undefined ? null : {category}
         );
 
-        const updatedTopic = {
-            ...DB.topics[indexTopicForUpdate],
+        const updatedConvocation = {
+            ...DB.convocations[indexConvocationForUpdate],
             ...filteredChanges,
             updatedAt: new Date().toLocaleString("en-US", {timeZone: "UTC"}),
         };
     
-        DB.topics[indexTopicForUpdate] = updatedTopic;
+        DB.convocations[indexConvocationForUpdate] = updatedConvocation;
         saveToDatabase(DB);
-        return updatedTopic;
+        return updatedConvocation;
     } catch (error) {
         throw {
             status: error?.status || 500,
             message: error?.message || error,
         };
     }
-}; */
+};
 
-/* const deleteOneTopic = (topicId) => {
+/* const deleteOneTopic = (convocationId) => {
     try {
         const indexForDeletion = DB.topics.findIndex(
-            (topic) => topic.id === topicId
+            (convocation) => convocation.id === convocationId
         );
         if (indexForDeletion === -1) {
             throw {
                 status: 400,
-                message: `Can't find Topic with the id '${topicId}'`,
+                message: `Can't find Topic with the id '${convocationId}'`,
             }; 
         }
         DB.topics.splice(indexForDeletion, 1);
@@ -107,6 +98,6 @@ const updateOneTopic = (topicId, changes) => {
 module.exports = {
     getAllConvocations,
     createNewConvocation,
-    /*updateOneTopic,
-    deleteOneTopic */
+    updateOneConvocation,
+    /*deleteOneTopic */
 };

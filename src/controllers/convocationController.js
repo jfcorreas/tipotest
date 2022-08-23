@@ -50,25 +50,25 @@ const createNewConvocation = (req, res) => {
     }
 };
 
-/*const updateOneTopic = (req, res) => {
+const updateOneConvocation = (req, res) => {
     const {
         body,
-        params: { topicId },
+        params: { convocationId },
     } = req;
 
-    if (!topicId) {
+    if (!convocationId) {
         res
             .status(400)
             .send({
                 status: "FAILED",
                 data: {
-                    error: "Parameter ':topicId' can not be empty",
+                    error: "Parameter ':convocationId' can not be empty",
                 },
             }); 
     }
     try {
-        const updatedTopic = convocationService.updateOneTopic(topicId, body);
-        res.send({ status: "OK", data: updatedTopic });
+        const updatedConvocation = convocationService.updateOneConvocation(convocationId, body);
+        res.send({ status: "OK", data: updatedConvocation });
     } catch (error) {
         res
             .status(error?.status || 500)
@@ -77,24 +77,24 @@ const createNewConvocation = (req, res) => {
     }
 };
 
-const deleteOneTopic = (req, res) => {
+/*const deleteOneTopic = (req, res) => {
     const {
-        params: { topicId },
+        params: { convocationId },
     } = req;
 
-    if (!topicId) {
+    if (!convocationId) {
         res
             .status(400)
             .send({
                 status: "FAILED",
                 data: {
-                    error: "Parameter ':topicId' can not be empty",
+                    error: "Parameter ':convocationId' can not be empty",
                 },
             }); 
     }
 
     try {
-        convocationService.deleteOneTopic(topicId);
+        convocationService.deleteOneTopic(convocationId);
         res.status(204).send({ status: "OK" });
     } catch (error) {
         res
@@ -107,6 +107,6 @@ const deleteOneTopic = (req, res) => {
 module.exports = {
     getAllConvocations,
     createNewConvocation,
-/*    updateOneTopic,
-    deleteOneTopic */
+    updateOneConvocation,
+/*    deleteOneTopic */
 };

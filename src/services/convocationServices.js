@@ -25,18 +25,18 @@ const createNewConvocation = (newConvocation) => {
     }
 };
 
-/*const updateOneTopic = (topicId, changes) => {
+const updateOneConvocation = (convocationId, changes) => {
     try {
-        const updatedTopic = Convocation.updateOneTopic(topicId, changes);
-        return updatedTopic;
+        const updatedConvocation = Convocation.updateOneConvocation(convocationId, changes);
+        return updatedConvocation;
     } catch (error) {
         throw error;
     }
 };
 
-const deleteOneTopic = (topicId) => {
+/*const deleteOneTopic = (convocationId) => {
     try {
-        Convocation.deleteOneTopic(topicId);
+        Convocation.deleteOneTopic(convocationId);
     } catch (error) {
         throw error;
     }
@@ -45,6 +45,6 @@ const deleteOneTopic = (topicId) => {
 module.exports = {
     getAllConvocations,
     createNewConvocation,
-/*    updateOneTopic,
-    deleteOneTopic */
+    updateOneConvocation,
+    /*deleteOneTopic */
 };
