@@ -34,17 +34,17 @@ const updateOneConvocation = (convocationId, changes) => {
     }
 };
 
-/*const deleteOneTopic = (convocationId) => {
+const deleteOneConvocation = (convocationId) => {
     try {
-        Convocation.deleteOneTopic(convocationId);
+        Convocation.deleteOneConvocation(convocationId);
     } catch (error) {
         throw error;
     }
-} */
+}
 
 module.exports = {
     getAllConvocations,
     createNewConvocation,
     updateOneConvocation,
-    /*deleteOneTopic */
+    deleteOneConvocation
 };

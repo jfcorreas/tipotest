@@ -77,7 +77,7 @@ const updateOneConvocation = (req, res) => {
     }
 };
 
-/*const deleteOneTopic = (req, res) => {
+const deleteOneConvocation = (req, res) => {
     const {
         params: { convocationId },
     } = req;
@@ -94,7 +94,7 @@ const updateOneConvocation = (req, res) => {
     }
 
     try {
-        convocationService.deleteOneTopic(convocationId);
+        convocationService.deleteOneConvocation(convocationId);
         res.status(204).send({ status: "OK" });
     } catch (error) {
         res
@@ -102,11 +102,11 @@ const updateOneConvocation = (req, res) => {
             .send({
                 status: "FAILED", data: { error: error?.message || error }});            
     }
-}; */
+};
 
 module.exports = {
     getAllConvocations,
     createNewConvocation,
     updateOneConvocation,
-/*    deleteOneTopic */
+    deleteOneConvocation
 };

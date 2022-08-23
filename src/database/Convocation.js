@@ -74,18 +74,18 @@ const updateOneConvocation = (convocationId, changes) => {
     }
 };
 
-/* const deleteOneTopic = (convocationId) => {
+const deleteOneConvocation = (convocationId) => {
     try {
-        const indexForDeletion = DB.topics.findIndex(
+        const indexForDeletion = DB.convocations.findIndex(
             (convocation) => convocation.id === convocationId
         );
         if (indexForDeletion === -1) {
             throw {
                 status: 400,
-                message: `Can't find Topic with the id '${convocationId}'`,
+                message: `Can't find Convocation with the id '${convocationId}'`,
             }; 
         }
-        DB.topics.splice(indexForDeletion, 1);
+        DB.convocations.splice(indexForDeletion, 1);
         saveToDatabase(DB);
     } catch (error) {
         throw {
@@ -93,11 +93,11 @@ const updateOneConvocation = (convocationId, changes) => {
             message: error?.message || error,
         };
     }
-}; */
+};
 
 module.exports = {
     getAllConvocations,
     createNewConvocation,
     updateOneConvocation,
-    /*deleteOneTopic */
+    deleteOneConvocation
 };
