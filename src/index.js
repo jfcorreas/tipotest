@@ -17,7 +17,7 @@ app.listen(PORT, () => {
 
 // TODO: 
 //  ✅ Convocation CRUD
-//  Convocation Topics CRUD
+//  ✅ Convocation Topics CRUD
 //  Test CRUD
 //  Test update responses
 //  Test update score

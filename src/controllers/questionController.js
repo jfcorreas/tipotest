@@ -62,6 +62,7 @@ const updateOneQuestion = (req, res) => {
                     error: "Parameter ':questionId' can not be empty",
                 },
             }); 
+        return;
     }
     try {
         const updatedQuestion = questionService.updateOneQuestion(questionId, body);
@@ -88,6 +89,7 @@ const deleteOneQuestion = (req, res) => {
                     error: "Parameter ':questionId' can not be empty",
                 },
             }); 
+        return;
     }
 
     try {
@@ -130,6 +132,7 @@ const addNewAnswer = (req, res) => {
                     error: "Parameter ':questionId' can not be empty",
                 },
             });    
+        return;
     }
 
     if (
@@ -178,6 +181,7 @@ const updateOneAnswer = (req, res) => {
                     error: "Parameters ':questionId' and ':answerId' can not be empty",
                 },
             }); 
+        return;
     }
     try {
         const updatedAnswer = questionService.updateOneAnswer(questionId, answerId, body);

@@ -61,6 +61,7 @@ const updateOneTopic = (req, res) => {
                     error: "Parameter ':topicId' can not be empty",
                 },
             }); 
+        return;
     }
     try {
         const updatedTopic = topicService.updateOneTopic(topicId, body);
@@ -87,6 +88,7 @@ const deleteOneTopic = (req, res) => {
                     error: "Parameter ':topicId' can not be empty",
                 },
             }); 
+        return;
     }
 
     try {
