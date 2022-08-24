@@ -1,5 +1,6 @@
 const DB = require("./tipotestdb.json");
 const { saveToDatabase } = require("./utils");
+const Topic = require("./Topic");
 
 const getAllConvocations = () => {
     try {
@@ -74,6 +75,45 @@ const updateOneConvocation = (convocationId, changes) => {
     }
 };
 
+const updateConvocationTopics = (convocationId, topics) => {
+    try {
+
+        if (topics.constructor.name != "Array") {
+            throw {
+                status: 400,
+                message: `Invalid list of topics`
+            };
+        }
+
+        const indexConvocationForUpdate = DB.convocations.findIndex(
+            (convocation) => convocation.id === convocationId
+        );
+        if (indexConvocationForUpdate === -1) {
+            throw {
+                status: 400,
+                message: `Can't find Convocation with the id '${convocationId}'`,
+            };        
+        }        
+
+        filteredTopics = topics.filter(Topic.topicExists);
+
+        const updatedConvocation = {
+            ...DB.convocations[indexConvocationForUpdate],
+            topicList: filteredTopics,
+            updatedAt: new Date().toLocaleString("en-US", {timeZone: "UTC"}),
+        };
+    
+        DB.convocations[indexConvocationForUpdate] = updatedConvocation;
+        saveToDatabase(DB);
+        return updatedConvocation;
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error,
+        };
+    }
+};
+
 const deleteOneConvocation = (convocationId) => {
     try {
         const indexForDeletion = DB.convocations.findIndex(
@@ -99,5 +139,6 @@ module.exports = {
     getAllConvocations,
     createNewConvocation,
     updateOneConvocation,
+    updateConvocationTopics,
     deleteOneConvocation
 };

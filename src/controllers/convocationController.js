@@ -64,10 +64,52 @@ const updateOneConvocation = (req, res) => {
                 data: {
                     error: "Parameter ':convocationId' can not be empty",
                 },
-            }); 
+            });
+        return; 
     }
     try {
         const updatedConvocation = convocationService.updateOneConvocation(convocationId, body);
+        res.send({ status: "OK", data: updatedConvocation });
+    } catch (error) {
+        res
+            .status(error?.status || 500)
+            .send({
+                status: "FAILED", data: { error: error?.message || error }});        
+    }
+};
+
+const updateConvocationTopics = (req, res) => {
+    const {
+        body: { topicList },
+        params: { convocationId },
+    } = req;
+
+    if (!convocationId || !topicList) {
+        res
+            .status(400)
+            .send({
+                status: "FAILED",
+                data: {
+                    error: "Parameter ':convocationId' and property 'topicList' can not be empty",
+                },
+            }); 
+        return;
+    }
+
+    if (topicList.constructor.name != "Array") {
+        res
+        .status(400)
+        .send({
+            status: "FAILED",
+            data: {
+                error: "Invalid list of topics",
+            },
+        });     
+        return;            
+    };
+
+    try {
+        const updatedConvocation = convocationService.updateConvocationTopics(convocationId, topicList);
         res.send({ status: "OK", data: updatedConvocation });
     } catch (error) {
         res
@@ -91,6 +133,7 @@ const deleteOneConvocation = (req, res) => {
                     error: "Parameter ':convocationId' can not be empty",
                 },
             }); 
+        return;
     }
 
     try {
@@ -108,5 +151,6 @@ module.exports = {
     getAllConvocations,
     createNewConvocation,
     updateOneConvocation,
+    updateConvocationTopics,
     deleteOneConvocation
 };

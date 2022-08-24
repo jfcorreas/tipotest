@@ -1,6 +1,15 @@
 const DB = require("./tipotestdb.json");
 const { saveToDatabase } = require("./utils");
 
+const topicExists = (topicId) => {
+    return DB.topics.findIndex( (topic) => topic.id === topicId ) > -1;
+};
+
+const topicIsAlreadyAdded = (topicReq) => {
+    return (DB.topics.findIndex((topic) => topic.title === topicReq.title ) > -1) ||
+        (DB.topics.findIndex((topic) => topic.shorthand === topicReq.shorthand ) > -1);
+};
+
 const getAllTopics = () => {
     try {
         const allTopics = DB.topics;
@@ -15,11 +24,8 @@ const getAllTopics = () => {
 
 const createNewTopic = (newTopic) => {
     try {
-        const isAlreadyAdded = 
-            (DB.topics.findIndex((topic) => topic.title === newTopic.title ) > -1) ||
-            (DB.topics.findIndex((topic) => topic.shorthand === newTopic.shorthand ) > -1);
-
-        if (isAlreadyAdded) {
+        
+        if (topicIsAlreadyAdded(newTopic)) {
             throw {
                 status: 400,
                 message: `Topic with title: '${newTopic.title}' or shorthand: '${newTopic.shorthand}' already exists`,
@@ -50,9 +56,7 @@ const updateOneTopic = (topicId, changes) => {
             };
         }
 
-        const indexTopicForUpdate = DB.topics.findIndex(
-            (topic) => topic.id === topicId
-        );
+        const indexTopicForUpdate = DB.topics.findIndex( (topic) => topic.id === topicId );
         if (indexTopicForUpdate === -1) {
             throw {
                 status: 400,
@@ -60,11 +64,7 @@ const updateOneTopic = (topicId, changes) => {
             };        
         }        
 
-        const isAlreadyAdded = 
-            (DB.topics.findIndex((topic) => topic.title === title ) > -1) ||
-            (DB.topics.findIndex((topic) => topic.shorthand === shorthand ) > -1);
-
-        if (isAlreadyAdded) {
+        if (topicIsAlreadyAdded(changes)) {
             throw {
                 status: 400,
                 message: `Topic with title: '${title}' or shorthand: '${shorthand}' already exists`,
@@ -96,9 +96,7 @@ const updateOneTopic = (topicId, changes) => {
 
 const deleteOneTopic = (topicId) => {
     try {
-        const indexForDeletion = DB.topics.findIndex(
-            (topic) => topic.id === topicId
-        );
+        const indexForDeletion = DB.topics.findIndex( (topic) => topic.id === topicId );
         if (indexForDeletion === -1) {
             throw {
                 status: 400,
@@ -116,6 +114,8 @@ const deleteOneTopic = (topicId) => {
 };
 
 module.exports = {
+    topicExists,
+    topicIsAlreadyAdded,
     getAllTopics,
     createNewTopic,
     updateOneTopic,

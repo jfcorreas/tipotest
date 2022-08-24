@@ -58,14 +58,18 @@
   ],
   "convocations": [
     {
+      "0": "cbcc2c5d-def9-449f-b075-baf6b49a9e43",
+      "1": "314f885e-16cb-4597-ad1c-659b761855c0",
       "name": "Oferta de Empleo Público",
       "year": "2018",
       "institution": "SESCAM",
       "category": "Técnico de Gestión de Tecnologías de la Información",
-      "topicList": [],
+      "topicList": [
+        "314f885e-16cb-4597-ad1c-659b761855c0"
+      ],
       "id": "d26ecdac-33c0-4c90-b79d-cab45ca493cf",
       "createdAt": "8/23/2022, 6:55:07 PM",
-      "updatedAt": "8/23/2022, 6:55:07 PM"
+      "updatedAt": "8/24/2022, 6:30:28 PM"
     }
   ]
 }
