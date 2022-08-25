@@ -37,7 +37,8 @@ const getAllTopics = () => {
 const getTopicTests = (topicId) => {
     try {
         const topicTests = DB.topicsTests.filter( (topicTest) => topicTest.topicId === topicId);
-        return topicTests;
+        const testList = topicTests.map( ({topicId, testId} ) => testId);
+        return testList;
     } catch (error) {
         throw {
             status: error?.status || 500,

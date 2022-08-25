@@ -12,6 +12,20 @@ const getAllTests = () => {
         }
     }
 };
+
+const getTestTopics = (testId) => {
+    try {
+        const testTopics = DB.topicsTests.filter( (testTopic) => testTopic.testId === testId );
+        const topicList = testTopics.map( ({topicId, testId} ) => topicId);
+        return topicList;
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error,
+        }
+    }
+};
+
 /*
 const getTestsById = (testList) => {
     try {
@@ -148,6 +162,7 @@ const deleteOneConvocation = (convocationId) => {
 
 module.exports = {
     getAllTests,
+    getTestTopics
  /*    getTestsById
    createNewTest
   updateOneConvocation,

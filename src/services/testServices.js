@@ -9,6 +9,15 @@ const getAllTests = () => {
         throw error;
     }
 };
+
+const getTestTopics = (testId) => {
+    try {
+        const testTopics = Test.getTestTopics(testId);
+        return testTopics;
+    } catch (error) {
+        throw error;
+    }
+};
 /*
  const createNewTest = (newTest) => {
     const testToInsert = {
@@ -53,6 +62,7 @@ const deleteOneConvocation = (convocationId) => {
 
 module.exports = {
     getAllTests,
+    getTestTopics
 /*    createNewTest
      updateOneConvocation,
     updateConvocationTopics,

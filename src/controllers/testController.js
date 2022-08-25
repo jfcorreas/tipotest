@@ -11,6 +11,34 @@ const getAllTests = (req, res) => {
     };
 };
 
+const getTestTopics = (req, res) => {
+    const {
+        params: { testId },
+    } = req;
+
+    if (!testId) {
+        res
+            .status(400)
+            .send({
+                status: "FAILED",
+                data: {
+                    error: "Parameter ':testId' can not be empty",
+                },
+            }); 
+        return;
+    }
+
+    try {
+        const testTopics = testService.getTestTopics(testId);
+        res.status(200).send({ status: "OK", data: testTopics });
+    } catch (error) {
+        res
+            .status(error?.status || 500)
+            .send({
+                status: "FAILED", data: { error: error?.message || error }});            
+    }
+};
+
 /* const createNewConvocation = (req, res) => {
     const { body } = req;
 
@@ -149,6 +177,7 @@ const deleteOneConvocation = (req, res) => {
 
 module.exports = {
     getAllTests,
+    getTestTopics
 /*     createNewConvocation,
     updateOneConvocation,
     updateConvocationTopics,
