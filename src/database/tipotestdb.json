@@ -4,6 +4,7 @@
       "title": "La Constitución Española de 1978",
       "shorthand": "CE",
       "fullTitle": "La constitución española de 1978: valores superiores y principios inspiradores; Derechos y deberes fundamentales. Protección de la salud en la constitución. Limitaciones constitucionales al uso de la informática",
+      "tests": [],
       "id": "cbcc2c5d-def9-449f-b075-baf6b49a9e43",
       "createdAt": "8/15/2022, 5:18:58 PM",
       "updatedAt": "8/15/2022, 5:18:58 PM"
@@ -12,6 +13,7 @@
       "title": "El Estatuto de Autonomía de Castilla-La Mancha",
       "shorthand": "EA-CLM",
       "fullTitle": "El Estatuto de Autonomía de Castilla-La Mancha: Título preliminar. Las instituciones de la Comunidad Autónoma de Castilla-La Mancha. Organización territorial de la región. Competencias de la Comunidad Autónoma: especial referencia a la materia sanitaria.",
+      "tests": [],
       "id": "314f885e-16cb-4597-ad1c-659b761855c0",
       "createdAt": "8/22/2022, 6:32:59 PM",
       "updatedAt": "8/22/2022, 6:36:16 PM"
@@ -58,8 +60,6 @@
   ],
   "convocations": [
     {
-      "0": "cbcc2c5d-def9-449f-b075-baf6b49a9e43",
-      "1": "314f885e-16cb-4597-ad1c-659b761855c0",
       "name": "Oferta de Empleo Público",
       "year": "2018",
       "institution": "SESCAM",
@@ -72,5 +72,6 @@
       "updatedAt": "8/24/2022, 6:30:28 PM"
     }
   ],
-  "tests": []
+  "tests": [],
+  "topicsTests": []
 }

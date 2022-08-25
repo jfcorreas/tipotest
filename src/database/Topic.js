@@ -10,6 +10,18 @@ const topicIsAlreadyAdded = (topicReq) => {
         (DB.topics.findIndex((topic) => topic.shorthand === topicReq.shorthand ) > -1);
 };
 
+const getOneTopic = (topicId) => {
+    try {
+        const topicReq = DB.topics.find((topic) => topic.id = topicId);
+        return topicReq;
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error,
+        }
+    }
+};
+
 const getAllTopics = () => {
     try {
         const allTopics = DB.topics;
@@ -20,7 +32,19 @@ const getAllTopics = () => {
             message: error?.message || error,
         }
     }
-}
+};
+
+const getTopicTests = (topicId) => {
+    try {
+        const topicTests = DB.topicsTests.filter( (topicTest) => topicTest.topicId === topicId);
+        return topicTests;
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error,
+        }
+    }
+};
 
 const createNewTopic = (newTopic) => {
     try {
@@ -117,6 +141,8 @@ module.exports = {
     topicExists,
     topicIsAlreadyAdded,
     getAllTopics,
+    getOneTopic,
+    getTopicTests,
     createNewTopic,
     updateOneTopic,
     deleteOneTopic

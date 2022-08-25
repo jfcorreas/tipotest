@@ -13,11 +13,23 @@ const getAllTests = () => {
     }
 };
 /*
-const createNewConvocation = (newConvocation) => {
+const getTestsById = (testList) => {
     try {
-        DB.convocations.push(newConvocation);
+        const requestedTests = DB.tests.filter((test) => testList.include(test.id));
+        return requestedTests;
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error,
+        }
+    }
+};
+
+const createNewTest = (newTest) => {
+    try {
+        DB.tests.push(newTest);
         saveToDatabase(DB);
-        return newConvocation;
+        return newTest;
     } catch (error) {
         throw {
             status: error?.status || 500,
@@ -136,8 +148,9 @@ const deleteOneConvocation = (convocationId) => {
 
 module.exports = {
     getAllTests,
-/*     createNewConvocation,
-    updateOneConvocation,
+ /*    getTestsById
+   createNewTest
+  updateOneConvocation,
     updateConvocationTopics,
     deleteOneConvocation */
 };

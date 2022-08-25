@@ -42,9 +42,19 @@ const deleteOneTopic = (topicId) => {
     }
 }
 
+const getTopicTests = (topicId) => {
+    try {
+        const topicTests = Topic.getTopicTests(topicId);
+        return topicTests;
+    } catch (error) {
+        throw error;
+    }
+};
+
 module.exports = {
     getAllTopics,
     createNewTopic,
     updateOneTopic,
-    deleteOneTopic
+    deleteOneTopic,
+    getTopicTests
 };

@@ -7,6 +7,7 @@ router
     .get("/", topicController.getAllTopics)
     .post("/", topicController.createNewTopic)
     .patch("/:topicId", topicController.updateOneTopic)
-    .delete("/:topicId", topicController.deleteOneTopic);
+    .delete("/:topicId", topicController.deleteOneTopic)
+    .get("/:topicId/tests", topicController.getTopicTests);
 
 module.exports =  router;

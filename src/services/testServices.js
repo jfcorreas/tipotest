@@ -9,10 +9,10 @@ const getAllTests = () => {
         throw error;
     }
 };
-
-/* const createNewConvocation = (newConvocation) => {
-    const convocationToInsert = {
-        ...newConvocation,
+/*
+ const createNewTest = (newTest) => {
+    const testToInsert = {
+        ...newTest,
         id: uuid(),
         createdAt: new Date().toLocaleString("en-US", { timeZone: "UTC"}),
         updatedAt: new Date().toLocaleString("en-US", { timeZone: "UTC"}),
@@ -53,8 +53,8 @@ const deleteOneConvocation = (convocationId) => {
 
 module.exports = {
     getAllTests,
-/*     createNewConvocation,
-    updateOneConvocation,
+/*    createNewTest
+     updateOneConvocation,
     updateConvocationTopics,
     deleteOneConvocation */
 };
