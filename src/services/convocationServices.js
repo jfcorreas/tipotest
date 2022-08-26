@@ -10,6 +10,15 @@ const getAllConvocations = () => {
     }
 };
 
+const getConvocationById = (convocationId) => {
+    try {
+        const convocationReq = Convocation.getConvocationById(convocationId);
+        return convocationReq;
+    } catch (error) {
+        throw error;
+    }
+};
+
 const createNewConvocation = (newConvocation) => {
     const convocationToInsert = {
         ...newConvocation,
@@ -53,6 +62,7 @@ const deleteOneConvocation = (convocationId) => {
 
 module.exports = {
     getAllConvocations,
+    getConvocationById,
     createNewConvocation,
     updateOneConvocation,
     updateConvocationTopics,

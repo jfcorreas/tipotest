@@ -14,6 +14,24 @@ const getAllConvocations = () => {
     }
 };
 
+const getConvocationById = (convocationId) => {
+    try {
+        const convocationReq = DB.convocations.find( (convocation) => convocation.id === convocationId);
+        if (!convocationReq) {
+            throw {
+                status: 400,
+                message: `Can't find Convocation with the id '${convocationId}'`,
+            };        
+        } 
+        return convocationReq;
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error,
+        }
+    }
+};
+
 const createNewConvocation = (newConvocation) => {
     try {
         DB.convocations.push(newConvocation);
@@ -137,6 +155,7 @@ const deleteOneConvocation = (convocationId) => {
 
 module.exports = {
     getAllConvocations,
+    getConvocationById,
     createNewConvocation,
     updateOneConvocation,
     updateConvocationTopics,
