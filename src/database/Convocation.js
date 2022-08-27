@@ -2,6 +2,10 @@ const DB = require("./tipotestdb.json");
 const { saveToDatabase } = require("./utils");
 const Topic = require("./Topic");
 
+const convocationExists = (convocationId) => {
+    return DB.convocations.findIndex( (convocation) => convocation.id === convocationId ) > -1;
+};
+
 const getAllConvocations = () => {
     try {
         const allConvocations = DB.convocations;
@@ -154,6 +158,7 @@ const deleteOneConvocation = (convocationId) => {
 };
 
 module.exports = {
+    convocationExists,
     getAllConvocations,
     getConvocationById,
     createNewConvocation,

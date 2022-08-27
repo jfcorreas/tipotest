@@ -38,6 +38,21 @@ const getTestsById = (testList) => {
         }
     }
 };
+*/
+
+
+const addTopicTestElements = (newElements) => {
+    try {
+        const newTopicsTests = DB.topicsTests.concat(newElements);
+        DB.topicsTests = newTopicsTests;
+        saveToDatabase(DB);
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error,
+        }
+    }
+};
 
 const createNewTest = (newTest) => {
     try {
@@ -51,7 +66,7 @@ const createNewTest = (newTest) => {
         }
     }
 };
-
+/*
 const updateOneConvocation = (convocationId, changes) => {
     try {
         const name = changes.name;
@@ -162,10 +177,11 @@ const deleteOneConvocation = (convocationId) => {
 
 module.exports = {
     getAllTests,
-    getTestTopics
- /*    getTestsById
-   createNewTest
-  updateOneConvocation,
+    getTestTopics,
+ //    getTestsById
+    addTopicTestElements,
+    createNewTest
+ /* updateOneConvocation,
     updateConvocationTopics,
     deleteOneConvocation */
 };

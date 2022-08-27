@@ -1,5 +1,9 @@
 const testService = require("../services/testServices");
 
+const DEFAULT_NUM_CHOICES = 4;
+const DEFAULT_NUM_QUESTIONS = 100;
+const DEFAULT_SCORING_FORMULA = "H-(F/4)"
+
 const getAllTests = (req, res) => {
     try {
         const allTests = testService.getAllTests();
@@ -39,45 +43,49 @@ const getTestTopics = (req, res) => {
     }
 };
 
-/* const createNewConvocation = (req, res) => {
+const createNewTest = (req, res) => {
     const { body } = req;
+    const validTopicList = ( body.topicList &&
+                            body.topicList.constructor.name == "Array" &&
+                            body.topicList.length > 0);
 
-    if (
-        !body.name ||
-        !body.year ||
-        !body.institution ||
-        !body.category
-    ) {
+    if ( !body.convocationId && !validTopicList ) {
         res
             .status(400)
             .send({
                 status: "FAILED",
                 data: {
                     error:
-                        "One of the following keys is missing or is empty in request body: 'name', 'year', 'institution', 'category'",
+                        "The following keys are missing, are empty or are not valid in request body: 'convocationId' and 'topicList'",
                 },
             });
         return;
     };
 
-    const newConvocation = {
-        name: body.name,
-        year: body.year,
-        institution: body.institution,
-        category: body.category,
-        topicList: []
+    const topicList = validTopicList? body.topicList : false;
+    const validNumQuestions = ( Number.isInteger(body.numQuestions) && body.numQuestions > 0 );
+    const numQuestions = validNumQuestions? body.numQuestions : DEFAULT_NUM_QUESTIONS;
+
+    const newTest = {
+        numChoices: body.numChoices || DEFAULT_NUM_CHOICES,
+        convocationId: body.convocationId,
+        questionList: [],
+        reponses: [],
+        scoringFormula: body.scoringFormula || DEFAULT_SCORING_FORMULA,
+        score: 0,
+        submitted: false
     };
 
     try {
-        const createdConvocation = testService.createNewConvocation(newConvocation);
-        res.status(200).send({ status: "OK", data: createdConvocation });
+        const createdTest = testService.createNewTest(newTest, topicList, numQuestions);
+        res.status(200).send({ status: "OK", data: createdTest });
     } catch (error) {
         res
             .status(error?.status || 500)
             .send({ status: "FAILED", data: { error: error?.message || error }});
     }
 };
-
+/*
 const updateOneConvocation = (req, res) => {
     const {
         body,
@@ -177,9 +185,9 @@ const deleteOneConvocation = (req, res) => {
 
 module.exports = {
     getAllTests,
-    getTestTopics
-/*     createNewConvocation,
-    updateOneConvocation,
+    getTestTopics,
+    createNewTest,
+/*    updateOneConvocation,
     updateConvocationTopics,
     deleteOneConvocation */
 };

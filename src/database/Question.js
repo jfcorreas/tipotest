@@ -3,7 +3,7 @@ const { saveToDatabase } = require("./utils");
 
 const getAllQuestions = (filterParams) => {
     try {
-        let questions = DB.questions;
+        let questions = [...DB.questions];
         if (filterParams.topic) {
             questions = questions.filter((question) => question.topic === filterParams.topic);
         }
@@ -15,6 +15,35 @@ const getAllQuestions = (filterParams) => {
         }
     }
 }
+
+const getQuestionsForTest = (topicId, numQuestions, numAnswers) => {
+    try {
+        let questions = structuredClone(DB.questions);
+
+        if (topicId) {
+            questions = questions.filter((question) => question.topic === topicId);
+        }
+
+        while (questions.length > numQuestions) {
+            questions.splice([[questions.length * Math.random() | 0]],1);
+        }
+
+        questions.forEach( question => {
+            question.answers = getQuestionAnswers(question.id, numAnswers, false);
+            if (!question.answers) {
+                const badQuestionIndex = questions.findIndex( (element) => element.id == question.id);
+                questions.splice(badQuestionIndex, 1);
+            }
+        });
+
+        return questions;
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error,
+        }
+    }
+};
 
 const createNewQuestion = (newQuestion) => {
     try {
@@ -138,7 +167,7 @@ const deleteOneQuestion = (questionId) => {
     }
 };
 
-const getQuestionAnswers = (questionId, numAnswers) => {
+const getQuestionAnswers = (questionId, numAnswers, apiCall = true) => {
     try {
         const allAnswers = (DB.questions.find((question) => question.id === questionId )).answers;
 
@@ -153,17 +182,23 @@ const getQuestionAnswers = (questionId, numAnswers) => {
             }, { trueAnswers: [], falseAnswers: [] });
 
         if (!trueAnswers) {
-            throw {
-                status: 400,
-                message: `Question with id: '${questionId}' doesn't have any valid answer'`,
-            };             
+            if (apiCall) {
+                throw {
+                    status: 400,
+                    message: `Question with id: '${questionId}' doesn't have any valid answer'`,
+                };             
+            }
+            return false;
         }            
 
         if (falseAnswers.length < (numAnswers - 1)) {
-            throw {
-                status: 400,
-                message: `Question with id: '${questionId}' doesn't have enough false answers'`,
-            };            
+            if (apiCall) {
+                throw {
+                    status: 400,
+                    message: `Question with id: '${questionId}' doesn't have enough false answers'`,
+                };            
+            }
+            return false;
         }
 
         let answers = new Array(trueAnswers[[trueAnswers.length * Math.random() | 0]]);
@@ -298,6 +333,7 @@ const updateOneAnswer = (questionId, answerId, changes) => {
 
 module.exports = {
     getAllQuestions,
+    getQuestionsForTest,
     createNewQuestion,
     updateOneQuestion,
     deleteOneQuestion,

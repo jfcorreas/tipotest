@@ -20,5 +20,8 @@ app.listen(PORT, () => {
 // TODO: 
 //  ✅ Convocation CRUD
 //  ✅ Convocation Topics CRUD
-//  Test CRUD
+//  Test CRUD   
+//          REPAIR
+//              No salir cuando una question le faltan answers --> Question.js
+//              Test.addTopicTestElements(newTopicsForTest); --> testServices.js
 //  Test update responses (submitted = true, score calculation)

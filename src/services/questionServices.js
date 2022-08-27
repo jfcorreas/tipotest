@@ -10,6 +10,15 @@ const getAllQuestions = (filterParams) => {
     }
 };
 
+const getQuestionsForTest = (topicId, numQuestions, numAnswers) => {
+    try {
+        const questionsForTest = Question.getQuestionsForTest(topicId, numQuestions, numAnswers);
+        return questionsForTest;
+    } catch (error) {
+        throw error;
+    }
+};
+
 const createNewQuestion = (newQuestion) => {
     const questionToInsert = {
         ...newQuestion,
@@ -77,6 +86,7 @@ const updateOneAnswer = (questionId, answerId, changes) => {
 
 module.exports = {
     getAllQuestions,
+    getQuestionsForTest,
     createNewQuestion,
     updateOneQuestion,
     deleteOneQuestion,

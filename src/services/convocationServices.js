@@ -1,6 +1,14 @@
 const { v4: uuid } = require('uuid');
 const Convocation = require("../database/Convocation");
 
+const convocationExists = (convocationId) => {
+    try {
+        return Convocation.convocationExists(convocationId);
+    } catch (error) {
+        throw error;
+    }
+};
+
 const getAllConvocations = () => {
     try {
         const allConvocations = Convocation.getAllConvocations();
@@ -61,6 +69,7 @@ const deleteOneConvocation = (convocationId) => {
 }
 
 module.exports = {
+    convocationExists,
     getAllConvocations,
     getConvocationById,
     createNewConvocation,

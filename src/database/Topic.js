@@ -37,8 +37,19 @@ const getAllTopics = () => {
 const getTopicTests = (topicId) => {
     try {
         const topicTests = DB.topicsTests.filter( (topicTest) => topicTest.topicId === topicId);
-        const testList = topicTests.map( ({topicId, testId} ) => testId);
-        return testList;
+        return topicTests;
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error,
+        }
+    }
+};
+
+const getExistingTopics = (topicIds) => {
+    try {
+        const existingTopics = topicIds.filter( (topicId) => topicExists(topicId));
+        return existingTopics;
     } catch (error) {
         throw {
             status: error?.status || 500,
@@ -144,6 +155,7 @@ module.exports = {
     getAllTopics,
     getOneTopic,
     getTopicTests,
+    getExistingTopics,
     createNewTopic,
     updateOneTopic,
     deleteOneTopic
