@@ -70,7 +70,7 @@ const createNewTest = (req, res) => {
         numChoices: body.numChoices || DEFAULT_NUM_CHOICES,
         convocationId: body.convocationId,
         questionList: [],
-        reponses: [],
+        responses: [],
         scoringFormula: body.scoringFormula || DEFAULT_SCORING_FORMULA,
         score: 0,
         submitted: false
@@ -85,75 +85,36 @@ const createNewTest = (req, res) => {
             .send({ status: "FAILED", data: { error: error?.message || error }});
     }
 };
-/*
-const updateOneConvocation = (req, res) => {
+
+const completeOneTest = (req, res) => {
     const {
-        body,
-        params: { convocationId },
+        params: { testId },
+        body: { testResponses }
     } = req;
 
-    if (!convocationId) {
+    if (!testId || !testResponses) {
         res
             .status(400)
             .send({
                 status: "FAILED",
                 data: {
-                    error: "Parameter ':convocationId' can not be empty",
-                },
-            });
-        return; 
-    }
-    try {
-        const updatedConvocation = testService.updateOneConvocation(convocationId, body);
-        res.send({ status: "OK", data: updatedConvocation });
-    } catch (error) {
-        res
-            .status(error?.status || 500)
-            .send({
-                status: "FAILED", data: { error: error?.message || error }});        
-    }
-};
-
-const updateConvocationTopics = (req, res) => {
-    const {
-        body: { topicList },
-        params: { convocationId },
-    } = req;
-
-    if (!convocationId || !topicList) {
-        res
-            .status(400)
-            .send({
-                status: "FAILED",
-                data: {
-                    error: "Parameter ':convocationId' and property 'topicList' can not be empty",
+                    error: "Parameter ':testId' and array of responses can not be empty",
                 },
             }); 
         return;
     }
 
-    if (topicList.constructor.name != "Array") {
-        res
-        .status(400)
-        .send({
-            status: "FAILED",
-            data: {
-                error: "Invalid list of topics",
-            },
-        });     
-        return;            
-    };
-
     try {
-        const updatedConvocation = testService.updateConvocationTopics(convocationId, topicList);
-        res.send({ status: "OK", data: updatedConvocation });
+        const completedTest = testService.completeOneTest(testId, testResponses);
+        res.status(200).send({ status: "OK", data: completedTest });
     } catch (error) {
         res
             .status(error?.status || 500)
             .send({
-                status: "FAILED", data: { error: error?.message || error }});        
+                status: "FAILED", data: { error: error?.message || error }});            
     }
 };
+/*
 
 const deleteOneConvocation = (req, res) => {
     const {
@@ -187,6 +148,7 @@ module.exports = {
     getAllTests,
     getTestTopics,
     createNewTest,
+    completeOneTest
 /*    updateOneConvocation,
     updateConvocationTopics,
     deleteOneConvocation */

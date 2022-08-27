@@ -26,21 +26,6 @@ const getTestTopics = (testId) => {
     }
 };
 
-/*
-const getTestsById = (testList) => {
-    try {
-        const requestedTests = DB.tests.filter((test) => testList.include(test.id));
-        return requestedTests;
-    } catch (error) {
-        throw {
-            status: error?.status || 500,
-            message: error?.message || error,
-        }
-    }
-};
-*/
-
-
 const addTopicTestElements = (newElements) => {
     try {
         const newTopicsTests = DB.topicsTests.concat(newElements);
@@ -66,94 +51,62 @@ const createNewTest = (newTest) => {
         }
     }
 };
+
+const completeOneTest = (testId, testResponses) => {
+    try {
+        const indexTestForUpdate = DB.tests.findIndex( (test) => test.id === testId );
+        if (indexTestForUpdate === -1) {
+            throw {
+                status: 400,
+                message: `Can't find Test with the id '${testId}'`,
+            };        
+        }   
+
+        const originalTest = DB.tests[indexTestForUpdate];
+        if ( !testResponses || 
+            testResponses.constructor.name != "Array" ||
+            testResponses.length < originalTest.questionList.length ||
+            !testResponses.every( (choice) => choice < originalTest.numChoices) ) {
+            throw {
+                status: 400,
+                message: `Not valid or incomplete responses submitted`
+            };
+        }
+        
+        let hits = 0, faults = 0;
+        testResponses.forEach( (choice, index) => {
+            if ( originalTest.questionList[index].answers[choice].isCorrect ) {
+                hits++;
+            } else {
+                faults++;
+            }
+        });
+        
+        let newScore = 0;
+        switch (originalTest.scoringFormula) {
+            case "H-(F/4)":
+            default:    newScore = hits - (faults / 4);  
+        }
+
+        const updatedTest = {
+            ...originalTest,
+            responses: testResponses,
+            submitted: true,
+            score: newScore,
+            updatedAt: new Date().toLocaleString("en-US", {timeZone: "UTC"}),
+        };
+    
+        DB.tests[indexTestForUpdate] = updatedTest;
+        saveToDatabase(DB);
+        return updatedTest;
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error,
+        };
+    }
+};
 /*
-const updateOneConvocation = (convocationId, changes) => {
-    try {
-        const name = changes.name;
-        const year = changes.year;
-        const institution = changes.institution;
-        const category = changes.category;
-
-        if (!year && !name && !institution && !category) {
-            throw {
-                status: 400,
-                message: `No valid changes requested`
-            };
-        }
-
-        const indexConvocationForUpdate = DB.convocations.findIndex(
-            (convocation) => convocation.id === convocationId
-        );
-        if (indexConvocationForUpdate === -1) {
-            throw {
-                status: 400,
-                message: `Can't find Convocation with the id '${convocationId}'`,
-            };        
-        }        
-
-        const filteredChanges = Object.assign({},
-            year === undefined ? null : {year},    
-            name === undefined ? null : {name},
-            institution === undefined ? null : {institution},
-            category === undefined ? null : {category}
-        );
-
-        const updatedConvocation = {
-            ...DB.convocations[indexConvocationForUpdate],
-            ...filteredChanges,
-            updatedAt: new Date().toLocaleString("en-US", {timeZone: "UTC"}),
-        };
-    
-        DB.convocations[indexConvocationForUpdate] = updatedConvocation;
-        saveToDatabase(DB);
-        return updatedConvocation;
-    } catch (error) {
-        throw {
-            status: error?.status || 500,
-            message: error?.message || error,
-        };
-    }
-};
-
-const updateConvocationTopics = (convocationId, topics) => {
-    try {
-
-        if (topics.constructor.name != "Array") {
-            throw {
-                status: 400,
-                message: `Invalid list of topics`
-            };
-        }
-
-        const indexConvocationForUpdate = DB.convocations.findIndex(
-            (convocation) => convocation.id === convocationId
-        );
-        if (indexConvocationForUpdate === -1) {
-            throw {
-                status: 400,
-                message: `Can't find Convocation with the id '${convocationId}'`,
-            };        
-        }        
-
-        filteredTopics = topics.filter(Topic.topicExists);
-
-        const updatedConvocation = {
-            ...DB.convocations[indexConvocationForUpdate],
-            topicList: filteredTopics,
-            updatedAt: new Date().toLocaleString("en-US", {timeZone: "UTC"}),
-        };
-    
-        DB.convocations[indexConvocationForUpdate] = updatedConvocation;
-        saveToDatabase(DB);
-        return updatedConvocation;
-    } catch (error) {
-        throw {
-            status: error?.status || 500,
-            message: error?.message || error,
-        };
-    }
-};
-
 const deleteOneConvocation = (convocationId) => {
     try {
         const indexForDeletion = DB.convocations.findIndex(
@@ -178,10 +131,7 @@ const deleteOneConvocation = (convocationId) => {
 module.exports = {
     getAllTests,
     getTestTopics,
- //    getTestsById
     addTopicTestElements,
-    createNewTest
- /* updateOneConvocation,
-    updateConvocationTopics,
-    deleteOneConvocation */
+    createNewTest,
+    completeOneTest
 };

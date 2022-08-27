@@ -67,25 +67,17 @@ const createNewTest = (newTest, topicList, numQuestions) => {
         throw error;
     }
 };
+
+const completeOneTest = (testId, testResponses ) => {
+    try {
+        const completedTest = Test.completeOneTest(testId, testResponses);
+        return completedTest;
+    } catch (error) {
+        throw error;
+    }
+};
+
 /*
-const updateOneConvocation = (convocationId, changes) => {
-    try {
-        const updatedConvocation = Test.updateOneConvocation(convocationId, changes);
-        return updatedConvocation;
-    } catch (error) {
-        throw error;
-    }
-};
-
-const updateConvocationTopics = (convocationId, topics) => {
-    try {
-        const updatedConvocation = Test.updateConvocationTopics(convocationId, topics);
-        return updatedConvocation;
-    } catch (error) {
-        throw error;
-    }
-};
-
 const deleteOneConvocation = (convocationId) => {
     try {
         Test.deleteOneConvocation(convocationId);
@@ -97,7 +89,8 @@ const deleteOneConvocation = (convocationId) => {
 module.exports = {
     getAllTests,
     getTestTopics,
-    createNewTest
+    createNewTest,
+    completeOneTest
 /*     updateOneConvocation,
     updateConvocationTopics,
     deleteOneConvocation */
