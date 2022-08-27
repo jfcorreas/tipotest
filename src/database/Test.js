@@ -26,21 +26,10 @@ const getTestTopics = (testId) => {
     }
 };
 
-const addTopicTestElements = (newElements) => {
+const createNewTest = (newTest, newTopicsForTest) => {
     try {
-        const newTopicsTests = DB.topicsTests.concat(newElements);
-        DB.topicsTests = newTopicsTests;
-        saveToDatabase(DB);
-    } catch (error) {
-        throw {
-            status: error?.status || 500,
-            message: error?.message || error,
-        }
-    }
-};
-
-const createNewTest = (newTest) => {
-    try {
+        const newTopicsTests = DB.topicsTests.concat(newTopicsForTest);
+        DB.topicsTests = newTopicsTests;        
         DB.tests.push(newTest);
         saveToDatabase(DB);
         return newTest;
@@ -65,7 +54,7 @@ const completeOneTest = (testId, testResponses) => {
         const originalTest = DB.tests[indexTestForUpdate];
         if ( !testResponses || 
             testResponses.constructor.name != "Array" ||
-            testResponses.length < originalTest.questionList.length ||
+            testResponses.length != originalTest.questionList.length ||
             !testResponses.every( (choice) => choice < originalTest.numChoices) ) {
             throw {
                 status: 400,
@@ -106,19 +95,21 @@ const completeOneTest = (testId, testResponses) => {
         };
     }
 };
-/*
-const deleteOneConvocation = (convocationId) => {
+
+const deleteOneTest = (testId) => {
     try {
-        const indexForDeletion = DB.convocations.findIndex(
-            (convocation) => convocation.id === convocationId
+        const indexForDeletion = DB.tests.findIndex(
+            (test) => test.id === testId
         );
         if (indexForDeletion === -1) {
             throw {
                 status: 400,
-                message: `Can't find Convocation with the id '${convocationId}'`,
+                message: `Can't find Test with the id '${testId}'`,
             }; 
         }
-        DB.convocations.splice(indexForDeletion, 1);
+
+        DB.topicsTests = DB.topicsTests.filter( (element) => element.testId !== testId );
+        DB.tests.splice(indexForDeletion, 1);
         saveToDatabase(DB);
     } catch (error) {
         throw {
@@ -126,12 +117,12 @@ const deleteOneConvocation = (convocationId) => {
             message: error?.message || error,
         };
     }
-}; */
+};
 
 module.exports = {
     getAllTests,
     getTestTopics,
-    addTopicTestElements,
     createNewTest,
-    completeOneTest
+    completeOneTest,
+    deleteOneTest
 };

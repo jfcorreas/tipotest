@@ -55,13 +55,12 @@ const createNewTest = (newTest, topicList, numQuestions) => {
                 questionService.getQuestionsForTest(element, numQuestions, testToInsert.numChoices)
             );
         }); 
-        const createdTest = Test.createNewTest(testToInsert);
-
+        
         const newTopicsForTest = topicsForTest.map( topicId => {
-            return { topicId, testId: createdTest.id};
+            return { topicId, testId: testToInsert.id };
         });
-        Test.addTopicTestElements(newTopicsForTest);
 
+        const createdTest = Test.createNewTest(testToInsert, newTopicsForTest);
         return createdTest;
     } catch (error) {
         throw error;
@@ -77,21 +76,19 @@ const completeOneTest = (testId, testResponses ) => {
     }
 };
 
-/*
-const deleteOneConvocation = (convocationId) => {
+
+const deleteOneTest = (testId) => {
     try {
-        Test.deleteOneConvocation(convocationId);
+        Test.deleteOneTest(testId);
     } catch (error) {
         throw error;
     }
-} */
+}
 
 module.exports = {
     getAllTests,
     getTestTopics,
     createNewTest,
-    completeOneTest
-/*     updateOneConvocation,
-    updateConvocationTopics,
-    deleteOneConvocation */
+    completeOneTest,
+    deleteOneTest
 };

@@ -114,27 +114,26 @@ const completeOneTest = (req, res) => {
                 status: "FAILED", data: { error: error?.message || error }});            
     }
 };
-/*
 
-const deleteOneConvocation = (req, res) => {
+const deleteOneTest = (req, res) => {
     const {
-        params: { convocationId },
+        params: { testId },
     } = req;
 
-    if (!convocationId) {
+    if (!testId) {
         res
             .status(400)
             .send({
                 status: "FAILED",
                 data: {
-                    error: "Parameter ':convocationId' can not be empty",
+                    error: "Parameter ':testId' can not be empty",
                 },
             }); 
         return;
     }
 
     try {
-        testService.deleteOneConvocation(convocationId);
+        testService.deleteOneTest(testId);
         res.status(204).send({ status: "OK" });
     } catch (error) {
         res
@@ -142,14 +141,12 @@ const deleteOneConvocation = (req, res) => {
             .send({
                 status: "FAILED", data: { error: error?.message || error }});            
     }
-}; */
+};
 
 module.exports = {
     getAllTests,
     getTestTopics,
     createNewTest,
-    completeOneTest
-/*    updateOneConvocation,
-    updateConvocationTopics,
-    deleteOneConvocation */
+    completeOneTest,
+    deleteOneTest
 };

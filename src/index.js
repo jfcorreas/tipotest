@@ -16,9 +16,3 @@ app.use("/api/v1/tests", v1TestRoutes);
 app.listen(PORT, () => {
     console.log(`🌎 TIPOTEST running on port ${PORT}`)
 });
-
-// TODO: 
-//  ✅ Convocation CRUD
-//  ✅ Convocation Topics CRUD
-//  ✅ Test CRUD   
-//  Test update responses (submitted = true, score calculation)
