@@ -123,12 +123,65 @@
       "id": "ee80a377-2ec0-493f-a51c-b295066077da",
       "createdAt": "8/27/2022, 4:49:57 PM",
       "updatedAt": "8/27/2022, 4:50:09 PM"
+    },
+    {
+      "numChoices": 4,
+      "questionList": [
+        {
+          "text": "Según la regulación constitucional del derecho de asociación",
+          "topic": "cbcc2c5d-def9-449f-b075-baf6b49a9e43",
+          "answers": [
+            {
+              "text": "Las asociaciones que se constituyan deben inscribirse en un registro a los efectos de publicidad",
+              "isCorrect": true,
+              "id": "f03aff19-9c71-478b-9d4e-1c305fa06d78",
+              "createdAt": "8/16/2022, 11:17:39 PM",
+              "updatedAt": "8/16/2022, 11:17:39 PM"
+            },
+            {
+              "text": "Las asociaciones pueden ser suspendidas en virtud de resolución administrativa motivada",
+              "isCorrect": false,
+              "id": "5b4e66ac-59fc-427f-99b4-0d0a0f3c4f54",
+              "createdAt": "8/21/2022, 2:56:20 PM",
+              "updatedAt": "8/21/2022, 2:56:20 PM"
+            },
+            {
+              "text": "Este derecho aparece regulado en la Sección 2ª del Capítulo 2º del Título I de la Constitución",
+              "isCorrect": false,
+              "id": "56855583-4f26-4d3e-a593-daca439c4e82",
+              "createdAt": "8/21/2022, 3:31:47 PM",
+              "updatedAt": "8/21/2022, 7:11:12 PM"
+            },
+            {
+              "text": "Este derecho aparece regulado en el Título Preliminar de la Constitución",
+              "isCorrect": false,
+              "id": "4e5df3bc-b797-4354-9b66-1a70183b65e6",
+              "createdAt": "8/21/2022, 3:03:15 PM",
+              "updatedAt": "8/21/2022, 3:03:15 PM"
+            }
+          ],
+          "id": "082e5d22-fddd-493c-b656-11c65e42f9fe",
+          "createdAt": "8/16/2022, 4:28:33 PM",
+          "updatedAt": "8/21/2022, 7:11:12 PM"
+        }
+      ],
+      "responses": [],
+      "scoringFormula": "H-(F/4)",
+      "score": 0,
+      "submitted": false,
+      "id": "d7d0e5ae-efca-4e2a-b426-c1548d706ebf",
+      "createdAt": "8/27/2022, 6:06:53 PM",
+      "updatedAt": "8/27/2022, 6:06:53 PM"
     }
   ],
   "topicsTests": [
     {
       "topicId": "cbcc2c5d-def9-449f-b075-baf6b49a9e43",
       "testId": "ee80a377-2ec0-493f-a51c-b295066077da"
+    },
+    {
+      "topicId": "cbcc2c5d-def9-449f-b075-baf6b49a9e43",
+      "testId": "d7d0e5ae-efca-4e2a-b426-c1548d706ebf"
     }
   ]
 }

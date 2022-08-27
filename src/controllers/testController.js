@@ -1,8 +1,9 @@
 const testService = require("../services/testServices");
+const config = require("../config");
 
-const DEFAULT_NUM_CHOICES = 4;
-const DEFAULT_NUM_QUESTIONS = 100;
-const DEFAULT_SCORING_FORMULA = "H-(F/4)"
+const { app: { DEFAULT_NUM_CHOICES,
+            DEFAULT_NUM_QUESTIONS,
+            DEFAULT_SCORING_FORMULA  } } = config;
 
 const getAllTests = (req, res) => {
     try {
