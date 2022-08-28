@@ -1,11 +1,18 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const config = require("./config");
+
 const v1ConvocationRoutes = require("./v1/routes/convocationRoutes");
 const v1TopicRoutes = require("./v1/routes/topicRoutes");
 const v1QuestionRoutes = require("./v1/routes/questionRoutes");
 const v1TestRoutes = require("./v1/routes/testRoutes");
 
-const { app: { appName, APIport }} = config;
+const mongoDB = `mongodb://${config.db.host}:${config.db.port}/${config.db.name}`;
+mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true});
+
+const db = mongoose.connection;
+
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 const app = express()
 
@@ -15,6 +22,6 @@ app.use("/api/v1/topics", v1TopicRoutes);
 app.use("/api/v1/questions", v1QuestionRoutes);
 app.use("/api/v1/tests", v1TestRoutes);
 
-app.listen(APIport, () => {
-    console.log(`🌎 ${appName} running on port ${APIport}`)
+app.listen(config.app.port, () => {
+    console.log(`🌎 ${config.app.name} running on port ${config.app.port}`)
 });
