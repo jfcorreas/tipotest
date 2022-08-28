@@ -1,9 +1,10 @@
 const { v4: uuid } = require('uuid');
+const TopicFile = require("../database/TopicFile");
 const Topic = require("../database/Topic");
 
-const getAllTopics = () => {
+const getAllTopics = async () => {
     try {
-        const allTopics = Topic.getAllTopics();
+        const allTopics = await Topic.getAllTopics();
         return allTopics;
     } catch (error) {
         throw error;
@@ -12,7 +13,7 @@ const getAllTopics = () => {
 
 const getTopicTests = (topicId) => {
     try {
-        const topicTests = Topic.getTopicTests(topicId);
+        const topicTests = TopicFile.getTopicTests(topicId);
         return topicTests;
     } catch (error) {
         throw error;
@@ -21,7 +22,7 @@ const getTopicTests = (topicId) => {
 
 const getExistingTopics = (topicIds) => {
     try {
-        const existingTopics = Topic.getExistingTopics(topicIds);
+        const existingTopics = TopicFile.getExistingTopics(topicIds);
         return existingTopics;
     } catch (error) {
         throw error;
@@ -36,7 +37,7 @@ const createNewTopic = (newTopic) => {
         updatedAt: new Date().toLocaleString("en-US", { timeZone: "UTC"}),
     }
     try {
-        const createdTopic = Topic.createNewTopic(topicToInsert);
+        const createdTopic = TopicFile.createNewTopic(topicToInsert);
         return createdTopic;
     } catch (error) {
         throw error;
@@ -45,7 +46,7 @@ const createNewTopic = (newTopic) => {
 
 const updateOneTopic = (topicId, changes) => {
     try {
-        const updatedTopic = Topic.updateOneTopic(topicId, changes);
+        const updatedTopic = TopicFile.updateOneTopic(topicId, changes);
         return updatedTopic;
     } catch (error) {
         throw error;
@@ -54,7 +55,7 @@ const updateOneTopic = (topicId, changes) => {
 
 const deleteOneTopic = (topicId) => {
     try {
-        Topic.deleteOneTopic(topicId);
+        TopicFile.deleteOneTopic(topicId);
     } catch (error) {
         throw error;
     }

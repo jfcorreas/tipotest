@@ -1,6 +1,6 @@
 const DB = require("./tipotestdb.json");
 const { saveToDatabase } = require("./utils");
-const Topic = require("./Topic");
+const Topic = require("./TopicFile");
 
 const convocationExists = (convocationId) => {
     return DB.convocations.findIndex( (convocation) => convocation.id === convocationId ) > -1;

@@ -1,8 +1,8 @@
 const topicService = require("../services/topicServices");
 
-const getAllTopics = (req, res) => {
+const getAllTopics = async (req, res) => {
     try {
-        const allTopics = topicService.getAllTopics();
+        const allTopics = await topicService.getAllTopics();
         res.send({ status: "OK", data: allTopics});
     } catch (error) {
         res
