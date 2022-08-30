@@ -47,9 +47,9 @@ const updateOneTopic = async (topicId, changes) => {
     }
 };
 
-const deleteOneTopic = (topicId) => {
+const deleteOneTopic = async (topicId) => {
     try {
-        TopicFile.deleteOneTopic(topicId);
+        await Topic.deleteOneTopic(topicId);
     } catch (error) {
         throw error;
     }

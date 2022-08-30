@@ -93,7 +93,7 @@ const updateOneTopic = async (req, res) => {
     }
 };
 
-const deleteOneTopic = (req, res) => {
+const deleteOneTopic = async (req, res) => {
     const {
         params: { topicId },
     } = req;
@@ -111,7 +111,7 @@ const deleteOneTopic = (req, res) => {
     }
 
     try {
-        topicService.deleteOneTopic(topicId);
+        await topicService.deleteOneTopic(topicId);
         res.status(204).send({ status: "OK" });
     } catch (error) {
         res

@@ -52,8 +52,21 @@ const updateOneTopic = async (topicId, changes) => {
     }
 };
 
+const deleteOneTopic = async (topicId) => {
+    try {
+        // FIXME: Check that no questions have this Topic
+        await Topic.deleteOne( { _id: topicId});
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error,
+        };
+    }
+};
+
 module.exports = {
     getAllTopics,
     createNewTopic,
-    updateOneTopic
+    updateOneTopic,
+    deleteOneTopic
 };
