@@ -1,9 +1,10 @@
 const { v4: uuid } = require('uuid');
+const QuestionFile = require("../database/QuestionFile");
 const Question = require("../database/Question");
 
-const getAllQuestions = (filterParams) => {
+const getAllQuestions = async (filterParams) => {
     try {
-        const filteredQuestions = Question.getAllQuestions(filterParams);
+        const filteredQuestions = await Question.getAllQuestions(filterParams);
         return filteredQuestions;
     } catch (error) {
         throw error;
@@ -12,7 +13,7 @@ const getAllQuestions = (filterParams) => {
 
 const getQuestionsForTest = (topicId, numQuestions, numAnswers) => {
     try {
-        const questionsForTest = Question.getQuestionsForTest(topicId, numQuestions, numAnswers);
+        const questionsForTest = QuestionFile.getQuestionsForTest(topicId, numQuestions, numAnswers);
         return questionsForTest;
     } catch (error) {
         throw error;
@@ -27,7 +28,7 @@ const createNewQuestion = (newQuestion) => {
         updatedAt: new Date().toLocaleString("en-US", { timeZone: "UTC"}),
     }
     try {
-        const createdQuestion = Question.createNewQuestion(questionToInsert);
+        const createdQuestion = QuestionFile.createNewQuestion(questionToInsert);
         return createdQuestion;
     } catch (error) {
         throw error;
@@ -36,7 +37,7 @@ const createNewQuestion = (newQuestion) => {
 
 const updateOneQuestion = (questionId, changes) => {
     try {
-        const updatedQuestion = Question.updateOneQuestion(questionId, changes);
+        const updatedQuestion = QuestionFile.updateOneQuestion(questionId, changes);
         return updatedQuestion;
     } catch (error) {
         throw error;
@@ -45,7 +46,7 @@ const updateOneQuestion = (questionId, changes) => {
 
 const deleteOneQuestion = (questionId) => {
     try {
-        Question.deleteOneQuestion(questionId);
+        QuestionFile.deleteOneQuestion(questionId);
     } catch (error) {
         throw error;
     }
@@ -53,7 +54,7 @@ const deleteOneQuestion = (questionId) => {
 
 const getQuestionAnswers = (questionId, numAnswers) => {
     try {
-        const answers = Question.getQuestionAnswers(questionId, numAnswers);
+        const answers = QuestionFile.getQuestionAnswers(questionId, numAnswers);
         return answers;
     } catch (error) {
         throw error;
@@ -68,7 +69,7 @@ const addNewAnswer = (questionId, newAnswer) => {
         updatedAt: new Date().toLocaleString("en-US", { timeZone: "UTC"}),
     }
     try {
-        const createdAnswer = Question.addNewAnswer(questionId, answerToInsert);
+        const createdAnswer = QuestionFile.addNewAnswer(questionId, answerToInsert);
         return createdAnswer;
     } catch (error) {
         throw error;
@@ -77,7 +78,7 @@ const addNewAnswer = (questionId, newAnswer) => {
 
 const updateOneAnswer = (questionId, answerId, changes) => {
     try {
-        const updatedAnswer = Question.updateOneAnswer(questionId, answerId, changes);
+        const updatedAnswer = QuestionFile.updateOneAnswer(questionId, answerId, changes);
         return updatedAnswer;
     } catch (error) {
         throw error;
