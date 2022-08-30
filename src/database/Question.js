@@ -12,6 +12,20 @@ const getAllQuestions = async (filterParams) => {
     }
 };
 
+const createNewQuestion = async (newQuestion) => {
+    try {
+        const createdQuestion = new Question(newQuestion);
+        await Question.create(createdQuestion);
+        return createdQuestion;
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error,
+        }
+    }
+};
+
 module.exports = {
     getAllQuestions,
+    createNewQuestion
 };

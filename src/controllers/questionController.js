@@ -14,7 +14,7 @@ const getAllQuestions = async (req, res) => {
     };
 };
 
-const createNewQuestion = (req, res) => {
+const createNewQuestion = async (req, res) => {
     const { body } = req;
 
     if (
@@ -40,7 +40,7 @@ const createNewQuestion = (req, res) => {
     };
 
     try {
-        const createdQuestion = questionService.createNewQuestion(newQuestion);
+        const createdQuestion = await questionService.createNewQuestion(newQuestion);
         res.status(200).send({ status: "OK", data: createdQuestion });
     } catch (error) {
         res

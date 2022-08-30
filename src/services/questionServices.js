@@ -20,15 +20,9 @@ const getQuestionsForTest = (topicId, numQuestions, numAnswers) => {
     }
 };
 
-const createNewQuestion = (newQuestion) => {
-    const questionToInsert = {
-        ...newQuestion,
-        id: uuid(),
-        createdAt: new Date().toLocaleString("en-US", { timeZone: "UTC"}),
-        updatedAt: new Date().toLocaleString("en-US", { timeZone: "UTC"}),
-    }
+const createNewQuestion = async (newQuestion) => {
     try {
-        const createdQuestion = QuestionFile.createNewQuestion(questionToInsert);
+        const createdQuestion = await Question.createNewQuestion(newQuestion);
         return createdQuestion;
     } catch (error) {
         throw error;
