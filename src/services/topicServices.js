@@ -20,9 +20,9 @@ const getTopicTests = (topicId) => {
     }
 };
 
-const getExistingTopics = (topicIds) => {
+const getExistingTopics = async (topicIds) => {
     try {
-        const existingTopics = TopicFile.getExistingTopics(topicIds);
+        const existingTopics = await Topic.getExistingTopics(topicIds);
         return existingTopics;
     } catch (error) {
         throw error;

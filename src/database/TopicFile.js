@@ -151,7 +151,6 @@ const deleteOneTopic = (topicId) => {
 
 module.exports = {
     topicExists,
-    topicIsAlreadyAdded,
     getAllTopics,
     getOneTopic,
     getTopicTests,
