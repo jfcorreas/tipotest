@@ -38,9 +38,9 @@ const createNewTopic = async (newTopic) => {
     }
 };
 
-const updateOneTopic = (topicId, changes) => {
+const updateOneTopic = async (topicId, changes) => {
     try {
-        const updatedTopic = TopicFile.updateOneTopic(topicId, changes);
+        const updatedTopic = await Topic.updateOneTopic(topicId, changes);
         return updatedTopic;
     } catch (error) {
         throw error;

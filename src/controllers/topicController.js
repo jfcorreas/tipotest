@@ -46,7 +46,7 @@ const createNewTopic = async (req, res) => {
     }
 };
 
-const updateOneTopic = (req, res) => {
+const updateOneTopic = async (req, res) => {
     const {
         body,
         params: { topicId },
@@ -63,8 +63,27 @@ const updateOneTopic = (req, res) => {
             }); 
         return;
     }
+
+    const changes = {
+        title: body.title,
+        shorthand: body.shorthand,
+        fullTitle: body.fullTitle
+    };
+
+    if (!changes.shorthand && !changes.title && !changes.fullTitle) {
+        res
+            .status(400)
+            .send({
+                status: "FAILED",
+                data: {
+                    error: "No valid changes requested",
+                },
+            }); 
+        return;        
+    }
+
     try {
-        const updatedTopic = topicService.updateOneTopic(topicId, body);
+        const updatedTopic = await topicService.updateOneTopic(topicId, changes);
         res.send({ status: "OK", data: updatedTopic });
     } catch (error) {
         res
