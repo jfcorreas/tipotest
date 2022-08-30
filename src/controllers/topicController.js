@@ -11,7 +11,7 @@ const getAllTopics = async (req, res) => {
     };
 };
 
-const createNewTopic = (req, res) => {
+const createNewTopic = async (req, res) => {
     const { body } = req;
 
     if (
@@ -37,7 +37,7 @@ const createNewTopic = (req, res) => {
     };
 
     try {
-        const createdTopic = topicService.createNewTopic(newTopic);
+        const createdTopic = await topicService.createNewTopic(newTopic);
         res.status(200).send({ status: "OK", data: createdTopic });
     } catch (error) {
         res

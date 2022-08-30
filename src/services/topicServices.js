@@ -29,15 +29,9 @@ const getExistingTopics = (topicIds) => {
     }
 };
 
-const createNewTopic = (newTopic) => {
-    const topicToInsert = {
-        ...newTopic,
-        id: uuid(),
-        createdAt: new Date().toLocaleString("en-US", { timeZone: "UTC"}),
-        updatedAt: new Date().toLocaleString("en-US", { timeZone: "UTC"}),
-    }
+const createNewTopic = async (newTopic) => {
     try {
-        const createdTopic = TopicFile.createNewTopic(topicToInsert);
+        const createdTopic = await Topic.createNewTopic(newTopic);
         return createdTopic;
     } catch (error) {
         throw error;
