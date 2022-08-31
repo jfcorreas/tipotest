@@ -29,6 +29,15 @@ const getExistingTopics = async (topicIds) => {
     }
 };
 
+const getOneTopic = async (topicId) => {
+    try {
+        const topic = Topic.getOneTopic(topicId);
+        return topic;
+    } catch (error) {
+        throw error;
+    }
+};
+
 const createNewTopic = async (newTopic) => {
     try {
         const createdTopic = await Topic.createNewTopic(newTopic);
@@ -59,6 +68,7 @@ module.exports = {
     getAllTopics,
     getTopicTests,
     getExistingTopics,
+    getOneTopic,
     createNewTopic,
     updateOneTopic,
     deleteOneTopic

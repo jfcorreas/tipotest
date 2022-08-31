@@ -29,9 +29,9 @@ const createNewQuestion = async (newQuestion) => {
     }
 };
 
-const updateOneQuestion = (questionId, changes) => {
+const updateOneQuestion = async (questionId, changes) => {
     try {
-        const updatedQuestion = QuestionFile.updateOneQuestion(questionId, changes);
+        const updatedQuestion = await Question.updateOneQuestion(questionId, changes);
         return updatedQuestion;
     } catch (error) {
         throw error;

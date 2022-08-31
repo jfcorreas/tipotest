@@ -49,7 +49,7 @@ const createNewQuestion = async (req, res) => {
     }
 };
 
-const updateOneQuestion = (req, res) => {
+const updateOneQuestion = async (req, res) => {
     const {
         body,
         params: { questionId },
@@ -66,8 +66,14 @@ const updateOneQuestion = (req, res) => {
             }); 
         return;
     }
+
+    const changes = {
+        text: body.text,
+        topic: body.topic,
+    };
+
     try {
-        const updatedQuestion = questionService.updateOneQuestion(questionId, body);
+        const updatedQuestion = await questionService.updateOneQuestion(questionId, changes);
         res.send({ status: "OK", data: updatedQuestion });
     } catch (error) {
         res

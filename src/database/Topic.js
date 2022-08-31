@@ -13,10 +13,23 @@ const getAllTopics = async () => {
     }
 };
 
+
 const getExistingTopics = async (topicIds) => {
     try {
         const existingTopics = await Topic.find({ _id: { $in: topicIds } });
         return existingTopics;
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error,
+        }
+    }
+};
+
+const getOneTopic = async (topicId) => {
+    try {
+        const topic = await Topic.findOne({ _id: topicId });
+        return topic;
     } catch (error) {
         throw {
             status: error?.status || 500,
@@ -81,6 +94,7 @@ const deleteOneTopic = async (topicId) => {
 module.exports = {
     getAllTopics,
     getExistingTopics,
+    getOneTopic,
     createNewTopic,
     updateOneTopic,
     deleteOneTopic

@@ -2,8 +2,44 @@ const topicService = require("../services/topicServices");
 
 const getAllTopics = async (req, res) => {
     try {
+        // TODO: implement filters
+        /*     let filters;
+    if (body.shorthand || body.title || body.fullTitle) {
+        filters = Object.assign({},
+            title === undefined ? null : {title},    
+            shorthand === undefined ? null : {shorthand},
+            fullTitle === undefined ? null : {fullTitle}
+        );
+    }     */
         const allTopics = await topicService.getAllTopics();
         res.send({ status: "OK", data: allTopics});
+    } catch (error) {
+        res
+            .status(error?.status || 500)
+            .send({status: "FAILED", data: { error: error?.message || error }});
+    };
+};
+
+const getOneTopic = async (req, res) => {
+    const {
+        params: { topicId },
+    } = req;
+
+    if (!topicId) {
+        res
+            .status(400)
+            .send({
+                status: "FAILED",
+                data: {
+                    error: "Parameter ':topicId' can not be empty",
+                },
+            }); 
+        return;
+    }
+
+    try {
+        const topic = await topicService.getOneTopic(topicId);
+        res.send({ status: "OK", data: topic});
     } catch (error) {
         res
             .status(error?.status || 500)
@@ -151,6 +187,7 @@ const getTopicTests = (req, res) => {
 
 module.exports = {
     getAllTopics,
+    getOneTopic,
     createNewTopic,
     updateOneTopic,
     deleteOneTopic,

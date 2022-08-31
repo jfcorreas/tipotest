@@ -5,6 +5,7 @@ const router = express.Router();
 
 router
     .get("/", topicController.getAllTopics)
+    .get("/:topicId", topicController.getOneTopic)
     .post("/", topicController.createNewTopic)
     .patch("/:topicId", topicController.updateOneTopic)
     .delete("/:topicId", topicController.deleteOneTopic)
