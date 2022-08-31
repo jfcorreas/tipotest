@@ -55,15 +55,9 @@ const getQuestionAnswers = (questionId, numAnswers) => {
     }
 };
 
-const addNewAnswer = (questionId, newAnswer) => {
-    const answerToInsert = {
-        ...newAnswer,
-        id: uuid(),
-        createdAt: new Date().toLocaleString("en-US", { timeZone: "UTC"}),
-        updatedAt: new Date().toLocaleString("en-US", { timeZone: "UTC"}),
-    }
+const addNewAnswer = async (questionId, newAnswer) => {
     try {
-        const createdAnswer = QuestionFile.addNewAnswer(questionId, answerToInsert);
+        const createdAnswer = await Question.addNewAnswer(questionId, newAnswer);
         return createdAnswer;
     } catch (error) {
         throw error;

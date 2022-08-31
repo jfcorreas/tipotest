@@ -1,4 +1,4 @@
-const Question = require("../database/schemas/QuestionSchema");
+const { Question, Answer } = require("../database/schemas/QuestionSchema");
 const Topic = require("../database/Topic");
 
 const getAllQuestions = async (filterParams) => {
@@ -52,8 +52,43 @@ const updateOneQuestion = async (questionId, changes) => {
     }
 };
 
+const addNewAnswer = async (questionId, newAnswer) => {
+    try {
+        const question = await Question.findById(questionId).exec();
+        if (!question) {
+            throw {
+                status: 400,
+                message: `Can't find Question with the id '${questionId}`
+            };            
+        }
+
+        const existingAnswer = await Question.findOne( { _id: question._id, "answers.text": newAnswer.text} ).exec();
+
+        if (existingAnswer) {
+            throw {
+                status: 400,
+                message: `Answer with text: '${newAnswer.text}' already exists for question with id: '${questionId}'`,
+            };
+        }
+
+        const createdAnswer = new Answer(newAnswer);
+
+        question.answers.push(createdAnswer);
+        question.updatedAt = new Date().toLocaleString("en-US", {timeZone: "UTC"});
+        await question.save();
+
+        return createdAnswer;
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error,
+        }
+    }
+};
+
 module.exports = {
     getAllQuestions,
     createNewQuestion,
-    updateOneQuestion
+    updateOneQuestion,
+    addNewAnswer
 };

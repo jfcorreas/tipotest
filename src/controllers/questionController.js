@@ -125,7 +125,7 @@ const getQuestionAnswers = (req, res) => {
     };
 };
 
-const addNewAnswer = (req, res) => {
+const addNewAnswer = async (req, res) => {
     const {
         params: { questionId },
         body
@@ -145,7 +145,7 @@ const addNewAnswer = (req, res) => {
 
     if (
         !body.text ||
-        !body.isCorrect
+        body.isCorrect === undefined
     ) {
         res
             .status(400)
@@ -165,7 +165,7 @@ const addNewAnswer = (req, res) => {
     };
 
     try {
-        const addedAnswer = questionService.addNewAnswer(questionId, newAnswer);
+        const addedAnswer = await questionService.addNewAnswer(questionId, newAnswer);
         res.status(200).send({ status: "OK", data: addedAnswer });
     } catch (error) {
         res
