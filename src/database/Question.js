@@ -52,6 +52,17 @@ const updateOneQuestion = async (questionId, changes) => {
     }
 };
 
+const deleteOneQuestion = async (questionId) => {
+    try {
+        await Question.findByIdAndDelete(questionId);
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error,
+        };
+    }
+};
+
 const addNewAnswer = async (questionId, newAnswer) => {
     try {
         const question = await Question.findById(questionId).exec();
@@ -90,5 +101,6 @@ module.exports = {
     getAllQuestions,
     createNewQuestion,
     updateOneQuestion,
+    deleteOneQuestion,
     addNewAnswer
 };

@@ -38,9 +38,9 @@ const updateOneQuestion = async (questionId, changes) => {
     }
 };
 
-const deleteOneQuestion = (questionId) => {
+const deleteOneQuestion = async (questionId) => {
     try {
-        QuestionFile.deleteOneQuestion(questionId);
+        await Question.deleteOneQuestion(questionId);
     } catch (error) {
         throw error;
     }

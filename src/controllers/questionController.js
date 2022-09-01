@@ -83,7 +83,7 @@ const updateOneQuestion = async (req, res) => {
     }
 };
 
-const deleteOneQuestion = (req, res) => {
+const deleteOneQuestion = async (req, res) => {
     const {
         params: { questionId },
     } = req;
@@ -101,7 +101,7 @@ const deleteOneQuestion = (req, res) => {
     }
 
     try {
-        questionService.deleteOneQuestion(questionId);
+        await questionService.deleteOneQuestion(questionId);
         res.status(204).send({ status: "OK" });
     } catch (error) {
         res
