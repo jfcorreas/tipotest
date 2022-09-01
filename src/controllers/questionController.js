@@ -174,7 +174,7 @@ const addNewAnswer = async (req, res) => {
     }
 };
 
-const updateOneAnswer = (req, res) => {
+const updateOneAnswer = async (req, res) => {
     const {
         body,
         params: { questionId, answerId },
@@ -191,8 +191,14 @@ const updateOneAnswer = (req, res) => {
             }); 
         return;
     }
+
+    const changes = {
+        text: body.text,
+        isCorrect: body.isCorrect,
+    };    
+
     try {
-        const updatedAnswer = questionService.updateOneAnswer(questionId, answerId, body);
+        const updatedAnswer = await questionService.updateOneAnswer(questionId, answerId, changes);
         res.send({ status: "OK", data: updatedAnswer });
     } catch (error) {
         res

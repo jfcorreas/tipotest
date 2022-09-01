@@ -64,9 +64,9 @@ const addNewAnswer = async (questionId, newAnswer) => {
     }
 };
 
-const updateOneAnswer = (questionId, answerId, changes) => {
+const updateOneAnswer = async (questionId, answerId, changes) => {
     try {
-        const updatedAnswer = QuestionFile.updateOneAnswer(questionId, answerId, changes);
+        const updatedAnswer = await Question.updateOneAnswer(questionId, answerId, changes);
         return updatedAnswer;
     } catch (error) {
         throw error;

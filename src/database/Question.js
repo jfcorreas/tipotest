@@ -97,10 +97,61 @@ const addNewAnswer = async (questionId, newAnswer) => {
     }
 };
 
+const updateOneAnswer = async (questionId, answerId, changes) => {
+    try {
+        const question = await Question.findById(questionId).exec();
+        if (!question) {
+            throw {
+                status: 400,
+                message: `Can't find Question with the id '${questionId}`
+            };            
+        }
+
+        const questionToUpdate = await Question.findOne( { _id: question._id, "answers._id": answerId} ).exec();
+        if (!questionToUpdate) {
+            throw {
+                status: 400,
+                message: `Can't find Answer with the id '${answerId}`
+            };            
+        }
+
+        const isAlreadyAdded = questionToUpdate.answers.findIndex((answer) => (answer.text === changes.text)) > -1;
+        // FIXME: don't check the text in the answer to be updated
+
+        if (isAlreadyAdded) {
+            throw {
+                status: 400,
+                message: `Answer with text: '${changes.text}' already exists for question with id: '${questionId}'`,
+            };
+        } 
+
+        changes.text = changes.text? changes.text : questionToUpdate.answers.id(answerId).text;
+        changes.isCorrect = changes.isCorrect != undefined? changes.isCorrect : questionToUpdate.answers.id(answerId).isCorrect;
+
+        await Question.updateOne({ _id: questionId, "answers._id": answerId}, {
+            "$set": {
+                "answers.$.text": changes.text,
+                "answers.$.isCorrect": changes.isCorrect,
+                "answers.$.updatedAt": new Date().toLocaleString("en-US", {timeZone: "UTC"}),
+                "updatedAt": new Date().toLocaleString("en-US", {timeZone: "UTC"})
+            }
+        });
+
+        const updatedQuestion = await Question.findById(questionId).exec();
+        return updatedQuestion;
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error,
+        }
+    }
+};
+
 module.exports = {
     getAllQuestions,
     createNewQuestion,
     updateOneQuestion,
     deleteOneQuestion,
-    addNewAnswer
+    addNewAnswer,
+    updateOneAnswer
 };
