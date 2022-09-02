@@ -1,4 +1,4 @@
-const { Question, Answer } = require("../database/schemas/QuestionSchema");
+const { Question } = require("../database/schemas/QuestionSchema");
 const Topic = require("../database/Topic");
 
 const getAllQuestions = async (filterParams) => {
@@ -73,20 +73,26 @@ const addNewAnswer = async (questionId, newAnswer) => {
             };            
         }
 
-        const existingAnswer = await Question.findOne( { _id: question._id, "answers.text": newAnswer.text} ).exec();
-
-        if (existingAnswer) {
+        let existingAnswer = await Question.find( 
+            { _id: question._id, "answers.text": newAnswer.text}, 
+            { answers: { $elemMatch: { text: newAnswer.text} } } ).exec();
+        
+        if (existingAnswer.length > 0 ) {
             throw {
                 status: 400,
                 message: `Answer with text: '${newAnswer.text}' already exists for question with id: '${questionId}'`,
             };
         }
 
-        const createdAnswer = new Answer(newAnswer);
-
-        question.answers.push(createdAnswer);
+        question.answers.push(newAnswer);
         question.updatedAt = new Date().toLocaleString("en-US", {timeZone: "UTC"});
         await question.save();
+
+        let createdAnswer = await Question.find( 
+            { _id: question._id, "answers.text": newAnswer.text}, 
+            { answers: { $elemMatch: { text: newAnswer.text} } } ).exec();
+
+        createdAnswer = createdAnswer[0].answers[0];
 
         return createdAnswer;
     } catch (error) {
@@ -116,9 +122,8 @@ const updateOneAnswer = async (questionId, answerId, changes) => {
         }
 
         const isAlreadyAdded = questionToUpdate.answers.findIndex((answer) => (answer.text === changes.text)) > -1;
-        // FIXME: don't check the text in the answer to be updated
 
-        if (isAlreadyAdded) {
+        if (isAlreadyAdded && questionToUpdate.answers.id(answerId).text != changes.text) {
             throw {
                 status: 400,
                 message: `Answer with text: '${changes.text}' already exists for question with id: '${questionId}'`,
@@ -126,7 +131,9 @@ const updateOneAnswer = async (questionId, answerId, changes) => {
         } 
 
         changes.text = changes.text? changes.text : questionToUpdate.answers.id(answerId).text;
-        changes.isCorrect = changes.isCorrect != undefined? changes.isCorrect : questionToUpdate.answers.id(answerId).isCorrect;
+        changes.isCorrect = changes.isCorrect != undefined? 
+            changes.isCorrect : 
+            questionToUpdate.answers.id(answerId).isCorrect;
 
         await Question.updateOne({ _id: questionId, "answers._id": answerId}, {
             "$set": {
@@ -137,8 +144,13 @@ const updateOneAnswer = async (questionId, answerId, changes) => {
             }
         });
 
-        const updatedQuestion = await Question.findById(questionId).exec();
-        return updatedQuestion;
+        let updatedAnswer = await Question.find( 
+            { _id: questionId, "answers._id": answerId}, 
+            { answers: { $elemMatch: { _id: answerId} } } ).exec();
+
+        updatedAnswer = updatedAnswer[0].answers[0];
+
+        return updatedAnswer;
     } catch (error) {
         throw {
             status: error?.status || 500,
