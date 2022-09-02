@@ -159,11 +159,36 @@ const updateOneAnswer = async (questionId, answerId, changes) => {
     }
 };
 
+const deleteOneAnswer = async (questionId, answerId) => {
+    try {
+        const question = await Question.findById(questionId).exec();
+        if (!question) {
+            throw {
+                status: 400,
+                message: `Can't find Question with the id '${questionId}`
+            };            
+        }        
+
+        question.answers.pull({ _id: answerId });
+        question.updatedAt = new Date().toLocaleString("en-US", {timeZone: "UTC"});
+        await question.save();
+        
+        return question;
+
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error,
+        }
+    }
+};
+
 module.exports = {
     getAllQuestions,
     createNewQuestion,
     updateOneQuestion,
     deleteOneQuestion,
     addNewAnswer,
-    updateOneAnswer
+    updateOneAnswer,
+    deleteOneAnswer
 };

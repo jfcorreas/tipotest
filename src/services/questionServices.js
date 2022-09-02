@@ -73,6 +73,15 @@ const updateOneAnswer = async (questionId, answerId, changes) => {
     }
 };
 
+const deleteOneAnswer = async (questionId, answerId) => {
+    try {
+        const questionAfterDelete = await Question.deleteOneAnswer(questionId, answerId);
+        return questionAfterDelete;
+    } catch (error) {
+        throw error;
+    }
+};
+
 module.exports = {
     getAllQuestions,
     getQuestionsForTest,
@@ -81,5 +90,6 @@ module.exports = {
     deleteOneQuestion,
     getQuestionAnswers,
     addNewAnswer,
-    updateOneAnswer
+    updateOneAnswer,
+    deleteOneAnswer
 };

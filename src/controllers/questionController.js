@@ -208,6 +208,34 @@ const updateOneAnswer = async (req, res) => {
     }
 };
 
+const deleteOneAnswer = async (req, res) => {
+    const {
+        params: { questionId, answerId },
+    } = req;
+
+    if (!questionId || !answerId) {
+        res
+            .status(400)
+            .send({
+                status: "FAILED",
+                data: {
+                    error: "Parameters ':questionId' and ':answerId' can not be empty",
+                },
+            }); 
+        return;
+    }
+
+    try {
+        const questionAfterDelete = await questionService.deleteOneAnswer(questionId, answerId);
+        res.send({ status: "OK", data: questionAfterDelete });
+    } catch (error) {
+        res
+            .status(error?.status || 500)
+            .send({
+                status: "FAILED", data: { error: error?.message || error }});            
+    }
+};
+
 module.exports = {
     getAllQuestions,
     createNewQuestion,
@@ -215,5 +243,6 @@ module.exports = {
     deleteOneQuestion,
     getQuestionAnswers,
     addNewAnswer,
-    updateOneAnswer
+    updateOneAnswer,
+    deleteOneAnswer
 };

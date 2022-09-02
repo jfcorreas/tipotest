@@ -10,6 +10,7 @@ router
     .delete("/:questionId", questionController.deleteOneQuestion)
     .get("/:questionId/answers", questionController.getQuestionAnswers)
     .post("/:questionId/answers",questionController.addNewAnswer)
-    .patch("/:questionId/answers/:answerId", questionController.updateOneAnswer);
+    .patch("/:questionId/answers/:answerId", questionController.updateOneAnswer)
+    .delete("/:questionId/answers/:answerId", questionController.deleteOneAnswer);
 
 module.exports =  router;
