@@ -3,8 +3,8 @@ const { Convocation } = require("../database/schemas/ConvocationSchema");
 
 const getAllConvocations = async (filterParams) => {
     try {
-        const allQuestions = await Question.find(filterParams);
-        return allQuestions;
+        const allConvocations = await Convocation.find(filterParams);
+        return allConvocations;
     } catch (error) {
         throw {
             status: error?.status || 500,
@@ -27,5 +27,6 @@ const createNewConvocation = async (newConvocation) => {
 };
 
 module.exports = {
+    getAllConvocations,
     createNewConvocation
 };

@@ -1,8 +1,27 @@
 const convocationService = require("../services/convocationServices");
 
-const getAllConvocations = (req, res) => {
+const getAllConvocations = async (req, res) => {
+    let {
+        query: { name, year, institution, category }
+    } = req;
+
+    let filterParams = {};
+    if (year || name || institution || category) {
+
+        name = name? new RegExp( name, "i") : undefined;
+        institution = institution? new RegExp( institution, "i") : undefined;
+        year = year? new RegExp( year, "i") : undefined;
+        category = category? new RegExp( category, "i") : undefined;
+
+        filterParams = Object.assign({},
+            name === undefined ? null : {name},    
+            year === undefined ? null : {year},
+            institution === undefined ? null : {institution},
+            category === undefined ? null : {category}
+        );
+    }     
     try {
-        const allConvocations = convocationService.getAllConvocations();
+        const allConvocations = await convocationService.getAllConvocations(filterParams);
         res.send({ status: "OK", data: allConvocations});
     } catch (error) {
         res

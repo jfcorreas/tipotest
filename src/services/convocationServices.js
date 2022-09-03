@@ -10,9 +10,9 @@ const convocationExists = (convocationId) => {
     }
 };
 
-const getAllConvocations = () => {
+const getAllConvocations = async (filterParams) => {
     try {
-        const allConvocations = ConvocationFile.getAllConvocations();
+        const allConvocations = await Convocation.getAllConvocations(filterParams);
         return allConvocations;
     } catch (error) {
         throw error;
