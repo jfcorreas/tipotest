@@ -3,7 +3,7 @@ const Topic = require("../database/Topic");
 
 const getAllQuestions = async (filterParams) => {
     try {
-        const allQuestions = await Question.find();
+        const allQuestions = await Question.find(filterParams);
         return allQuestions;
     } catch (error) {
         throw {

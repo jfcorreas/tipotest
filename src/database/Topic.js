@@ -1,5 +1,6 @@
 
 const Topic = require("../database/schemas/TopicSchema");
+const Question = require("../database/Question");
 
 const getAllTopics = async () => {
     try {
@@ -81,7 +82,13 @@ const updateOneTopic = async (topicId, changes) => {
 
 const deleteOneTopic = async (topicId) => {
     try {
-        // FIXME: Check that no questions have this Topic
+        const questions = await Question.getAllQuestions({ topic: topicId });
+        if (questions.length > 0) {
+            throw {
+                status: 400,
+                message: `Can't delete Topic with the id '${topicId}: there are questions associated with it `
+            };            
+        }
         await Topic.deleteOne( { _id: topicId});
     } catch (error) {
         throw {

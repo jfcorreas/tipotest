@@ -1,11 +1,10 @@
 const questionService = require("../services/questionServices");
 
 const getAllQuestions = async (req, res) => {
-    const { topic } = req.query;
-
-    // TODO: Review filters
+    const { topicId } = req.query;
+    const filterParams = topicId? { topic: topicId} : {};
     try {
-        const allQuestions = await questionService.getAllQuestions({ topic });
+        const allQuestions = await questionService.getAllQuestions(filterParams);
         res.send({ status: "OK", data: allQuestions});
     } catch (error) {
         res
