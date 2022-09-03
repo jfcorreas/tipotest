@@ -38,8 +38,20 @@ const createNewConvocation = async (newConvocation) => {
     }
 };
 
+const deleteOneConvocation = async (convocationId) => {
+    try {
+        await Convocation.deleteOne({ _id: convocationId });
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error,
+        }
+    }
+};
+
 module.exports = {
     getAllConvocations,
     getConvocationById,
-    createNewConvocation
+    createNewConvocation,
+    deleteOneConvocation
 };

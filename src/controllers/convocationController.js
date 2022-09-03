@@ -164,7 +164,7 @@ const updateConvocationTopics = (req, res) => {
     }
 };
 
-const deleteOneConvocation = (req, res) => {
+const deleteOneConvocation = async (req, res) => {
     const {
         params: { convocationId },
     } = req;
@@ -182,7 +182,7 @@ const deleteOneConvocation = (req, res) => {
     }
 
     try {
-        convocationService.deleteOneConvocation(convocationId);
+        await convocationService.deleteOneConvocation(convocationId);
         res.status(204).send({ status: "OK" });
     } catch (error) {
         res

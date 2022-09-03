@@ -55,9 +55,9 @@ const updateConvocationTopics = (convocationId, topics) => {
     }
 };
 
-const deleteOneConvocation = (convocationId) => {
+const deleteOneConvocation = async (convocationId) => {
     try {
-        ConvocationFile.deleteOneConvocation(convocationId);
+        await Convocation.deleteOneConvocation(convocationId);
     } catch (error) {
         throw error;
     }
