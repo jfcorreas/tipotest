@@ -74,7 +74,7 @@ const createNewTopic = async (req, res) => {
 
     try {
         const createdTopic = await topicService.createNewTopic(newTopic);
-        res.status(200).send({ status: "OK", data: createdTopic });
+        res.status(201).send({ status: "OK", data: createdTopic });
     } catch (error) {
         res
             .status(error?.status || 500)

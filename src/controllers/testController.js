@@ -79,7 +79,7 @@ const createNewTest = (req, res) => {
 
     try {
         const createdTest = testService.createNewTest(newTest, topicList, numQuestions);
-        res.status(200).send({ status: "OK", data: createdTest });
+        res.status(201).send({ status: "OK", data: createdTest });
     } catch (error) {
         res
             .status(error?.status || 500)

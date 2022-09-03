@@ -68,7 +68,7 @@ const createNewConvocation = (req, res) => {
 
     try {
         const createdConvocation = convocationService.createNewConvocation(newConvocation);
-        res.status(200).send({ status: "OK", data: createdConvocation });
+        res.status(201).send({ status: "OK", data: createdConvocation });
     } catch (error) {
         res
             .status(error?.status || 500)

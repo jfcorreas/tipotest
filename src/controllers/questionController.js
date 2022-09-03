@@ -41,7 +41,7 @@ const createNewQuestion = async (req, res) => {
 
     try {
         const createdQuestion = await questionService.createNewQuestion(newQuestion);
-        res.status(200).send({ status: "OK", data: createdQuestion });
+        res.status(201).send({ status: "OK", data: createdQuestion });
     } catch (error) {
         res
             .status(error?.status || 500)
@@ -166,7 +166,7 @@ const addNewAnswer = async (req, res) => {
 
     try {
         const addedAnswer = await questionService.addNewAnswer(questionId, newAnswer);
-        res.status(200).send({ status: "OK", data: addedAnswer });
+        res.status(201).send({ status: "OK", data: addedAnswer });
     } catch (error) {
         res
             .status(error?.status || 500)
