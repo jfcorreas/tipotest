@@ -37,7 +37,7 @@ const getConvocationById = (req, res) => {
     };
 };
 
-const createNewConvocation = (req, res) => {
+const createNewConvocation = async (req, res) => {
     const { body } = req;
 
     if (
@@ -67,7 +67,7 @@ const createNewConvocation = (req, res) => {
     };
 
     try {
-        const createdConvocation = convocationService.createNewConvocation(newConvocation);
+        const createdConvocation = await convocationService.createNewConvocation(newConvocation);
         res.status(201).send({ status: "OK", data: createdConvocation });
     } catch (error) {
         res

@@ -1,9 +1,10 @@
 const { v4: uuid } = require('uuid');
+const ConvocationFile = require("../database/ConvocationFile");
 const Convocation = require("../database/Convocation");
 
 const convocationExists = (convocationId) => {
     try {
-        return Convocation.convocationExists(convocationId);
+        return ConvocationFile.convocationExists(convocationId);
     } catch (error) {
         throw error;
     }
@@ -11,7 +12,7 @@ const convocationExists = (convocationId) => {
 
 const getAllConvocations = () => {
     try {
-        const allConvocations = Convocation.getAllConvocations();
+        const allConvocations = ConvocationFile.getAllConvocations();
         return allConvocations;
     } catch (error) {
         throw error;
@@ -20,22 +21,16 @@ const getAllConvocations = () => {
 
 const getConvocationById = (convocationId) => {
     try {
-        const convocationReq = Convocation.getConvocationById(convocationId);
+        const convocationReq = ConvocationFile.getConvocationById(convocationId);
         return convocationReq;
     } catch (error) {
         throw error;
     }
 };
 
-const createNewConvocation = (newConvocation) => {
-    const convocationToInsert = {
-        ...newConvocation,
-        id: uuid(),
-        createdAt: new Date().toLocaleString("en-US", { timeZone: "UTC"}),
-        updatedAt: new Date().toLocaleString("en-US", { timeZone: "UTC"}),
-    }
+const createNewConvocation = async (newConvocation) => {
     try {
-        const createdConvocation = Convocation.createNewConvocation(convocationToInsert);
+        const createdConvocation = await Convocation.createNewConvocation(newConvocation);
         return createdConvocation;
     } catch (error) {
         throw error;
@@ -44,7 +39,7 @@ const createNewConvocation = (newConvocation) => {
 
 const updateOneConvocation = (convocationId, changes) => {
     try {
-        const updatedConvocation = Convocation.updateOneConvocation(convocationId, changes);
+        const updatedConvocation = ConvocationFile.updateOneConvocation(convocationId, changes);
         return updatedConvocation;
     } catch (error) {
         throw error;
@@ -53,7 +48,7 @@ const updateOneConvocation = (convocationId, changes) => {
 
 const updateConvocationTopics = (convocationId, topics) => {
     try {
-        const updatedConvocation = Convocation.updateConvocationTopics(convocationId, topics);
+        const updatedConvocation = ConvocationFile.updateConvocationTopics(convocationId, topics);
         return updatedConvocation;
     } catch (error) {
         throw error;
@@ -62,7 +57,7 @@ const updateConvocationTopics = (convocationId, topics) => {
 
 const deleteOneConvocation = (convocationId) => {
     try {
-        Convocation.deleteOneConvocation(convocationId);
+        ConvocationFile.deleteOneConvocation(convocationId);
     } catch (error) {
         throw error;
     }
