@@ -15,7 +15,7 @@ const getAllQuestions = (filterParams) => {
         }
     }
 }
-
+// TODO: migrate getQuestionsForTest to MongoDB
 const getQuestionsForTest = (topicId, numQuestions, numAnswers) => {
     try {
         let questions = structuredClone(DB.questions);

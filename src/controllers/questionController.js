@@ -111,12 +111,12 @@ const deleteOneQuestion = async (req, res) => {
     }
 };
 
-const getQuestionAnswers = (req, res) => {
+const getQuestionAnswers = async (req, res) => {
     const { questionId } = req.params;
     const { numAnswers } = req.query;
     
     try {
-        const answers = questionService.getQuestionAnswers(questionId, numAnswers);
+        const answers = await questionService.getQuestionAnswers(questionId, numAnswers);
         res.send({ status: "OK", data: answers});
     } catch (error) {
         res

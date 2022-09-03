@@ -63,6 +63,19 @@ const deleteOneQuestion = async (questionId) => {
     }
 };
 
+const getAllQuestionAnswers = async (questionId) => {
+    try {
+        const question = await Question.findById(questionId, 'answers'); 
+        return question.answers;
+
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error
+        }
+    }
+};
+
 const addNewAnswer = async (questionId, newAnswer) => {
     try {
         const question = await Question.findById(questionId).exec();
@@ -188,6 +201,7 @@ module.exports = {
     createNewQuestion,
     updateOneQuestion,
     deleteOneQuestion,
+    getAllQuestionAnswers,
     addNewAnswer,
     updateOneAnswer,
     deleteOneAnswer

@@ -46,10 +46,56 @@ const deleteOneQuestion = async (questionId) => {
     }
 };
 
-const getQuestionAnswers = (questionId, numAnswers) => {
+const getQuestionAnswers = async (questionId, numAnswers, apiCall = true) => {
     try {
-        const answers = QuestionFile.getQuestionAnswers(questionId, numAnswers);
-        return answers;
+        const allAnswers = await Question.getAllQuestionAnswers(questionId);
+
+        if (!numAnswers || numAnswers < 2) {
+            return allAnswers;
+        }
+
+        const { trueAnswers, falseAnswers } = 
+            allAnswers.reduce((r, answer) => {
+                r[answer.isCorrect ? 'trueAnswers' : 'falseAnswers'].push(answer);
+                return r;
+            }, { trueAnswers: [], falseAnswers: [] });
+
+        if (!trueAnswers) {
+            if (apiCall) {
+                throw {
+                    status: 400,
+                    message: `Question with id: '${questionId}' doesn't have any valid answer'`,
+                };             
+            }
+            return false;
+        }            
+
+        if (falseAnswers.length < (numAnswers - 1)) {
+            if (apiCall) {
+                throw {
+                    status: 400,
+                    message: `Question with id: '${questionId}' doesn't have enough false answers'`,
+                };            
+            }
+            return false;
+        }
+
+        let answers = new Array(trueAnswers[[trueAnswers.length * Math.random() | 0]]);
+
+        let falseAnswersLeft = numAnswers - 1;
+        while (falseAnswersLeft-- && falseAnswers.length > 0) {
+            answers.push(falseAnswers.splice([[falseAnswers.length * Math.random() | 0]], 1).pop());
+        }       
+
+        const suffleIndex = answers.length * Math.random() | 0;
+        if (suffleIndex > 0) {
+            const tempElem = answers[suffleIndex];
+            answers[suffleIndex] = answers[0];
+            answers[0] = tempElem;
+        }
+
+        return answers;        
+
     } catch (error) {
         throw error;
     }
