@@ -2,9 +2,9 @@
 const Topic = require("../database/schemas/TopicSchema");
 const Question = require("../database/Question");
 
-const getAllTopics = async () => {
+const getAllTopics = async (filterParams) => {
     try {
-        const allTopics = await Topic.find();
+        const allTopics = await Topic.find(filterParams);
         return allTopics;
     } catch (error) {
         throw {

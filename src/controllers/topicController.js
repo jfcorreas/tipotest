@@ -1,17 +1,25 @@
 const topicService = require("../services/topicServices");
 
 const getAllTopics = async (req, res) => {
-    try {
-        // TODO: implement filters
-        /*     let filters;
-    if (body.shorthand || body.title || body.fullTitle) {
-        filters = Object.assign({},
+    let {
+        query: { title, shorthand, fullTitle }
+    } = req;
+
+    let filterParams = {};
+    if (shorthand || title || fullTitle) {
+
+        title = title? new RegExp( title, "i") : undefined;
+        fullTitle = fullTitle? new RegExp( fullTitle, "i") : undefined;
+        shorthand = shorthand? new RegExp( shorthand, "i") : undefined;
+
+        filterParams = Object.assign({},
             title === undefined ? null : {title},    
             shorthand === undefined ? null : {shorthand},
             fullTitle === undefined ? null : {fullTitle}
         );
-    }     */
-        const allTopics = await topicService.getAllTopics();
+    }    
+    try {
+        const allTopics = await topicService.getAllTopics(filterParams);
         res.send({ status: "OK", data: allTopics});
     } catch (error) {
         res

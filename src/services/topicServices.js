@@ -2,9 +2,9 @@ const { v4: uuid } = require('uuid');
 const TopicFile = require("../database/TopicFile");
 const Topic = require("../database/Topic");
 
-const getAllTopics = async () => {
+const getAllTopics = async (filterParams) => {
     try {
-        const allTopics = await Topic.getAllTopics();
+        const allTopics = await Topic.getAllTopics(filterParams);
         return allTopics;
     } catch (error) {
         throw error;
