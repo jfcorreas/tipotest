@@ -30,7 +30,7 @@ const getAllConvocations = async (req, res) => {
     };
 };
 
-const getConvocationById = (req, res) => {
+const getConvocationById = async (req, res) => {
     const {
         params: { convocationId },
     } = req;
@@ -47,7 +47,7 @@ const getConvocationById = (req, res) => {
         return; 
     }    
     try {
-        const convocationReq = convocationService.getConvocationById(convocationId);
+        const convocationReq = await convocationService.getConvocationById(convocationId);
         res.send({ status: "OK", data: convocationReq});
     } catch (error) {
         res

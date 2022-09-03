@@ -13,6 +13,18 @@ const getAllConvocations = async (filterParams) => {
     }
 };
 
+const getConvocationById = async (convocationId) => {
+    try {
+        const convocation = await Convocation.findById(convocationId);
+        return convocation;
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error,
+        }
+    }
+};
+
 const createNewConvocation = async (newConvocation) => {
     try {
         const createdConvocation = new Convocation(newConvocation);
@@ -28,5 +40,6 @@ const createNewConvocation = async (newConvocation) => {
 
 module.exports = {
     getAllConvocations,
+    getConvocationById,
     createNewConvocation
 };

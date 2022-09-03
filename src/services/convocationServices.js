@@ -19,9 +19,9 @@ const getAllConvocations = async (filterParams) => {
     }
 };
 
-const getConvocationById = (convocationId) => {
+const getConvocationById = async (convocationId) => {
     try {
-        const convocationReq = ConvocationFile.getConvocationById(convocationId);
+        const convocationReq = await Convocation.getConvocationById(convocationId);
         return convocationReq;
     } catch (error) {
         throw error;
