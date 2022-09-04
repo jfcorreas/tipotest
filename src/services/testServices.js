@@ -1,12 +1,13 @@
 const { v4: uuid } = require('uuid');
+const TestFile = require("../database/TestFile");
 const Test = require("../database/Test");
 const topicService = require("./topicServices");
 const convocationService = require("./convocationServices");
 const questionService = require("./questionServices");
 
-const getAllTests = () => {
+const getAllTests = async () => {
     try {
-        const allTests = Test.getAllTests();
+        const allTests = await Test.getAllTests();
         return allTests;
     } catch (error) {
         throw error;
@@ -15,7 +16,7 @@ const getAllTests = () => {
 
 const getTestTopics = (testId) => {
     try {
-        const testTopics = Test.getTestTopics(testId);
+        const testTopics = TestFile.getTestTopics(testId);
         return testTopics;
     } catch (error) {
         throw error;
@@ -60,7 +61,7 @@ const createNewTest = (newTest, topicList, numQuestions) => {
             return { topicId, testId: testToInsert.id };
         });
 
-        const createdTest = Test.createNewTest(testToInsert, newTopicsForTest);
+        const createdTest = TestFile.createNewTest(testToInsert, newTopicsForTest);
         return createdTest;
     } catch (error) {
         throw error;
@@ -69,7 +70,7 @@ const createNewTest = (newTest, topicList, numQuestions) => {
 
 const completeOneTest = (testId, testResponses ) => {
     try {
-        const completedTest = Test.completeOneTest(testId, testResponses);
+        const completedTest = TestFile.completeOneTest(testId, testResponses);
         return completedTest;
     } catch (error) {
         throw error;
@@ -79,7 +80,7 @@ const completeOneTest = (testId, testResponses ) => {
 
 const deleteOneTest = (testId) => {
     try {
-        Test.deleteOneTest(testId);
+        TestFile.deleteOneTest(testId);
     } catch (error) {
         throw error;
     }

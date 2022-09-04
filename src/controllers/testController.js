@@ -5,9 +5,9 @@ const { app: { DEFAULT_NUM_CHOICES,
             DEFAULT_NUM_QUESTIONS,
             DEFAULT_SCORING_FORMULA  } } = config;
 
-const getAllTests = (req, res) => {
+const getAllTests = async (req, res) => {  
     try {
-        const allTests = testService.getAllTests();
+        const allTests = await testService.getAllTests();
         res.send({ status: "OK", data: allTests});
     } catch (error) {
         res

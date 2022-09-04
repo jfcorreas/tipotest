@@ -27,5 +27,6 @@ QuestionSchema.index( { text: 1, topic: 1 }, { unique: true} );
 const Question = mongoose.model('question', QuestionSchema);
 
 module.exports = {
-    Question
+    Question,
+    QuestionSchema
 };
