@@ -141,7 +141,7 @@ const updateOneConvocation = async (req, res) => {
     }
 };
 
-const updateConvocationTopics = (req, res) => {
+const updateConvocationTopics = async (req, res) => {
     const {
         body: { topicList },
         params: { convocationId },
@@ -172,7 +172,7 @@ const updateConvocationTopics = (req, res) => {
     };
 
     try {
-        const updatedConvocation = convocationService.updateConvocationTopics(convocationId, topicList);
+        const updatedConvocation = await convocationService.updateOneConvocationTopics(convocationId, topicList);
         res.send({ status: "OK", data: updatedConvocation });
     } catch (error) {
         res

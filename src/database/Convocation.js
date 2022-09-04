@@ -1,5 +1,7 @@
 const { Convocation } = require("../database/schemas/ConvocationSchema");
-//const Topic = require("../database/Topic");
+const Topic = require("../database/schemas/TopicSchema");
+const { asyncFilter } = require("../database/utils");
+
 
 const getAllConvocations = async (filterParams) => {
     try {
@@ -48,11 +50,57 @@ const updateOneConvocation = async (convocationId, changes) => {
                 message: `Can't find Convocation with the id '${convocationId}`
             };            
         }
-        
+
         if (changes.name) convocationToUpdate.name = changes.name;
         if (changes.year) convocationToUpdate.year = changes.year;
         if (changes.institution) convocationToUpdate.institution = changes.institution;
         if (changes.category) convocationToUpdate.category = changes.category;
+        convocationToUpdate.updatedAt = new Date().toLocaleString("en-US", {timeZone: "UTC"});
+            
+        const updatedConvocation = await convocationToUpdate.save();
+        return updatedConvocation;
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error,
+        };
+    }
+};
+
+const updateOneConvocationTopics = async (convocationId, topics) => {
+    try {
+
+        if (topics.constructor.name != "Array") {
+            throw {
+                status: 400,
+                message: `Invalid list of topics`
+            };
+        }
+
+        const convocationToUpdate = await Convocation.findById(convocationId).exec();
+
+        if (!convocationToUpdate) {
+            throw {
+                status: 400,
+                message: `Can't find Convocation with the id '${convocationId}`
+            };            
+        }
+
+        const uniqueTopics = new Set(topics);
+
+        if (topics.length > uniqueTopics.size) {
+            throw {
+                status: 400,
+                message: `Found duplicated topics`
+            };
+        }        
+        
+        const filteredTopics = await asyncFilter( topics, async (topic) => {
+            const exists = await Topic.findById(topic);
+            return exists;
+        });
+
+        convocationToUpdate.topicList = filteredTopics; 
         convocationToUpdate.updatedAt = new Date().toLocaleString("en-US", {timeZone: "UTC"});
             
         const updatedConvocation = await convocationToUpdate.save();
@@ -81,5 +129,6 @@ module.exports = {
     getConvocationById,
     createNewConvocation,
     updateOneConvocation,
+    updateOneConvocationTopics,
     deleteOneConvocation
 };

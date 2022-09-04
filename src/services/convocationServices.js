@@ -46,9 +46,9 @@ const updateOneConvocation = async (convocationId, changes) => {
     }
 };
 
-const updateConvocationTopics = (convocationId, topics) => {
+const updateOneConvocationTopics = async (convocationId, topics) => {
     try {
-        const updatedConvocation = ConvocationFile.updateConvocationTopics(convocationId, topics);
+        const updatedConvocation = await Convocation.updateOneConvocationTopics(convocationId, topics);
         return updatedConvocation;
     } catch (error) {
         throw error;
@@ -69,6 +69,6 @@ module.exports = {
     getConvocationById,
     createNewConvocation,
     updateOneConvocation,
-    updateConvocationTopics,
+    updateOneConvocationTopics,
     deleteOneConvocation
 };
