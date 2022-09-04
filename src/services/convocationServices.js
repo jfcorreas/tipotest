@@ -1,14 +1,4 @@
-const { v4: uuid } = require('uuid');
-const ConvocationFile = require("../database/ConvocationFile");
 const Convocation = require("../database/Convocation");
-
-const convocationExists = (convocationId) => {
-    try {
-        return ConvocationFile.convocationExists(convocationId);
-    } catch (error) {
-        throw error;
-    }
-};
 
 const getAllConvocations = async (filterParams) => {
     try {
@@ -64,7 +54,6 @@ const deleteOneConvocation = async (convocationId) => {
 }
 
 module.exports = {
-    convocationExists,
     getAllConvocations,
     getConvocationById,
     createNewConvocation,
