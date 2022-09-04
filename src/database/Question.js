@@ -1,5 +1,5 @@
 const { Question } = require("../database/schemas/QuestionSchema");
-const Topic = require("../database/Topic");
+const Topic = require("../database/schemas/TopicSchema");
 
 const getAllQuestions = async (filterParams) => {
     try {
@@ -36,10 +36,10 @@ const updateOneQuestion = async (questionId, changes) => {
             };            
         }
 
-        const topic = await Topic.getOneTopic(changes.topic);
+        const topic = await Topic.findOne({ _id: changes.topic });
 
-        questionChanges.text = changes.text? changes.text : questionChanges.text;
-        questionChanges.topic = topic? topic._id : questionChanges.topic;
+        if (changes.text) questionChanges.text = changes.text;
+        if (topic) questionChanges.topic = topic._id;
         questionChanges.updatedAt = new Date().toLocaleString("en-US", {timeZone: "UTC"});
 
         const updatedQuestion = await questionChanges.save();

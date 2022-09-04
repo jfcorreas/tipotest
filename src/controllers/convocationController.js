@@ -95,7 +95,7 @@ const createNewConvocation = async (req, res) => {
     }
 };
 
-const updateOneConvocation = (req, res) => {
+const updateOneConvocation = async (req, res) => {
     const {
         body,
         params: { convocationId },
@@ -112,8 +112,26 @@ const updateOneConvocation = (req, res) => {
             });
         return; 
     }
+    const changes = {
+        name: body.name,
+        year: body.year,
+        institution: body.institution,
+        category: body.category
+    };
+
+    if (!changes.year && !changes.name && !changes.institution && !changes.category) {
+        res
+            .status(400)
+            .send({
+                status: "FAILED",
+                data: {
+                    error: "No valid changes requested",
+                },
+            }); 
+        return;        
+    }    
     try {
-        const updatedConvocation = convocationService.updateOneConvocation(convocationId, body);
+        const updatedConvocation = await convocationService.updateOneConvocation(convocationId, changes);
         res.send({ status: "OK", data: updatedConvocation });
     } catch (error) {
         res

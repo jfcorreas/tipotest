@@ -5,10 +5,10 @@ const router = express.Router();
 
 router
     .get("/", convocationController.getAllConvocations)
-    .get("/:convocationId", convocationController.getConvocationById)
     .post("/", convocationController.createNewConvocation)
+    .get("/:convocationId", convocationController.getConvocationById)
     .patch("/:convocationId", convocationController.updateOneConvocation)
-    .patch("/:convocationId/topics", convocationController.updateConvocationTopics)
-    .delete("/:convocationId", convocationController.deleteOneConvocation);
+    .delete("/:convocationId", convocationController.deleteOneConvocation)
+    .patch("/:convocationId/topics", convocationController.updateConvocationTopics);
 
 module.exports =  router;

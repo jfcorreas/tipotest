@@ -38,6 +38,33 @@ const createNewConvocation = async (newConvocation) => {
     }
 };
 
+const updateOneConvocation = async (convocationId, changes) => {
+    try {
+        const convocationToUpdate = await Convocation.findById(convocationId).exec();
+
+        if (!convocationToUpdate) {
+            throw {
+                status: 400,
+                message: `Can't find Convocation with the id '${convocationId}`
+            };            
+        }
+        
+        if (changes.name) convocationToUpdate.name = changes.name;
+        if (changes.year) convocationToUpdate.year = changes.year;
+        if (changes.institution) convocationToUpdate.institution = changes.institution;
+        if (changes.category) convocationToUpdate.category = changes.category;
+        convocationToUpdate.updatedAt = new Date().toLocaleString("en-US", {timeZone: "UTC"});
+            
+        const updatedConvocation = await convocationToUpdate.save();
+        return updatedConvocation;
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error,
+        };
+    }
+};
+
 const deleteOneConvocation = async (convocationId) => {
     try {
         await Convocation.deleteOne({ _id: convocationId });
@@ -53,5 +80,6 @@ module.exports = {
     getAllConvocations,
     getConvocationById,
     createNewConvocation,
+    updateOneConvocation,
     deleteOneConvocation
 };

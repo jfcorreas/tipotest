@@ -1,6 +1,6 @@
 
 const Topic = require("../database/schemas/TopicSchema");
-const Question = require("../database/Question");
+const Question = require("../database/schemas/QuestionSchema");
 
 const getAllTopics = async (filterParams) => {
     try {
@@ -56,21 +56,21 @@ const createNewTopic = async (newTopic) => {
 
 const updateOneTopic = async (topicId, changes) => {
     try {
-        const topicChanges = await Topic.findById(topicId).exec();
+        const topicToUpdate = await Topic.findById(topicId).exec();
 
-        if (!topicChanges) {
+        if (!topicToUpdate) {
             throw {
                 status: 400,
                 message: `Can't find Topic with the id '${topicId}`
             };            
         }
 
-        topicChanges.title = changes.title;
-        topicChanges.shorthand = changes.shorthand;
-        topicChanges.fullTitle = changes.fullTitle;
-        topicChanges.updatedAt = new Date().toLocaleString("en-US", {timeZone: "UTC"});
+        if (changes.title) topicToUpdate.title = changes.title;
+        if (changes.shorthand) topicToUpdate.shorthand = changes.shorthand;
+        if (changes.fullTitle) topicToUpdate.fullTitle = changes.fullTitle;
+        topicToUpdate.updatedAt = new Date().toLocaleString("en-US", {timeZone: "UTC"});
             
-        const updatedTocic = await topicChanges.save();
+        const updatedTocic = await topicToUpdate.save();
         return updatedTocic;
     } catch (error) {
         throw {
@@ -82,7 +82,7 @@ const updateOneTopic = async (topicId, changes) => {
 
 const deleteOneTopic = async (topicId) => {
     try {
-        const questions = await Question.getAllQuestions({ topic: topicId });
+        const questions = await Question.find({ topic: topicId });
         if (questions.length > 0) {
             throw {
                 status: 400,

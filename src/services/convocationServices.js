@@ -37,9 +37,9 @@ const createNewConvocation = async (newConvocation) => {
     }
 };
 
-const updateOneConvocation = (convocationId, changes) => {
+const updateOneConvocation = async (convocationId, changes) => {
     try {
-        const updatedConvocation = ConvocationFile.updateOneConvocation(convocationId, changes);
+        const updatedConvocation = await Convocation.updateOneConvocation(convocationId, changes);
         return updatedConvocation;
     } catch (error) {
         throw error;
