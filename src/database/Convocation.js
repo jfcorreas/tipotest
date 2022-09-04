@@ -1,7 +1,5 @@
 const { Convocation } = require("../database/schemas/ConvocationSchema");
 const Topic = require("../database/schemas/TopicSchema");
-const { asyncFilter } = require("../database/utils");
-
 
 const getAllConvocations = async (filterParams) => {
     try {
@@ -95,9 +93,9 @@ const updateOneConvocationTopics = async (convocationId, topics) => {
             };
         }        
         
-        const filteredTopics = await asyncFilter( topics, async (topic) => {
-            const exists = await Topic.findById(topic);
-            return exists;
+        const existentTopics = await Topic.find({ _id: { $in: topics } }, "_id" );
+        const filteredTopics = existentTopics.map( (topic) => {
+            return topic._id;
         });
 
         convocationToUpdate.topicList = filteredTopics; 
