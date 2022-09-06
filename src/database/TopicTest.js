@@ -12,6 +12,18 @@ const getTestTopics = async (testId) => {
     }
 };
 
+const getTopicTests = async (topicId) => {
+    try {
+        const topicTest = await TopicTest.find( { topicId: topicId}, 'testId' );
+        return topicTest.map((element) => element.testId);
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error,
+        }
+    }
+};
+
 const createNewTopicsForTest = async (newTopicsForTest) => {
     try {
         const createdTTs = await TopicTest.create(newTopicsForTest);
@@ -26,5 +38,6 @@ const createNewTopicsForTest = async (newTopicsForTest) => {
 
 module.exports = {
     getTestTopics,
+    getTopicTests,
     createNewTopicsForTest
 }

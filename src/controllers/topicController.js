@@ -55,6 +55,34 @@ const getOneTopic = async (req, res) => {
     };
 };
 
+const getTopicTests = async (req, res) => {
+    const {
+        params: { topicId },
+    } = req;
+
+    if (!topicId) {
+        res
+            .status(400)
+            .send({
+                status: "FAILED",
+                data: {
+                    error: "Parameter ':topicId' can not be empty",
+                },
+            }); 
+        return;
+    }
+
+    try {
+        const topicTests = await topicService.getTopicTests(topicId);
+        res.status(200).send({ status: "OK", data: topicTests });
+    } catch (error) {
+        res
+            .status(error?.status || 500)
+            .send({
+                status: "FAILED", data: { error: error?.message || error }});            
+    }
+};
+
 const createNewTopic = async (req, res) => {
     const { body } = req;
 
@@ -165,39 +193,11 @@ const deleteOneTopic = async (req, res) => {
     }
 };
 
-const getTopicTests = (req, res) => {
-    const {
-        params: { topicId },
-    } = req;
-
-    if (!topicId) {
-        res
-            .status(400)
-            .send({
-                status: "FAILED",
-                data: {
-                    error: "Parameter ':topicId' can not be empty",
-                },
-            }); 
-        return;
-    }
-
-    try {
-        const topicTests = topicService.getTopicTests(topicId);
-        res.status(200).send({ status: "OK", data: topicTests });
-    } catch (error) {
-        res
-            .status(error?.status || 500)
-            .send({
-                status: "FAILED", data: { error: error?.message || error }});            
-    }
-};
-
 module.exports = {
     getAllTopics,
     getOneTopic,
+    getTopicTests,
     createNewTopic,
     updateOneTopic,
-    deleteOneTopic,
-    getTopicTests
+    deleteOneTopic
 };

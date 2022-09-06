@@ -38,8 +38,6 @@ const getOneTopic = async (topicId) => {
     }
 };
 
-// TODO: getTopicTests
-
 const createNewTopic = async (newTopic) => {
     try {
         const createdTopic = new Topic(newTopic);
