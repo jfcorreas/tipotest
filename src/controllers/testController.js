@@ -87,7 +87,7 @@ const createNewTest = async (req, res) => {
     }
 };
 
-const completeOneTest = (req, res) => {
+const completeOneTest = async (req, res) => {
     const {
         params: { testId },
         body: { testResponses }
@@ -106,7 +106,7 @@ const completeOneTest = (req, res) => {
     }
 
     try {
-        const completedTest = testService.completeOneTest(testId, testResponses);
+        const completedTest = await testService.completeOneTest(testId, testResponses);
         res.status(200).send({ status: "OK", data: completedTest });
     } catch (error) {
         res

@@ -1,4 +1,3 @@
-const TestFile = require("../database/TestFile");
 const Test = require("../database/Test");
 const Convocation = require("../database/Convocation");
 const Topic = require("../database/Topic");
@@ -100,9 +99,42 @@ const createNewTest = async (newTest, topicList, numQuestions) => {
     }
 };
 
-const completeOneTest = (testId, testResponses ) => {
+const completeOneTest = async (testId, testResponses ) => {
     try {
-        const completedTest = TestFile.completeOneTest(testId, testResponses);
+        const undoneTest = await Test.getOneTest(testId, 'questionList numChoices scoringGormula');
+        if (!undoneTest) {
+            throw {
+                status: 400,
+                message: `Can't find Test with the id '${testId}`
+            };            
+        } 
+
+        if ( !testResponses || 
+            testResponses.constructor.name != "Array" ||
+            testResponses.length != undoneTest.questionList.length ||
+            !testResponses.every( (choice) => choice < undoneTest.numChoices) ) {
+            throw {
+                status: 400,
+                message: `Not valid or incomplete responses submitted`
+            };
+        }
+        
+        let hits = 0, faults = 0;
+        testResponses.forEach( (choice, index) => {
+            if ( undoneTest.questionList[index].answers[choice].isCorrect ) {
+                hits++;
+            } else {
+                faults++;
+            }
+        });
+        
+        let newScore = 0;
+        switch (undoneTest.scoringFormula) {
+            case "H-(F/4)":
+            default:    newScore = hits - (faults / 4);  
+        }
+
+        const completedTest = await Test.completeOneTest(testId, testResponses, newScore);
         return completedTest;
     } catch (error) {
         throw error;
