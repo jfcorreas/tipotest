@@ -1,5 +1,5 @@
-const DB = require("./tipotestdb.json");
-const { saveToDatabase } = require("./utils");
+const DB = require("../tipotestdb.json");
+const { saveToDatabase } = require("../utils");
 
 const getAllTests = () => {
     try {

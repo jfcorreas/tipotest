@@ -1,19 +1,9 @@
-const QuestionFile = require("../database/QuestionFile");
 const Question = require("../database/Question");
 
 const getAllQuestions = async (filterParams) => {
     try {
         const filteredQuestions = await Question.getAllQuestions(filterParams);
         return filteredQuestions;
-    } catch (error) {
-        throw error;
-    }
-};
-
-const getQuestionsForTest = (topicId, numQuestions, numAnswers) => {
-    try {
-        const questionsForTest = QuestionFile.getQuestionsForTest(topicId, numQuestions, numAnswers);
-        return questionsForTest;
     } catch (error) {
         throw error;
     }
@@ -129,7 +119,6 @@ const deleteOneAnswer = async (questionId, answerId) => {
 
 module.exports = {
     getAllQuestions,
-    getQuestionsForTest,
     createNewQuestion,
     updateOneQuestion,
     deleteOneQuestion,
