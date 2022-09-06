@@ -110,9 +110,9 @@ const completeOneTest = (testId, testResponses ) => {
 };
 
 
-const deleteOneTest = (testId) => {
+const deleteOneTest = async (testId) => {
     try {
-        TestFile.deleteOneTest(testId);
+        await Test.deleteOneTest(testId);
     } catch (error) {
         throw error;
     }

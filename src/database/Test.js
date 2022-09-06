@@ -25,7 +25,19 @@ const createNewTest = async (newTest) => {
     }
 };
 
+const deleteOneTest = async (testId) => {
+    try {
+        await Test.findByIdAndDelete(testId);
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error,
+        };
+    }
+};
+
 module.exports = {
     getAllTests,
-    createNewTest
+    createNewTest,
+    deleteOneTest
 }

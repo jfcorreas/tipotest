@@ -116,7 +116,7 @@ const completeOneTest = (req, res) => {
     }
 };
 
-const deleteOneTest = (req, res) => {
+const deleteOneTest = async (req, res) => {
     const {
         params: { testId },
     } = req;
@@ -134,7 +134,7 @@ const deleteOneTest = (req, res) => {
     }
 
     try {
-        testService.deleteOneTest(testId);
+        await testService.deleteOneTest(testId);
         res.status(204).send({ status: "OK" });
     } catch (error) {
         res
