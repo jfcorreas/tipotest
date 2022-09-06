@@ -16,7 +16,7 @@ const getAllTests = async (req, res) => {
     };
 };
 
-const getTestTopics = (req, res) => {
+const getTestTopics = async (req, res) => {
     const {
         params: { testId },
     } = req;
@@ -34,7 +34,7 @@ const getTestTopics = (req, res) => {
     }
 
     try {
-        const testTopics = testService.getTestTopics(testId);
+        const testTopics = await testService.getTestTopics(testId);
         res.status(200).send({ status: "OK", data: testTopics });
     } catch (error) {
         res

@@ -2,8 +2,8 @@ const TestFile = require("../database/TestFile");
 const Test = require("../database/Test");
 const Convocation = require("../database/Convocation");
 const Topic = require("../database/Topic");
-const Question = require("../database/Question");
 const TopicTest = require("../database/TopicTest");
+const Question = require("../database/Question");
 const questionService = require("./questionServices");
 
 const getAllTests = async () => {
@@ -15,9 +15,9 @@ const getAllTests = async () => {
     }
 };
 
-const getTestTopics = (testId) => {
+const getTestTopics = async (testId) => {
     try {
-        const testTopics = TestFile.getTestTopics(testId);
+        const testTopics = await TopicTest.getTestTopics(testId);
         return testTopics;
     } catch (error) {
         throw error;
@@ -78,14 +78,14 @@ const createNewTest = async (newTest, topicList, numQuestions) => {
             const selectedQuestions = await getQuestionsForTest(topic, numQuestions / topicsForTest.length, newTest.numChoices);
             questionsForTest = questionsForTest.concat(selectedQuestions);
         }
-        console.log(questionsForTest[0]);
+
         if ( questionsForTest.length < 1) {
             throw {
                 status: 400,
                 message: `No questions available with ${newTest.numChoices} answers for the Test`,
             };
         }        
-        
+
         newTest.questionList = questionsForTest;
         const createdTest = await Test.createNewTest(newTest);
 
