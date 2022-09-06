@@ -44,7 +44,7 @@ const getTestTopics = (req, res) => {
     }
 };
 
-const createNewTest = (req, res) => {
+const createNewTest = async (req, res) => {
     const { body } = req;
     const validTopicList = ( body.topicList &&
                             body.topicList.constructor.name == "Array" &&
@@ -78,7 +78,7 @@ const createNewTest = (req, res) => {
     };
 
     try {
-        const createdTest = testService.createNewTest(newTest, topicList, numQuestions);
+        const createdTest = await testService.createNewTest(newTest, topicList, numQuestions);
         res.status(201).send({ status: "OK", data: createdTest });
     } catch (error) {
         res

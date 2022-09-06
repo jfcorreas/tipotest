@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { QuestionSchema } = require("./QuestionSchema");
 const config = require("../../config");
 
 const { app: { DEFAULT_NUM_CHOICES,
@@ -10,8 +9,15 @@ const Schema = mongoose.Schema;
 const TestSchema = new Schema(
     {
         numChoices: { type: String, required: true, default: DEFAULT_NUM_CHOICES },
-        convocationId: { type: Schema.Types.ObjectId, ref: 'convocation', required: true },
-        questionList: [{ QuestionSchema }],
+        convocationId: { type: Schema.Types.ObjectId, ref: 'convocation' },
+        questionList: [{     
+            text: { type: String, required: true },
+            topic: { type: Schema.Types.ObjectId, ref: 'topic', required: true },
+            answers: [{
+                text: { type: String, required: true },
+                isCorrect: { type: Boolean, required: true, default: false }, 
+            }],
+         }],
         responses: [{ type: Number }],
         scoringFormula: { type: String, required: true, default: DEFAULT_SCORING_FORMULA },
         score: { type: Number, required: true, default: 0 },

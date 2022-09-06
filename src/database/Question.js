@@ -13,6 +13,23 @@ const getAllQuestions = async (filterParams) => {
     }
 };
 
+const getQuestionSample = async (topicId, numQuestions) => {
+    try {
+        const questions = await Question.aggregate([
+            { $match: { topic: topicId} },
+            { $sample: { size: numQuestions} }
+        ]);
+        
+        return questions;
+
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error
+        }
+    }
+};
+
 const createNewQuestion = async (newQuestion) => {
     try {
         const createdQuestion = new Question(newQuestion);
@@ -66,7 +83,7 @@ const deleteOneQuestion = async (questionId) => {
 const getAllQuestionAnswers = async (questionId) => {
     try {
         const question = await Question.findById(questionId, 'answers'); 
-        return question.answers;
+        return question? question.answers : null;
 
     } catch (error) {
         throw {
@@ -198,6 +215,7 @@ const deleteOneAnswer = async (questionId, answerId) => {
 
 module.exports = {
     getAllQuestions,
+    getQuestionSample,
     createNewQuestion,
     updateOneQuestion,
     deleteOneQuestion,

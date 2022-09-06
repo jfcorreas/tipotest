@@ -48,7 +48,7 @@ const deleteOneQuestion = async (questionId) => {
 const getQuestionAnswers = async (questionId, numAnswers, apiCall = true) => {
     try {
         const allAnswers = await Question.getAllQuestionAnswers(questionId);
-
+        
         if (!numAnswers || numAnswers < 2) {
             return allAnswers;
         }

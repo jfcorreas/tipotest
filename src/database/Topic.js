@@ -14,10 +14,9 @@ const getAllTopics = async (filterParams) => {
     }
 };
 
-
 const getExistingTopics = async (topicIds) => {
     try {
-        const existingTopics = await Topic.find({ _id: { $in: topicIds } });
+        const existingTopics = await Topic.find({ _id: { $in: topicIds } }, '_id');
         return existingTopics;
     } catch (error) {
         throw {

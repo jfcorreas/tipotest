@@ -22,7 +22,8 @@ const QuestionSchema = new Schema(
 );
 
 QuestionSchema.index( { topic: 1 } );
-QuestionSchema.index( { text: 1, topic: 1 }, { unique: true} );
+QuestionSchema.index( { text: 1 } );
+QuestionSchema.index( { text: 1, topic: 1 }, {unique: true} );
 
 const Question = mongoose.model('question', QuestionSchema);
 
