@@ -36,6 +36,8 @@ const createNewTopicsForTest = async (newTopicsForTest) => {
     }
 };
 
+// TODO: Implement deleteTopicTests and deleteTestTopics and call from respective functions in deleteTopic and deleteTest
+
 module.exports = {
     getTestTopics,
     getTopicTests,

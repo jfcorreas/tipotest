@@ -28,9 +28,9 @@ const getExistingTopics = async (topicIds) => {
     }
 };
 
-const getOneTopic = async (topicId) => {
+const getTopicById = async (topicId) => {
     try {
-        const topic = Topic.getOneTopic(topicId);
+        const topic = Topic.getTopicById(topicId);
         return topic;
     } catch (error) {
         throw error;
@@ -67,7 +67,7 @@ module.exports = {
     getAllTopics,
     getTopicTests,
     getExistingTopics,
-    getOneTopic,
+    getTopicById,
     createNewTopic,
     updateOneTopic,
     deleteOneTopic

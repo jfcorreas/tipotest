@@ -26,9 +26,9 @@ const getExistingTopics = async (topicIds) => {
     }
 };
 
-const getOneTopic = async (topicId) => {
+const getTopicById = async (topicId) => {
     try {
-        const topic = await Topic.findOne({ _id: topicId });
+        const topic = await Topic.findById(topicId);
         return topic;
     } catch (error) {
         throw {
@@ -98,7 +98,7 @@ const deleteOneTopic = async (topicId) => {
 module.exports = {
     getAllTopics,
     getExistingTopics,
-    getOneTopic,
+    getTopicById,
     createNewTopic,
     updateOneTopic,
     deleteOneTopic

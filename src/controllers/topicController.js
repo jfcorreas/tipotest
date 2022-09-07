@@ -28,7 +28,7 @@ const getAllTopics = async (req, res) => {
     };
 };
 
-const getOneTopic = async (req, res) => {
+const getTopicById = async (req, res) => {
     const {
         params: { topicId },
     } = req;
@@ -46,7 +46,7 @@ const getOneTopic = async (req, res) => {
     }
 
     try {
-        const topic = await topicService.getOneTopic(topicId);
+        const topic = await topicService.getTopicById(topicId);
         res.send({ status: "OK", data: topic});
     } catch (error) {
         res
@@ -195,7 +195,7 @@ const deleteOneTopic = async (req, res) => {
 
 module.exports = {
     getAllTopics,
-    getOneTopic,
+    getTopicById,
     getTopicTests,
     createNewTopic,
     updateOneTopic,
