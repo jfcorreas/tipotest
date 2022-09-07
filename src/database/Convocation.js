@@ -15,7 +15,7 @@ const getAllConvocations = async (filterParams) => {
 
 const getConvocationById = async (convocationId) => {
     try {
-        const convocation = await Convocation.findById(convocationId);
+        const convocation = await Convocation.findById(convocationId).populate({ path: 'topicList' });
         return convocation;
     } catch (error) {
         throw {
