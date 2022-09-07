@@ -5,6 +5,7 @@ const { app: { DEFAULT_NUM_CHOICES,
             DEFAULT_NUM_QUESTIONS,
             DEFAULT_SCORING_FORMULA  } } = config;
 
+// TODO: Filter Tests by date and implement pagination
 const getAllTests = async (req, res) => {  
     try {
         const allTests = await testService.getAllTests();
