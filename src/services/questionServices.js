@@ -9,6 +9,15 @@ const getAllQuestions = async (filterParams) => {
     }
 };
 
+const getQuestionById = async (questionId) => {
+    try {
+        const question = await Question.getQuestionById(questionId);
+        return question;
+    } catch (error) {
+        throw error;
+    }
+};
+
 const createNewQuestion = async (newQuestion) => {
     try {
         const createdQuestion = await Question.createNewQuestion(newQuestion);
@@ -119,6 +128,7 @@ const deleteOneAnswer = async (questionId, answerId) => {
 
 module.exports = {
     getAllQuestions,
+    getQuestionById,
     createNewQuestion,
     updateOneQuestion,
     deleteOneQuestion,

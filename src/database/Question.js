@@ -13,6 +13,18 @@ const getAllQuestions = async (filterParams) => {
     }
 };
 
+const getQuestionById = async (questionId) => {
+    try {
+        const question = await Question.findById(questionId).populate({ path: 'topic' });
+        return question;
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error,
+        }
+    }
+};
+
 const getQuestionSample = async (topicId, numQuestions) => {
     try {
         const questions = await Question.aggregate([
@@ -215,6 +227,7 @@ const deleteOneAnswer = async (questionId, answerId) => {
 
 module.exports = {
     getAllQuestions,
+    getQuestionById,
     getQuestionSample,
     createNewQuestion,
     updateOneQuestion,

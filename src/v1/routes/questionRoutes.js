@@ -6,6 +6,7 @@ const router = express.Router();
 router
     .get("/", questionController.getAllQuestions)
     .post("/", questionController.createNewQuestion)
+    .get("/:questionId", questionController.getQuestionById)
     .patch("/:questionId", questionController.updateOneQuestion)
     .delete("/:questionId", questionController.deleteOneQuestion)
     .get("/:questionId/answers", questionController.getQuestionAnswers)

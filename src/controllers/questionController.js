@@ -13,6 +13,32 @@ const getAllQuestions = async (req, res) => {
     };
 };
 
+const getQuestionById = async (req, res) => {
+    const {
+        params: { questionId },
+    } = req;
+
+    if (!questionId) {
+        res
+            .status(400)
+            .send({
+                status: "FAILED",
+                data: {
+                    error: "Parameter ':questionId' can not be empty",
+                },
+            });
+        return; 
+    }    
+    try {
+        const questionRequested = await questionService.getQuestionById(questionId);
+        res.send({ status: "OK", data: questionRequested});
+    } catch (error) {
+        res
+            .status(error?.status || 500)
+            .send({status: "FAILED", data: { error: error?.message || error }});
+    };
+};
+
 const createNewQuestion = async (req, res) => {
     const { body } = req;
 
@@ -237,6 +263,7 @@ const deleteOneAnswer = async (req, res) => {
 
 module.exports = {
     getAllQuestions,
+    getQuestionById,
     createNewQuestion,
     updateOneQuestion,
     deleteOneQuestion,
