@@ -14,9 +14,9 @@ const db = mongoose.connection;
 
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
-const app = express()
+const app = express();
 
-app.use(express.json())
+app.use(express.json());
 app.use("/api/v1/convocations", v1ConvocationRoutes);
 app.use("/api/v1/topics", v1TopicRoutes);
 app.use("/api/v1/questions", v1QuestionRoutes);
