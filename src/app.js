@@ -7,8 +7,8 @@ const OPTIONS = {
     mode: 'cors' 
 };
 
-const fetchIpInfo = ip => {
-    return fetch(`${config.apiurl}/convocations`,
+const fetchIpInfo = (apiPath) => {
+    return fetch(`${config.apiurl}/${apiPath}`,
       OPTIONS)
         .then(res => res.json())
         .catch(err => console.error(err))
@@ -28,13 +28,15 @@ $form.addEventListener('submit', async (event) => {
   
     $submit.setAttribute('disabled', '')
     $submit.setAttribute('aria-busy', 'true')
-  
-    const ipInfo = await fetchIpInfo(value)
-  
-    if (ipInfo) {
-      $results.innerHTML = JSON.stringify(ipInfo, null, 2)
+    try {
+        const ipInfo = await fetchIpInfo(value);
+        if (ipInfo.status="OK") {
+          $results.innerHTML = JSON.stringify(ipInfo, null, 2)
+        }
+    } catch (error) {
+        console.error(error);
     }
-  
+
     $submit.removeAttribute('disabled')
     $submit.removeAttribute('aria-busy')
   })
