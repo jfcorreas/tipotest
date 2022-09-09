@@ -4,6 +4,7 @@
   "description": "REST API and WebApp to record and take multiple-choice tests",
   "main": "index.js",
   "scripts": {
+    "start": "echo \"Error: no start script especified\" && exit 1",
     "dev": "live-server",
     "api-start": "node ./src/api.js",
     "api-dev": "nodemon ./src/api.js --ignore './src/database/file_model/*.json'",

@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const mongoose = require('mongoose');
 const config = require("./config");
 
@@ -16,6 +17,7 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 app.use("/api/v1/convocations", v1ConvocationRoutes);
 app.use("/api/v1/topics", v1TopicRoutes);
