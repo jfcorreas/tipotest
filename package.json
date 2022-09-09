@@ -4,9 +4,10 @@
   "description": "REST API and WebApp to record and take multiple-choice tests",
   "main": "index.js",
   "scripts": {
-    "start": "node ./src/api.js",
-    "dev": "nodemon ./src/api.js --ignore './src/database/*.json'",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "live-server",
+    "api-start": "node ./src/api.js",
+    "api-dev": "nodemon ./src/api.js --ignore './src/database/file_model/*.json'",
+    "api-test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "node",
@@ -21,6 +22,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "live-server": "^1.1.0",
     "nodemon": "^2.0.19"
   }
 }
