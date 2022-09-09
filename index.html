@@ -9,13 +9,16 @@
 </head>
 <body>
     <main class="container">
+        <select id="convocations">
+            <option>Loading...</option>
+        </select>
         <form id="formulario">
-            <label> IP del usuario
-                <input required id="input" type="text" placeholder="Introduce aquí la IP">
-                <small>Por ejemplo: 54.85.132.205</small>
+            <label> Consulta en la API TipoTest
+                <input required id="input" type="text" placeholder="Introduce aquí el path a consultar en la API">
+                <small>Por ejemplo: convocations</small>
             </label>
             <button id="submit">
-                Buscar información de esta IP
+                Consulta la API
             </button>
         </form>
         <div>

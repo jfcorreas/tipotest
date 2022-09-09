@@ -15,9 +15,16 @@ const db = mongoose.connection;
 
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
+const corsOptions = {
+    "origin": "*",
+    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+    "preflightContinue": false,
+    "optionsSuccessStatus": 204
+};
+
 const app = express();
 
-app.use(cors());    // TODO: configure CORS - https://expressjs.com/en/resources/middleware/cors.html
+app.use(cors(corsOptions));    // TODO: configure CORS - https://expressjs.com/en/resources/middleware/cors.html
 app.use(express.json());
 app.use("/api/v1/convocations", v1ConvocationRoutes);
 app.use("/api/v1/topics", v1TopicRoutes);

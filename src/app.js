@@ -16,10 +16,25 @@ const fetchIpInfo = (apiPath) => {
 
 const $ = selector => document.querySelector(selector)
 
+const $convocations = $('#convocations')
 const $form = $('#formulario')
 const $input = $('#input')
 const $submit = $('#submit')
 const $results = $('#results')
+
+window.addEventListener("load", async (event) => {
+    const convocations = await fetchIpInfo('convocations');    
+    $convocations.remove(0);
+    let index = 0;
+    for (const convocation of convocations.data) {
+        const opt = document.createElement("option");
+        opt.value = convocation._id;
+        opt.innerText = convocation.name;
+
+        $convocations.appendChild(opt);
+        index++;
+    }
+})
 
 $form.addEventListener('submit', async (event) => {
     event.preventDefault()
@@ -28,15 +43,12 @@ $form.addEventListener('submit', async (event) => {
   
     $submit.setAttribute('disabled', '')
     $submit.setAttribute('aria-busy', 'true')
-    try {
-        const ipInfo = await fetchIpInfo(value);
-        if (ipInfo.status="OK") {
-          $results.innerHTML = JSON.stringify(ipInfo, null, 2)
-        }
-    } catch (error) {
-        console.error(error);
+
+    const ipInfo = await fetchIpInfo(value);
+    if (ipInfo) {
+        $results.innerHTML = JSON.stringify(ipInfo, null, 2)
     }
 
     $submit.removeAttribute('disabled')
     $submit.removeAttribute('aria-busy')
-  })
+})
