@@ -1,8 +1,8 @@
 const Convocation = require("../database/Convocation");
 
-const getAllConvocations = async (filterParams) => {
+const getAllConvocations = async (filterParams, sortResults) => {
     try {
-        const allConvocations = await Convocation.getAllConvocations(filterParams);
+        const allConvocations = await Convocation.getAllConvocations(filterParams, sortResults);
         return allConvocations;
     } catch (error) {
         throw error;

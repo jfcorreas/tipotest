@@ -1,9 +1,9 @@
 const { Convocation } = require("../database/schemas/ConvocationSchema");
 const Topic = require("../database/schemas/TopicSchema");
 
-const getAllConvocations = async (filterParams) => {
+const getAllConvocations = async (filterParams, sortResults = { year: -1 }) => {
     try {
-        const allConvocations = await Convocation.find(filterParams);
+        const allConvocations = await Convocation.find(filterParams).sort( sortResults );
         return allConvocations;
     } catch (error) {
         throw {

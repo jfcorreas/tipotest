@@ -2,7 +2,7 @@ const convocationService = require("../services/convocationServices");
 
 const getAllConvocations = async (req, res) => {
     let {
-        query: { name, year, institution, category }
+        query: { name, year, institution, category, sortAsc, sortDesc }
     } = req;
 
     let filterParams = {};
@@ -20,8 +20,16 @@ const getAllConvocations = async (req, res) => {
             category === undefined ? null : {category}
         );
     }     
+
+    let sortResults = undefined;
+    if ( sortAsc || sortDesc ){
+        sortResults = {};
+        if (sortAsc) sortResults[sortAsc] = 1;
+        if (sortDesc) sortResults[sortDesc] = -1;
+    }
+
     try {
-        const allConvocations = await convocationService.getAllConvocations(filterParams);
+        const allConvocations = await convocationService.getAllConvocations(filterParams, sortResults);
         res.send({ status: "OK", data: allConvocations});
     } catch (error) {
         res
