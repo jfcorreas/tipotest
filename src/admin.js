@@ -16,7 +16,32 @@ const fetchIpInfo = (apiPath) => {
 
 const $ = selector => document.querySelector(selector)
 
-// const $convocations = $('#convocations')
+const $convocations = $('#convocations')
+const $convocationsTable = $('#convocationsTable')
+
+$convocations.addEventListener('click', async (event) => {
+    if ($convocations.parentElement.open){    
+        $convocations.parentElement.setAttribute('open', false);
+        return;
+    }
+    event.preventDefault();
+    $convocations.setAttribute('aria-busy', 'true');
+    const convocations = await fetchIpInfo('convocations');
+    $convocations.setAttribute('aria-busy', 'false');
+    $convocations.parentElement.setAttribute('open', true);
+
+    if (convocations.status === "OK") {
+        const tbody = $convocationsTable.getElementsByTagName("tbody")[0];
+        for (const convocation of convocations.data) {
+            const newRow = tbody.insertRow(tbody.rows.length);
+            const rowHtml = `<th scope="row">${convocation.name}</th>
+                            <td>${convocation.year}</td>
+                            <td>${convocation.institution}</td>
+                            <td>${convocation.category}</td>`
+            newRow.innerHTML = rowHtml;
+        }
+    }
+})
 
 /* window.addEventListener("load", async (event) => {
     const convocations = await fetchIpInfo('convocations');    

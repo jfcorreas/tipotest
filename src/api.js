@@ -24,7 +24,7 @@ const corsOptions = {
 
 const app = express();
 
-app.use(cors(corsOptions));    // TODO: configure CORS - https://expressjs.com/en/resources/middleware/cors.html
+app.use(cors(corsOptions));    // Configure CORS - https://expressjs.com/en/resources/middleware/cors.html
 app.use(express.json());
 app.use("/api/v1/convocations", v1ConvocationRoutes);
 app.use("/api/v1/topics", v1TopicRoutes);
