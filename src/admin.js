@@ -7,7 +7,7 @@ const OPTIONS = {
     mode: 'cors' 
 };
 
-const fetchIpInfo = (apiPath) => {
+const fetchInfo = (apiPath) => {
     return fetch(`${config.apiurl}/${apiPath}`,
       OPTIONS)
         .then(res => res.json())
@@ -15,48 +15,62 @@ const fetchIpInfo = (apiPath) => {
 }
 
 const $ = selector => document.querySelector(selector)
+const $all = selector => document.querySelectorAll(selector)
 
+const $html =$('html');
 const $convocations = $('#convocations')
 const $convocationsTable = $('#convocationsTable')
+const $convocationModal = $('#convocationModal')
 
 $convocations.addEventListener('click', async (event) => {
     if ($convocations.parentElement.open){    
         $convocations.parentElement.setAttribute('open', false);
         return;
     }
-    event.preventDefault();
     $convocations.setAttribute('aria-busy', 'true');
-    const convocations = await fetchIpInfo('convocations');
+    const convocations = await fetchInfo('convocations');
     $convocations.setAttribute('aria-busy', 'false');
     $convocations.parentElement.setAttribute('open', true);
 
     if (convocations.status === "OK") {
         const tbody = $convocationsTable.getElementsByTagName("tbody")[0];
+        tbody.innerHTML = '';
         for (const convocation of convocations.data) {
             const newRow = tbody.insertRow(tbody.rows.length);
+            newRow.setAttribute('id', convocation._id);
             const rowHtml = `<th scope="row">${convocation.name}</th>
                             <td>${convocation.year}</td>
                             <td>${convocation.institution}</td>
                             <td>${convocation.category}</td>`
             newRow.innerHTML = rowHtml;
         }
+        const $convocationsRows = $all('#convocationsTable tbody tr')
+
+        $convocationsRows.forEach(e => e.addEventListener("click", async function(event) {
+            // Here, `this` refers to the element the event was hooked on
+            console.log(event.target.parentElement.id)
+            $html.classList.add('modal-is-open');
+            $convocationModal.setAttribute('open', true);
+            const convocation = await fetchInfo(`convocations/${event.target.parentElement.id}`);
+            if (convocation.status === "OK") {
+                const content = $('#convocationModal p');
+                content.innerHTML = `${convocation.data.name}  ${convocation.data.year} - ${convocation.data.institution}`;
+            }
+        }));
     }
 })
 
-/* window.addEventListener("load", async (event) => {
-    const convocations = await fetchIpInfo('convocations');    
-    $convocations.remove(0);
-    let index = 0;
-    for (const convocation of convocations.data) {
-        const opt = document.createElement("option");
-        opt.value = convocation._id;
-        opt.innerText = convocation.name;
-
-        $convocations.appendChild(opt);
-        index++;
+const toggleModal = (event) => {
+    if ($convocationModal.open) {
+        $convocationModal.setAttribute('open', false);
+        $html.classList.remove('modal-is-open');
+    } else {
+        $html.classList.add('modal-is-open');
+        $convocationModal.setAttribute('open', true);
     }
-})
+};
 
+/*
 $form.addEventListener('submit', async (event) => {
     event.preventDefault()
     const {value} = $input
@@ -65,7 +79,7 @@ $form.addEventListener('submit', async (event) => {
     $submit.setAttribute('disabled', '')
     $submit.setAttribute('aria-busy', 'true')
 
-    const ipInfo = await fetchIpInfo(value);
+    const ipInfo = await fetchInfo(value);
     if (ipInfo) {
         $results.innerHTML = JSON.stringify(ipInfo, null, 2)
     }
