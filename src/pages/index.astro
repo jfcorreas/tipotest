@@ -1,5 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import Form from "../components/getApi";
+
 const config = {
     apiurl: "http://localhost:3080/api/v1"
 };
@@ -66,15 +68,8 @@ const toggleButton = (e) => {
               </details>              
         </section>
         <section>
-            <form id="formulario">
-                <label> Consulta en la API TipoTest
-                    <input required id="input" type="text" placeholder="Introduce aquí el path a consultar en la API">
-                    <small>Por ejemplo: convocations</small>
-                </label>
-                <button onclick={toggleButton} aria-busy={busy}>
-                    Consulta la API
-                </button>
-            </form>
+            <Form client:load></Form>
+
             <div>
                 <pre id="results">
     

@@ -21,6 +21,7 @@
   "author": "@jfcorreas",
   "license": "MIT",
   "dependencies": {
+    "@astrojs/react": "^1.1.2",
     "@picocss/pico": "^1.5.3",
     "astro": "^1.2.2",
     "express": "^4.18.1",
