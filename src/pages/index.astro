@@ -1,21 +1,46 @@
 ---
-// Welcome to Astro! Everything between these triple-dash code fences
-// is your "component front matter". It never runs in the browser.
-console.log('This runs in your terminal, not the browser!');
+import Layout from "../layouts/Layout.astro";
+const config = {
+    apiurl: "http://localhost:3080/api/v1"
+};
+
+const fetchInfo = (apiPath) => {
+    return fetch(`${config.apiurl}/${apiPath}`)
+        .then(res => res.json())
+        .catch(err => console.error(err))
+}
+
+const fetchResult = await fetchInfo('convocations');    
+const convocations = fetchResult.data? fetchResult.data : [];
+
+let busy = true;
+const toggleButton = (e) => {
+    console.log("clicked")
+    e.preventDefault()
+        busy = busy? false : true;
+
+}
+/* $form.addEventListener('submit', async (event) => {
+    event.preventDefault()
+    const {value} = $input
+    if (!value) return
+  
+    $submit.setAttribute('disabled', '')
+    $submit.setAttribute('aria-busy', 'true')
+
+    const ipInfo = await fetchIpInfo(value);
+    if (ipInfo) {
+        $results.innerHTML = JSON.stringify(ipInfo, null, 2)
+    }
+
+    $submit.removeAttribute('disabled')
+    $submit.removeAttribute('aria-busy')
+}) */
 ---
 <!-- Below is your "component template." It's just HTML, but with
      some magic sprinkled in to help you build great templates. -->
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset='utf-8'>
-    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-    <title>Tipo Test</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="./node_modules/@picocss/pico/css/pico.min.css">
-</head>
-<body>
+<Layout title="Tipo Test">
     <main class="container">
         <nav>
             <ul>
@@ -27,8 +52,10 @@ console.log('This runs in your terminal, not the browser!');
             </ul>
           </nav>        
         <section>
-            <select id="convocations">
-                <option>Cargando las convocatorias...</option>
+            <select>
+                {convocations.map(convocation => (
+                    <option value={convocation._id}>{convocation.name}</option>
+                  ))}
             </select>
             <details>
                 <summary>Últimos Tests</summary>
@@ -44,7 +71,7 @@ console.log('This runs in your terminal, not the browser!');
                     <input required id="input" type="text" placeholder="Introduce aquí el path a consultar en la API">
                     <small>Por ejemplo: convocations</small>
                 </label>
-                <button id="submit">
+                <button onclick={toggleButton} aria-busy={busy}>
                     Consulta la API
                 </button>
             </form>
@@ -55,6 +82,4 @@ console.log('This runs in your terminal, not the browser!');
             </div>
         </section>
     </main>
-    <script defer src='./src/app.js'></script>
-</body>
-</html>
+</Layout>
