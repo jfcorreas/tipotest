@@ -1,22 +1,37 @@
 
-let busy = false;
+import React, {Component} from 'react';
 
-const Form = () => {
-    function handleSubmit(e) {
-        e.preventDefault();
-        busy = true;
-        console.log('You clicked submit.');
-    }
-
-    return (
-        <form onSubmit={handleSubmit}>
-            <label> Consulta en la API TipoTest
-                <input required id="input" type="text" placeholder="Introduce aquí el path a consultar en la API" />
-                <small>Por ejemplo: convocations</small>
-            </label>
-            <button type="submit" aria-busy={busy}>Consulta la API</button>
-        </form>
-    );
+const config = {
+    apiurl: "http://localhost:3080/api/v1"
 };
 
-export default Form;
+const fetchInfo = (apiPath) => {
+    return fetch(`${config.apiurl}/${apiPath}`)
+        .then(res => res.json())
+        .catch(err => console.error(err))
+}
+
+class APIForm extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {busy: false, content: "Consulta la API"};
+
+        this.handleClick = this.handleClick.bind(this);
+    }
+
+    async handleClick() {
+        this.setState(prevState => ({ busy: !prevState.busy }));
+        const fetchResult = await fetchInfo('convocations');  
+        const convocations = fetchResult && fetchResult.data? fetchResult.data : [];
+        
+        this.setState(prevState => ({ busy: !prevState.busy , content: convocations[0].name}));
+    }
+
+    render() {
+        return (
+            <button onClick={this.handleClick} aria-busy={this.state.busy}>{this.state.content}</button>
+        )
+    }
+}
+
+export default APIForm;

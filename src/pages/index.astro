@@ -1,6 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import Form from "../components/getApi";
+import APIForm from "../components/getApi";
 
 const config = {
     apiurl: "http://localhost:3080/api/v1"
@@ -12,8 +12,8 @@ const fetchInfo = (apiPath) => {
         .catch(err => console.error(err))
 }
 
-const fetchResult = await fetchInfo('convocations');    
-const convocations = fetchResult.data? fetchResult.data : [];
+const fetchResult = await fetchInfo('convocations');  
+const convocations = fetchResult && fetchResult.data? fetchResult.data : [];
 
 let busy = true;
 const toggleButton = (e) => {
@@ -68,7 +68,7 @@ const toggleButton = (e) => {
               </details>              
         </section>
         <section>
-            <Form client:load></Form>
+            <APIForm client:load></APIForm>
 
             <div>
                 <pre id="results">
