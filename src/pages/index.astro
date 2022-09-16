@@ -3,13 +3,8 @@ import Layout from "../layouts/Layout.astro";
 import NavBar from "../layouts/NavBar.astro";
 import APIForm from "../components/getApi";
 
-const config = {
-    apiurl: "http://localhost:3080/api/v1",
-    appTitle: "Tipo TEST"
-};
-
 const fetchInfo = (apiPath) => {
-    return fetch(`${config.apiurl}/${apiPath}`)
+    return fetch(`${import.meta.env.API_URL}/${apiPath}`)
         .then(res => res.json())
         .catch(err => console.error(err))
 }
@@ -17,36 +12,11 @@ const fetchInfo = (apiPath) => {
 const fetchResult = await fetchInfo('convocations');  
 const convocations = fetchResult && fetchResult.data? fetchResult.data : [];
 
-let busy = true;
-const toggleButton = (e) => {
-    console.log("clicked")
-    e.preventDefault()
-        busy = busy? false : true;
-
-}
-/* $form.addEventListener('submit', async (event) => {
-    event.preventDefault()
-    const {value} = $input
-    if (!value) return
-  
-    $submit.setAttribute('disabled', '')
-    $submit.setAttribute('aria-busy', 'true')
-
-    const ipInfo = await fetchIpInfo(value);
-    if (ipInfo) {
-        $results.innerHTML = JSON.stringify(ipInfo, null, 2)
-    }
-
-    $submit.removeAttribute('disabled')
-    $submit.removeAttribute('aria-busy')
-}) */
 ---
-<!-- Below is your "component template." It's just HTML, but with
-     some magic sprinkled in to help you build great templates. -->
 
-<Layout title={config.appTitle}>
+<Layout title={import.meta.env.PUBLIC_APP_TITLE}>
     <main class="container">
-        <NavBar title={config.appTitle}></NavBar>     
+        <NavBar title={import.meta.env.PUBLIC_APP_TITLE}></NavBar>     
         <section>
             <select>
                 {convocations.map(convocation => (
@@ -64,5 +34,12 @@ const toggleButton = (e) => {
         <section>
             <APIForm client:load></APIForm>
         </section>
+        <p class="instructions">
+            <strong>MODE:</strong> { import.meta.env.MODE } <br />
+            <strong>BASE URL:</strong> { import.meta.env.BASE_URL } <br />
+            <strong>SITE:</strong> { import.meta.env.SITE } <br />
+            <strong>API URL:</strong> { import.meta.env.API_URL } <br />
+            <strong>APP TITLE:</strong> { import.meta.env.PUBLIC_APP_TITLE } <br />
+        </p>
     </main>
 </Layout>
