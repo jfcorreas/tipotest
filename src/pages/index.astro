@@ -1,9 +1,11 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import NavBar from "../layouts/NavBar.astro";
 import APIForm from "../components/getApi";
 
 const config = {
-    apiurl: "http://localhost:3080/api/v1"
+    apiurl: "http://localhost:3080/api/v1",
+    appTitle: "Tipo TEST"
 };
 
 const fetchInfo = (apiPath) => {
@@ -42,17 +44,9 @@ const toggleButton = (e) => {
 <!-- Below is your "component template." It's just HTML, but with
      some magic sprinkled in to help you build great templates. -->
 
-<Layout title="Tipo Test">
+<Layout title={config.appTitle}>
     <main class="container">
-        <nav>
-            <ul>
-              <li><strong>Tipo Test</strong></li>
-            </ul>
-            <ul>
-              <li><a href="admin.html">Admin</a></li>
-              <li><a href="#" role="button">Nuevo Test</a></li>
-            </ul>
-          </nav>        
+        <NavBar title={config.appTitle}></NavBar>     
         <section>
             <select>
                 {convocations.map(convocation => (

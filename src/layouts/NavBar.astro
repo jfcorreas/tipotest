@@ -1,0 +1,20 @@
+---
+export interface Props {
+    title: string;
+    
+}
+
+const { title } = Astro.props;
+
+---
+
+<nav>
+    <ul>
+        <li><a href="/"><h2>{title}</h2></a></li>
+    </ul>
+    <ul>
+        { (Astro.url.pathname === '/') && <li><a href="admin.html">Admin</a></li>}
+        <li><a href="#" role="button">Nuevo Test</a></li>
+    </ul>
+</nav>
+<pre>You Are Here: {Astro.url.pathname}</pre>

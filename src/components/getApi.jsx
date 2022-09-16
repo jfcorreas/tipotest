@@ -44,10 +44,10 @@ class APIForm extends Component {
                     <label> IP del usuario
                         <input required
                             type="text"
-                            placeholder="Introduce aquí la IP"
+                            placeholder="Introduce aquí la consulta"
                             value={this.state.query}
                             onChange={this.handleChange} />
-                        <small>Por ejemplo: 54.85.132.205</small>
+                        <small>Por ejemplo: convocations, topics, questions o tests</small>
                     </label>
                     <button type="submit" aria-busy={this.state.busy}>
                         Buscar información de esta IP
