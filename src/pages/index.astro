@@ -15,7 +15,6 @@ const convocations = fetchResult && fetchResult.data? fetchResult.data : [];
 ---
 
 <Layout title={import.meta.env.PUBLIC_APP_TITLE}>
-    <main class="container">
         <NavBar title={import.meta.env.PUBLIC_APP_TITLE}></NavBar>     
         <section>
             <select>
@@ -41,5 +40,4 @@ const convocations = fetchResult && fetchResult.data? fetchResult.data : [];
             <strong>API URL:</strong> { import.meta.env.API_URL } <br />
             <strong>APP TITLE:</strong> { import.meta.env.PUBLIC_APP_TITLE } <br />
         </p>
-    </main>
 </Layout>

@@ -51,7 +51,7 @@ class APIForm extends Component {
                         Buscar información de esta IP
                     </button>
                 </form>
-                <pre id="results">
+                <pre>
                     {JSON.stringify(this.state.result, null, 2)}
                 </pre>
             </div>

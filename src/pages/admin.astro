@@ -8,22 +8,9 @@ const config = {
     appTitle: import.meta.env.PUBLIC_APP_TITLE
 }
 
-const fetchInfo = (apiPath) => {
-    return fetch(`${config.apiUrl}/${apiPath}`)
-        .then(res => res.json())
-        .catch(err => console.error(err))
-}
-
-const fetchResult = await fetchInfo('convocations');  
-const convocations = fetchResult && fetchResult.data? fetchResult.data : [];
-
 ---
 
 <Layout title={config.appTitle}>
-    <main class="container">
         <NavBar title={config.appTitle}></NavBar>     
-        <section>
         <ConvocationsTable apiUrl={config.apiUrl} client:load></ConvocationsTable>
-        </section>
-    </main>
 </Layout>
