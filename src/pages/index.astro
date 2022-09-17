@@ -32,7 +32,7 @@ const convocations = fetchResult && fetchResult.data? fetchResult.data : [];
               </details>              
         </section>
         <section>
-            <APIForm client:load></APIForm>
+            <APIForm apiUrl={import.meta.env.API_URL} client:load></APIForm>
         </section>
         <p class="instructions">
             <strong>MODE:</strong> { import.meta.env.MODE } <br />

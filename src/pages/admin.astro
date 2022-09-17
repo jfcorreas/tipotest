@@ -1,14 +1,15 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import NavBar from "../layouts/NavBar.astro";
+import ConvocationsTable from "../components/convocationsTable";
 
 const config = {
-    apiurl: import.meta.env.API_URL,
+    apiUrl: import.meta.env.API_URL,
     appTitle: import.meta.env.PUBLIC_APP_TITLE
-};
+}
 
 const fetchInfo = (apiPath) => {
-    return fetch(`${config.apiurl}/${apiPath}`)
+    return fetch(`${config.apiUrl}/${apiPath}`)
         .then(res => res.json())
         .catch(err => console.error(err))
 }
@@ -22,23 +23,7 @@ const convocations = fetchResult && fetchResult.data? fetchResult.data : [];
     <main class="container">
         <NavBar title={config.appTitle}></NavBar>     
         <section>
-            <details>
-                <summary id="convocations">Convocatorias</summary>
-                <table id="convocationsTable" role="grid">
-                    <thead>
-                      <tr>
-                        <th scope="col">Nombre</th>
-                        <th scope="col">Año</th>
-                        <th scope="col">Administración</th>
-                        <th scope="col">Categoría</th>
-                        <th scope="col">Acciones</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                  </table>
-                  <a href="index.html" role="button" class="contrast outline">+ Nueva Convocatoria</a>
-              </details>          
+        <ConvocationsTable apiUrl={config.apiUrl} client:load></ConvocationsTable>
         </section>
     </main>
 </Layout>

@@ -1,27 +1,25 @@
 
 import React, { Component } from 'react';
 
-const config = {
-    apiurl: "http://localhost:3080/api/v1"
-};
-
-const fetchInfo = (apiPath) => {
-    return fetch(`${config.apiurl}/${apiPath}`)
-        .then(res => res.json())
-        .catch(err => console.error(err))
-}
-
 class APIForm extends Component {
     constructor(props) {
         super(props);
+        
         this.state = {
             busy: false,
             query: '',
-            result: ''
+            result: '',
+            apiUrl: props.apiUrl
         };
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    async fetchInfo (apiPath) {
+        return fetch(`${this.state.apiUrl}/${apiPath}`)
+        .then(res => res.json())
+        .catch(err => console.error(err))
     }
 
     handleChange(event) {
@@ -31,7 +29,7 @@ class APIForm extends Component {
     async handleSubmit(event) {
         event.preventDefault();
         this.setState(prevState => ({ busy: !prevState.busy }));
-        const fetchResult = await fetchInfo(this.state.query);
+        const fetchResult = await this.fetchInfo(this.state.query);
         const convocations = fetchResult && fetchResult.data ? fetchResult.data : [];
 
         this.setState(prevState => ({ busy: !prevState.busy, result: convocations }));
