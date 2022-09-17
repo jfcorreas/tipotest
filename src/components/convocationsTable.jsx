@@ -11,11 +11,12 @@ class ConvocationsTable extends Component {
             open: false,
             formOpen: false,
             convocations: [],
-            convocationSelectedId: ""
+            convocationSelectedId: null
         };
 
         this.handleDetailsClick = this.handleDetailsClick.bind(this);
         this.handleRowDoubleClick = this.handleRowDoubleClick.bind(this);
+        this.handleNewButton = this.handleNewButton.bind(this);
     }
 
     async fetchInfo(apiPath) {
@@ -40,8 +41,20 @@ class ConvocationsTable extends Component {
     }
 
     handleRowDoubleClick(event) {
-        this.setState({ formOpen: true, convocationSelectedId: event.currentTarget.id });
-        setTimeout(() => {this.setState({ formOpen: false })}, 100 );
+        this.setState({
+            formOpen: true,
+            convocationSelectedId: event.currentTarget.id,
+            editingConvocation: true
+        });
+        setTimeout(() => { this.setState({ formOpen: false }) }, 100);
+    }
+
+    handleNewButton(event) {
+        this.setState({
+            formOpen: true,
+            convocationSelectedId: null
+        });
+        setTimeout(() => { this.setState({ formOpen: false }) }, 100);
     }
 
     render() {
@@ -76,13 +89,17 @@ class ConvocationsTable extends Component {
                             })}
                         </tbody>
                     </table>
-                    <a href="#" role="button" className="contrast outline">Nueva Convocatoria</a>
+                    <a href="#"
+                        role="button"
+                        className="contrast outline"
+                        onClick={this.handleNewButton}>
+                        Nueva Convocatoria
+                    </a>
                 </details>
-                <ConvocationForm apiUrl={this.state.apiUrl} 
-                            open={this.state.formOpen}  
-                            convocationId={this.state.convocationSelectedId}>
-
-                            </ConvocationForm>
+                <ConvocationForm apiUrl={this.state.apiUrl}
+                    open={this.state.formOpen}
+                    convocationId={this.state.convocationSelectedId}>
+                </ConvocationForm>
             </section>
         )
     }

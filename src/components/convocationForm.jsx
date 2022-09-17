@@ -8,7 +8,7 @@ class ConvocationForm extends Component {
             open: false,
             convocationId: props.convocationId,
             busy: false,
-            query: '',
+            query: ''
         };
 
         this.handleClose = this.handleClose.bind(this);
@@ -20,7 +20,8 @@ class ConvocationForm extends Component {
 
     componentDidUpdate(prevProps) {
         if (this.props.open !== prevProps.open && this.props.open === true ){
-            this.setState({ open: true, convocationId: this.props.convocationId });
+            this.setState({ open: true, 
+                            convocationId: this.props.convocationId });
         }
     } 
 
@@ -34,20 +35,20 @@ class ConvocationForm extends Component {
                         className="close"
                         onClick={this.handleClose}>
                     </a>
-                    <h3>Confirm your action!</h3>
+                    <h3>{this.state.convocationId? 'Editando Convocatoria' : 'Nueva Convocatoria'}</h3>
                     <p>
-                        {this.props.convocationId}
+                        {this.state.convocationId}
                     </p>
                     <footer>
                         <a href="#cancel"
                             role="button"
                             className="secondary"
                             onClick={this.handleClose}>
-                            Cancel
+                            Cancelar
                         </a>
                         <a href="#confirm"
                             role="button">
-                            Confirm
+                            {this.state.convocationId? 'Guardar Cambios' : 'Crear Convocatoria'}
                         </a>
                     </footer>
                 </article>
