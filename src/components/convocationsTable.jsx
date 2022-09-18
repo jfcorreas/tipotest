@@ -8,17 +8,18 @@ class ConvocationsTable extends Component {
         this.state = {
             apiUrl: props.apiUrl,
             busy: false,
-            cursorBusy: null,
+            componentBusy: null,
             open: false,
             formOpen: false,
             convocations: [],
             convocationSelectedId: null
         };
 
+        this.handleRefresh = this.handleRefresh.bind(this);
         this.handleDetailsClick = this.handleDetailsClick.bind(this);
         this.handleRowDoubleClick = this.handleRowDoubleClick.bind(this);
         this.handleNewButton = this.handleNewButton.bind(this);
-        this.toggleCursorBusy = this.toggleCursorBusy.bind(this);
+        this.toggleComponentBusy = this.toggleComponentBusy.bind(this);
     }
 
     async fetchInfo(apiPath) {
@@ -27,14 +28,8 @@ class ConvocationsTable extends Component {
             .catch(err => console.error(err))
     }
 
-    async handleDetailsClick(event) {
-        event.preventDefault();
-        if (this.state.open) {
-            this.setState(() => ({ open: false }));
-            return;
-        }
-
-        this.setState((prevState) => ({ busy: !prevState.busy, open: true }));
+    async handleRefresh() {
+        this.setState((prevState) => ({ busy: !prevState.busy }));
 
         const fetchResult = await this.fetchInfo("convocations");
 
@@ -42,8 +37,18 @@ class ConvocationsTable extends Component {
         this.setState((prevState) => ({ busy: !prevState.busy, convocations: convocations }));
     }
 
+    async handleDetailsClick(event) {
+        event.preventDefault();
+        if (this.state.open) {
+            this.setState(() => ({ open: false }));
+            return;
+        }
+        await this.handleRefresh();
+        this.setState({ open: true }); 
+    }
+
     handleRowDoubleClick(event) {
-        this.toggleCursorBusy();
+        this.toggleComponentBusy();
         this.setState({
             formOpen: true,
             convocationSelectedId: event.currentTarget.id,
@@ -53,7 +58,7 @@ class ConvocationsTable extends Component {
     }
 
     handleNewButton(event) {
-        this.toggleCursorBusy();
+        this.toggleComponentBusy();
         this.setState({
             formOpen: true,
             convocationSelectedId: null
@@ -61,17 +66,18 @@ class ConvocationsTable extends Component {
         setTimeout(() => { this.setState({ formOpen: false }) }, 100);
     }
 
-    toggleCursorBusy() {
-        this.setState({ cursorBusy: this.state.cursorBusy? null : 'cursorBusy' });
+    toggleComponentBusy() {
+        this.setState({ componentBusy: this.state.componentBusy? null : 'componentBusy' });
     }
 
     render() {
         return (
             <section>
-                <details open={this.state.open} className={this.state.cursorBusy}>
+                <details open={this.state.open} className={this.state.componentBusy}>
                     <summary onClick={this.handleDetailsClick} aria-busy={this.state.busy}>
                         Convocatorias
                     </summary>
+                    <a href="#" onClick={this.handleRefresh}>🔁</a>
                     <table role="grid">
                         <thead>
                             <tr>
@@ -86,7 +92,7 @@ class ConvocationsTable extends Component {
                                 return (
                                     <tr key={convocation._id}
                                         id={convocation._id}
-                                        title="Double-click to edit"
+                                        title="Doble click para editar"
                                         onDoubleClick={this.handleRowDoubleClick}>
                                         <th scope="row">{convocation.name}</th>
                                         <td>{convocation.year}</td>
@@ -99,7 +105,7 @@ class ConvocationsTable extends Component {
                     </table>
                     <a href="#"
                         role="button"
-                        className="contrast outline"
+                        className="primary outline"
                         onClick={this.handleNewButton}>
                         Nueva Convocatoria
                     </a>
@@ -107,7 +113,8 @@ class ConvocationsTable extends Component {
                 <ConvocationForm apiUrl={this.state.apiUrl}
                     open={this.state.formOpen}
                     convocationId={this.state.convocationSelectedId}
-                    cursorBusyHandler={this.toggleCursorBusy}>
+                    cursorBusyHandler={this.toggleComponentBusy}
+                    refreshParent={this.handleRefresh}>
                 </ConvocationForm>
             </section>
         )
