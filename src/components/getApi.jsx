@@ -39,7 +39,7 @@ class APIForm extends Component {
         return (
             <div>
                 <form onSubmit={this.handleSubmit}>
-                    <label> IP del usuario
+                    <label> Consulta la API
                         <input required
                             type="text"
                             placeholder="Introduce aquí la consulta"

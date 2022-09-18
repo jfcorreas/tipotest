@@ -8,6 +8,7 @@ class ConvocationsTable extends Component {
         this.state = {
             apiUrl: props.apiUrl,
             busy: false,
+            cursorBusy: null,
             open: false,
             formOpen: false,
             convocations: [],
@@ -17,6 +18,7 @@ class ConvocationsTable extends Component {
         this.handleDetailsClick = this.handleDetailsClick.bind(this);
         this.handleRowDoubleClick = this.handleRowDoubleClick.bind(this);
         this.handleNewButton = this.handleNewButton.bind(this);
+        this.toggleCursorBusy = this.toggleCursorBusy.bind(this);
     }
 
     async fetchInfo(apiPath) {
@@ -41,6 +43,7 @@ class ConvocationsTable extends Component {
     }
 
     handleRowDoubleClick(event) {
+        this.toggleCursorBusy();
         this.setState({
             formOpen: true,
             convocationSelectedId: event.currentTarget.id,
@@ -50,6 +53,7 @@ class ConvocationsTable extends Component {
     }
 
     handleNewButton(event) {
+        this.toggleCursorBusy();
         this.setState({
             formOpen: true,
             convocationSelectedId: null
@@ -57,10 +61,14 @@ class ConvocationsTable extends Component {
         setTimeout(() => { this.setState({ formOpen: false }) }, 100);
     }
 
+    toggleCursorBusy() {
+        this.setState({ cursorBusy: this.state.cursorBusy? null : 'cursorBusy' });
+    }
+
     render() {
         return (
             <section>
-                <details open={this.state.open} >
+                <details open={this.state.open} className={this.state.cursorBusy}>
                     <summary onClick={this.handleDetailsClick} aria-busy={this.state.busy}>
                         Convocatorias
                     </summary>
@@ -98,7 +106,8 @@ class ConvocationsTable extends Component {
                 </details>
                 <ConvocationForm apiUrl={this.state.apiUrl}
                     open={this.state.formOpen}
-                    convocationId={this.state.convocationSelectedId}>
+                    convocationId={this.state.convocationSelectedId}
+                    cursorBusyHandler={this.toggleCursorBusy}>
                 </ConvocationForm>
             </section>
         )
