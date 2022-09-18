@@ -6,6 +6,7 @@ class ConvocationsTable extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            errorMessage: null,
             apiUrl: props.apiUrl,
             busy: false,
             componentBusy: null,
@@ -25,11 +26,17 @@ class ConvocationsTable extends Component {
     async fetchInfo(apiPath) {
         return fetch(`${this.state.apiUrl}/${apiPath}`)
             .then(res => res.json())
-            .catch(err => console.error(err))
+            .catch(err => {
+                this.setState({ errorMessage: err.message })
+                console.log(err)
+            })
     }
 
     async handleRefresh() {
-        this.setState((prevState) => ({ busy: !prevState.busy }));
+        this.setState((prevState) => ({ 
+            busy: !prevState.busy,
+            errorMessage: null
+         }));
 
         const fetchResult = await this.fetchInfo("convocations");
 
@@ -77,6 +84,7 @@ class ConvocationsTable extends Component {
                     <summary onClick={this.handleDetailsClick} aria-busy={this.state.busy}>
                         Convocatorias
                     </summary>
+                    <span className='warning'>{this.state.errorMessage}</span>
                     <a href="#" onClick={this.handleRefresh}>🔁</a>
                     <table role="grid">
                         <thead>
