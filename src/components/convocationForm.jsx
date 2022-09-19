@@ -1,5 +1,10 @@
 import React, { Component } from 'react';
 
+const headersList = {
+    "Accept": "*/*",
+    "Content-Type": "application/json"
+   }
+
 class ConvocationForm extends Component {
     constructor(props) {
         super(props);
@@ -23,10 +28,23 @@ class ConvocationForm extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
+    // TODO: Handle API errors and refactor Fetchs
     async fetchConvocations(convocationQuery) {
         return fetch(`${this.state.apiUrl}/convocations/${convocationQuery}`)
             .then(res => res.json())
             .catch(err => console.error(err))
+    }
+
+    async updateConvocation(convocationId, options) {
+        return fetch(`${this.state.apiUrl}/convocations/${convocationId}`, options)
+        .then(res => res.json())
+        .catch(err => console.error(err)) 
+    }
+
+    async newConvocation(options) {
+        return fetch(`${this.state.apiUrl}/convocations`, options)
+        .then(res => res.json())
+        .catch(err => console.error(err)) 
     }
 
     async componentDidUpdate(prevProps) {
@@ -104,8 +122,20 @@ class ConvocationForm extends Component {
         }, 100);
     }
 
-    handleSubmit(event) {
-        console.log(this.state.convocation);
+    async handleSubmit() {
+        let options = {
+            method: 'POST',
+            headers: headersList,
+            body: JSON.stringify(this.state.convocation)
+        };
+        this.setState({ busy: true });
+        if (this.state.convocationId) {     // Editing Convocation
+            options.method= 'PATCH';
+            await this.updateConvocation(this.state.convocationId,options);
+        } else {
+            await this.newConvocation(options);
+        }
+        this.setState({ busy: false });
         this.props.refreshParent();
         this.handleClose();
     }
@@ -120,7 +150,7 @@ class ConvocationForm extends Component {
                         className="close"
                         onClick={this.handleClose}>
                     </a>
-                    <h3 aria-busy={this.state.busy}>{this.state.convocationId ? 'Editando Convocatoria' : 'Nueva Convocatoria'}</h3>
+                    <h3>{this.state.convocationId ? 'Editando Convocatoria' : 'Nueva Convocatoria'}</h3>
                     <div className='grid'>
                         <form>
                             <label>
@@ -169,6 +199,7 @@ class ConvocationForm extends Component {
                         </a>
                         <a href="#confirm"
                             role="button"
+                            aria-busy={this.state.busy}
                             disabled={this.state.invalidForm}
                             onClick={this.handleSubmit}>
                             {this.state.convocationId ? 'Guardar Cambios' : 'Crear Convocatoria'}
