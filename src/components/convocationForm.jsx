@@ -251,8 +251,8 @@ class ConvocationForm extends Component {
                     <article>
                         <h3>Atención</h3>
                         <p>
-                            ¿Seguro que quieres borrar la convocatoria {this.state.convocation ?
-                                this.state.convocation.name : undefined}?
+                            ¿Seguro que quieres borrar la convocatoria "{this.state.convocation ?
+                                this.state.convocation.fullName : undefined}"?
                         </p>
                         <footer>
                             <a href="#cancel"
