@@ -14,7 +14,8 @@ class ConvocationForm extends Component {
             open: false,
             convocationId: props.convocationId,
             convocation: null,
-            busy: false,
+            busySubmit: false,
+            busyDelete: false,
             query: '',
             name: null,
             year: null,
@@ -26,6 +27,7 @@ class ConvocationForm extends Component {
         this.handleClose = this.handleClose.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleDelete = this.handleDelete.bind(this);
     }
 
     // TODO: Handle API errors and refactor Fetchs
@@ -50,14 +52,14 @@ class ConvocationForm extends Component {
     async componentDidUpdate(prevProps) {
         if (this.props.open !== prevProps.open && this.props.open === true) {
             if (this.props.convocationId) {     // Editing Convocation
-                this.setState({ busy: true });
+                this.setState({ busySubmit: true });
                 const res = await this.fetchConvocations(this.props.convocationId);
                 if (res.status === 'OK') {
                     this.setState({
                         open: true,
                         convocationId: this.props.convocationId,
                         convocation: res.data,
-                        busy: false,
+                        busySubmit: false,
                         name: true,
                         year: true,
                         institution: true,
@@ -128,14 +130,28 @@ class ConvocationForm extends Component {
             headers: headersList,
             body: JSON.stringify(this.state.convocation)
         };
-        this.setState({ busy: true });
+        this.setState({ busySubmit: true });
         if (this.state.convocationId) {     // Editing Convocation
             options.method= 'PATCH';
             await this.updateConvocation(this.state.convocationId,options);
         } else {
             await this.newConvocation(options);
         }
-        this.setState({ busy: false });
+        this.setState({ busySubmit: false });
+        this.props.refreshParent();
+        this.handleClose();
+    }
+
+    async handleDelete() {
+        let options = {
+            method: 'DELETE',
+            headers: headersList
+        };
+        this.setState({ busyDelete: true });
+
+        await this.updateConvocation(this.state.convocationId,options);
+
+        this.setState({ busyDelete: false });
         this.props.refreshParent();
         this.handleClose();
     }
@@ -197,9 +213,17 @@ class ConvocationForm extends Component {
                             onClick={this.handleClose}>
                             Cancelar
                         </a>
+                        <a href="#delete"
+                            role="button"
+                            className='primary outline'
+                            aria-busy={this.state.busyDelete}
+                            disabled={this.state.convocationId? false : true}
+                            onClick={this.handleDelete}>
+                            Eliminar
+                        </a>
                         <a href="#confirm"
                             role="button"
-                            aria-busy={this.state.busy}
+                            aria-busySubmit={this.state.busySubmit}
                             disabled={this.state.invalidForm}
                             onClick={this.handleSubmit}>
                             {this.state.convocationId ? 'Guardar Cambios' : 'Crear Convocatoria'}
