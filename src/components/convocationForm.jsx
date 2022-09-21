@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 const headersList = {
     "Accept": "*/*",
     "Content-Type": "application/json"
-   }
+}
 
 class ConvocationForm extends Component {
     constructor(props) {
@@ -12,6 +12,7 @@ class ConvocationForm extends Component {
             errorText: null,
             apiUrl: props.apiUrl,
             open: false,
+            openConfirm: false,
             convocationId: props.convocationId,
             convocation: null,
             busySubmit: false,
@@ -25,9 +26,10 @@ class ConvocationForm extends Component {
         };
 
         this.handleClose = this.handleClose.bind(this);
+        this.handleCloseConfirm = this.handleCloseConfirm.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleDelete = this.handleDelete.bind(this);
+        this.handleDeletion = this.handleDeletion.bind(this);
     }
 
     // TODO: Handle API errors and refactor Fetchs
@@ -39,14 +41,14 @@ class ConvocationForm extends Component {
 
     async updateConvocation(convocationId, options) {
         return fetch(`${this.state.apiUrl}/convocations/${convocationId}`, options)
-        .then(res => res.json())
-        .catch(err => console.error(err)) 
+            .then(res => res.json())
+            .catch(err => console.error(err))
     }
 
     async newConvocation(options) {
         return fetch(`${this.state.apiUrl}/convocations`, options)
-        .then(res => res.json())
-        .catch(err => console.error(err)) 
+            .then(res => res.json())
+            .catch(err => console.error(err))
     }
 
     async componentDidUpdate(prevProps) {
@@ -86,6 +88,11 @@ class ConvocationForm extends Component {
 
     handleClose() {
         this.setState({ open: false });
+    }
+
+    handleCloseConfirm() {
+        this.setState({ openConfirm: false, deletionConfirmed: false });
+        this.handleClose()
     }
 
     handleInputChange(event) {
@@ -132,8 +139,8 @@ class ConvocationForm extends Component {
         };
         this.setState({ busySubmit: true });
         if (this.state.convocationId) {     // Editing Convocation
-            options.method= 'PATCH';
-            await this.updateConvocation(this.state.convocationId,options);
+            options.method = 'PATCH';
+            await this.updateConvocation(this.state.convocationId, options);
         } else {
             await this.newConvocation(options);
         }
@@ -142,95 +149,128 @@ class ConvocationForm extends Component {
         this.handleClose();
     }
 
-    async handleDelete() {
+    async handleDeletion() {
+
+        if (!this.state.deletionConfirmed) {
+            this.setState({ openConfirm: true, deletionConfirmed: true })
+            return;
+        }
+
         let options = {
             method: 'DELETE',
             headers: headersList
         };
         this.setState({ busyDelete: true });
 
-        await this.updateConvocation(this.state.convocationId,options);
+        await this.updateConvocation(this.state.convocationId, options);
 
         this.setState({ busyDelete: false });
         this.props.refreshParent();
-        this.handleClose();
+        this.handleCloseConfirm();
     }
 
     render() {
         return (
-            <dialog open={this.state.open}>
+            <div>
 
-                <article>
-                    <a href="#close"
-                        aria-label="Close"
-                        className="close"
-                        onClick={this.handleClose}>
-                    </a>
-                    <h3>{this.state.convocationId ? 'Editando Convocatoria' : 'Nueva Convocatoria'}</h3>
-                    <div className='grid'>
-                        <form>
-                            <label>
-                                Nombre
-                                <input name="name" type="text" required
-                                    placeholder="Nombre de la Convocatoria"
-                                    aria-invalid={(this.state.name === null) ? null : !this.state.name}
-                                    onChange={this.handleInputChange}
-                                    value={this.state.convocation ? this.state.convocation.name : ''} />
-                            </label>
-                            <label>
-                                Año
-                                <input name="year" type="number" required
-                                    placeholder="Año de la Convocatoria"
-                                    aria-invalid={(this.state.year === null) ? null : !this.state.year}
-                                    onChange={this.handleInputChange}
-                                    value={this.state.convocation ? this.state.convocation.year : new Date().getFullYear()} />
-                            </label>
-                            <label>
-                                Administración
-                                <input name="institution" type="text" required
-                                    placeholder="Administración convocante"
-                                    aria-invalid={(this.state.institution === null) ? null : !this.state.institution}
-                                    onChange={this.handleInputChange}
-                                    value={this.state.convocation ? this.state.convocation.institution : ''} />
-                            </label>
-                            <label>
-                                Categoría
-                                <input name="category" type="text" required
-                                    placeholder="Categoría profesional"
-                                    aria-invalid={(this.state.category === null) ? null : !this.state.category}
-                                    onChange={this.handleInputChange}
-                                    value={this.state.convocation ? this.state.convocation.category : ''} />
-                            </label>
-                            <label> Temario
 
-                            </label>
-                        </form>
-                    </div>
-                    <footer>
-                        <a href="#cancel"
-                            role="button"
-                            className="secondary"
+                <dialog open={this.state.open}>
+
+                    <article>
+                        <a href="#close"
+                            aria-label="Close"
+                            className="close"
                             onClick={this.handleClose}>
-                            Cancelar
                         </a>
-                        <a href="#delete"
-                            role="button"
-                            className='primary outline'
-                            aria-busy={this.state.busyDelete}
-                            disabled={this.state.convocationId? false : true}
-                            onClick={this.handleDelete}>
-                            Eliminar
-                        </a>
-                        <a href="#confirm"
-                            role="button"
-                            aria-busySubmit={this.state.busySubmit}
-                            disabled={this.state.invalidForm}
-                            onClick={this.handleSubmit}>
-                            {this.state.convocationId ? 'Guardar Cambios' : 'Crear Convocatoria'}
-                        </a>
-                    </footer>
-                </article>
-            </dialog>
+                        <h3>{this.state.convocationId ? 'Editando Convocatoria' : 'Nueva Convocatoria'}</h3>
+                        <div className='grid'>
+                            <form>
+                                <label>
+                                    Nombre
+                                    <input name="name" type="text" required
+                                        placeholder="Nombre de la Convocatoria"
+                                        aria-invalid={(this.state.name === null) ? null : !this.state.name}
+                                        onChange={this.handleInputChange}
+                                        value={this.state.convocation ? this.state.convocation.name : ''} />
+                                </label>
+                                <label>
+                                    Año
+                                    <input name="year" type="number" required
+                                        placeholder="Año de la Convocatoria"
+                                        aria-invalid={(this.state.year === null) ? null : !this.state.year}
+                                        onChange={this.handleInputChange}
+                                        value={this.state.convocation ? this.state.convocation.year : new Date().getFullYear()} />
+                                </label>
+                                <label>
+                                    Administración
+                                    <input name="institution" type="text" required
+                                        placeholder="Administración convocante"
+                                        aria-invalid={(this.state.institution === null) ? null : !this.state.institution}
+                                        onChange={this.handleInputChange}
+                                        value={this.state.convocation ? this.state.convocation.institution : ''} />
+                                </label>
+                                <label>
+                                    Categoría
+                                    <input name="category" type="text" required
+                                        placeholder="Categoría profesional"
+                                        aria-invalid={(this.state.category === null) ? null : !this.state.category}
+                                        onChange={this.handleInputChange}
+                                        value={this.state.convocation ? this.state.convocation.category : ''} />
+                                </label>
+                                <label> Temario
+
+                                </label>
+                            </form>
+                        </div>
+                        <footer>
+                            <a href="#cancel"
+                                role="button"
+                                className="secondary"
+                                onClick={this.handleClose}>
+                                Cancelar
+                            </a>
+                            <a href="#delete"
+                                role="button"
+                                className='primary outline'
+                                disabled={this.state.convocationId ? false : true}
+                                onClick={this.handleDeletion}>
+                                Eliminar
+                            </a>
+                            <a href="#confirm"
+                                role="button"
+                                aria-busySubmit={this.state.busySubmit}
+                                disabled={this.state.invalidForm}
+                                onClick={this.handleSubmit}>
+                                {this.state.convocationId ? 'Guardar Cambios' : 'Crear Convocatoria'}
+                            </a>
+                        </footer>
+                    </article>
+
+                </dialog>
+                <dialog open={this.state.openConfirm}>
+                    <article>
+                        <h3>Atención</h3>
+                        <p>
+                            ¿Seguro que quieres borrar la convocatoria {this.state.convocation ?
+                                this.state.convocation.name : undefined}?
+                        </p>
+                        <footer>
+                            <a href="#cancel"
+                                role="button"
+                                className="secondary"
+                                onClick={this.handleCloseConfirm}>
+                                Cancelar
+                            </a>
+                            <a href="#confirmDeletion"
+                                role="button"
+                                aria-busy={this.state.busyDelete}
+                                onClick={this.handleDeletion}>
+                                Eliminar Convocatoria
+                            </a>
+                        </footer>
+                    </article>
+                </dialog>
+            </div>
         )
     }
 }
