@@ -6,9 +6,8 @@ class ConvocationsTable extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            errorMessage: null,
             apiUrl: props.apiUrl,
-            busy: false,
+            errorMessage: null,
             componentBusy: null,
             open: false,
             formOpen: false,
@@ -23,7 +22,7 @@ class ConvocationsTable extends Component {
         this.toggleComponentBusy = this.toggleComponentBusy.bind(this);
     }
 
-    async fetchInfo(apiPath) {
+    async fetchAPI(apiPath) {
         return fetch(`${this.state.apiUrl}/${apiPath}`)
             .then(res => res.json())
             .catch(err => {
@@ -33,15 +32,14 @@ class ConvocationsTable extends Component {
     }
 
     async handleRefresh() {
-        this.setState((prevState) => ({ 
-            busy: !prevState.busy,
-            errorMessage: null
-         }));
+        this.setState({ errorMessage: null });
+        this.toggleComponentBusy();
 
-        const fetchResult = await this.fetchInfo("convocations");
+        const fetchResult = await this.fetchAPI("convocations");
 
         const convocations = fetchResult && fetchResult.data ? fetchResult.data : [];
-        this.setState((prevState) => ({ busy: !prevState.busy, convocations: convocations }));
+        this.setState({ convocations: convocations });
+        this.toggleComponentBusy();
     }
 
     async handleDetailsClick(event) {
@@ -81,7 +79,7 @@ class ConvocationsTable extends Component {
         return (
             <section>
                 <details open={this.state.open} className={this.state.componentBusy}>
-                    <summary onClick={this.handleDetailsClick} aria-busy={this.state.busy}>
+                    <summary onClick={this.handleDetailsClick} aria-busy={this.state.componentBusy? true : false }>
                         Convocatorias
                     </summary>
                     <span className='warning'>{this.state.errorMessage}</span>
