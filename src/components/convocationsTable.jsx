@@ -7,12 +7,12 @@ class ConvocationsTable extends Component {
         super(props);
         this.state = {
             apiUrl: props.apiUrl,
+            convocations: [],
+            convocationSelectedId: null,
             errorMessage: null,
             componentBusy: null,
             open: false,
-            formOpen: false,
-            convocations: [],
-            convocationSelectedId: null
+            formOpen: false
         };
 
         this.handleRefresh = this.handleRefresh.bind(this);
@@ -25,10 +25,7 @@ class ConvocationsTable extends Component {
     async fetchAPI(apiPath) {
         return fetch(`${this.state.apiUrl}/${apiPath}`)
             .then(res => res.json())
-            .catch(err => {
-                this.setState({ errorMessage: err.message })
-                console.log(err)
-            })
+            .catch(err => this.setState({ errorMessage: err.message }))
     }
 
     async handleRefresh() {

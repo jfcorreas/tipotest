@@ -9,19 +9,18 @@ class ConvocationForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            errorText: null,
             apiUrl: props.apiUrl,
-            open: false,
-            openConfirm: false,
             convocationId: props.convocationId,
             convocation: null,
-            busySubmit: false,
-            busyDelete: false,
-            query: '',
             name: null,
             year: null,
             institution: null,
             category: null,
+            errorMessage: null,
+            open: false,
+            openConfirm: false,
+            busySubmit: false,
+            busyDelete: false,
             invalidForm: true
         };
 
@@ -32,30 +31,22 @@ class ConvocationForm extends Component {
         this.handleDeletion = this.handleDeletion.bind(this);
     }
 
-    // TODO: Handle API errors and refactor Fetchs
-    async fetchConvocations(convocationQuery) {
-        return fetch(`${this.state.apiUrl}/convocations/${convocationQuery}`)
-            .then(res => res.json())
-            .catch(err => console.error(err))
-    }
+    async fetchAPI(path, subpath, objectId, filterParams, options) {
+        let requestUrl = `${this.state.apiUrl}/${path}`;
+        if (subpath) requestUrl = requestUrl + '/' + subpath;
+        if (objectId) requestUrl = requestUrl + '/' + objectId;
+        if (filterParams) requestUrl = requestUrl + '?' + filterParams;
 
-    async updateConvocation(convocationId, options) {
-        return fetch(`${this.state.apiUrl}/convocations/${convocationId}`, options)
+        return fetch(requestUrl, options)
             .then(res => res.json())
-            .catch(err => console.error(err))
-    }
-
-    async newConvocation(options) {
-        return fetch(`${this.state.apiUrl}/convocations`, options)
-            .then(res => res.json())
-            .catch(err => console.error(err))
+            .catch(err => this.setState({ errorMessage: err.message }))
     }
 
     async componentDidUpdate(prevProps) {
         if (this.props.open !== prevProps.open && this.props.open === true) {
             if (this.props.convocationId) {     // Editing Convocation
                 this.setState({ busySubmit: true });
-                const res = await this.fetchConvocations(this.props.convocationId);
+                const res = await this.fetchAPI('convocations', null, this.props.convocationId);
                 if (res.status === 'OK') {
                     this.setState({
                         open: true,
@@ -137,12 +128,13 @@ class ConvocationForm extends Component {
             headers: headersList,
             body: JSON.stringify(this.state.convocation)
         };
+        
         this.setState({ busySubmit: true });
         if (this.state.convocationId) {     // Editing Convocation
             options.method = 'PATCH';
-            await this.updateConvocation(this.state.convocationId, options);
+            await this.fetchAPI('convocations', null, this.state.convocationId, null, options);
         } else {
-            await this.newConvocation(options);
+            await this.fetchAPI('convocations', null, null, null, options);
         }
         this.setState({ busySubmit: false });
         this.props.refreshParent();
@@ -162,7 +154,7 @@ class ConvocationForm extends Component {
         };
         this.setState({ busyDelete: true });
 
-        await this.updateConvocation(this.state.convocationId, options);
+        await this.fetchAPI('convocations', null, this.state.convocationId, null, options);
 
         this.setState({ busyDelete: false });
         this.props.refreshParent();
@@ -172,8 +164,6 @@ class ConvocationForm extends Component {
     render() {
         return (
             <div>
-
-
                 <dialog open={this.state.open}>
 
                     <article>
@@ -183,6 +173,7 @@ class ConvocationForm extends Component {
                             onClick={this.handleClose}>
                         </a>
                         <h3>{this.state.convocationId ? 'Editando Convocatoria' : 'Nueva Convocatoria'}</h3>
+                        <span className='warning'>{this.state.errorMessage}</span>
                         <div className='grid'>
                             <form>
                                 <label>
@@ -238,7 +229,7 @@ class ConvocationForm extends Component {
                             </a>
                             <a href="#confirm"
                                 role="button"
-                                aria-busySubmit={this.state.busySubmit}
+                                aria-busy={this.state.busySubmit}
                                 disabled={this.state.invalidForm}
                                 onClick={this.handleSubmit}>
                                 {this.state.convocationId ? 'Guardar Cambios' : 'Crear Convocatoria'}
