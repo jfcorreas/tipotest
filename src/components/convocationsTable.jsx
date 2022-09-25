@@ -114,6 +114,7 @@ class ConvocationsTable extends Component {
                     <table role="grid">
                         <thead>
                             <tr>
+                                <th scope="col"></th>
                                 <th scope="col">Nombre</th>
                                 <th scope="col">Año</th>
                                 <th scope="col">Administración</th>
@@ -126,8 +127,18 @@ class ConvocationsTable extends Component {
                                     <tr key={convocation._id}
                                         id={convocation._id}
                                         title="Haga click para seleccionar"
+                                        className={this.state.convocationSelected && 
+                                            this.state.convocationSelected._id === convocation._id ? 
+                                            "selected" : null }
                                         onClick={this.handleRowClick}>
-                                        <th scope="row">{convocation.name}</th>
+                                        <th scope="row">
+                                            <input type="checkbox" 
+                                                checked={this.state.convocationSelected && 
+                                                    this.state.convocationSelected._id === convocation._id ? 
+                                                    true : null }
+                                            />
+                                        </th>
+                                        <td>{convocation.name}</td>
                                         <td>{convocation.year}</td>
                                         <td>{convocation.institution}</td>
                                         <td>{convocation.category}</td>
