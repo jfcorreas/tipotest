@@ -57,6 +57,7 @@ class ConvocationForm extends Component {
                         year: true,
                         institution: true,
                         category: true,
+                        errorMessage: false,
                         invalidForm: true
                     });
                 }
@@ -71,6 +72,7 @@ class ConvocationForm extends Component {
                 year: true,
                 institution: null,
                 category: null,
+                errorMessage: false,
                 invalidForm: true
             });
             this.props.cursorBusyHandler();
@@ -128,7 +130,7 @@ class ConvocationForm extends Component {
             headers: headersList,
             body: JSON.stringify(this.state.convocation)
         };
-        
+
         this.setState({ busySubmit: true });
         if (this.state.convocationId) {     // Editing Convocation
             options.method = 'PATCH';
@@ -207,9 +209,6 @@ class ConvocationForm extends Component {
                                         aria-invalid={(this.state.category === null) ? null : !this.state.category}
                                         onChange={this.handleInputChange}
                                         value={this.state.convocation ? this.state.convocation.category : ''} />
-                                </label>
-                                <label> Temario
-
                                 </label>
                             </form>
                         </div>
