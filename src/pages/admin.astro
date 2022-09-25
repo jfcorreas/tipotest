@@ -2,6 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 import NavBar from "../layouts/NavBar.astro";
 import ConvocationsTable from "../components/convocationsTable";
+import TopicsTable from "../components/topicsTable";
 
 const config = {
     apiUrl: import.meta.env.API_URL,
@@ -13,4 +14,5 @@ const config = {
 <Layout title={config.appTitle}>
         <NavBar title={config.appTitle}></NavBar>     
         <ConvocationsTable apiUrl={config.apiUrl} client:load></ConvocationsTable>
+        <TopicsTable apiUrl={config.apiUrl} client:load></TopicsTable>
 </Layout>

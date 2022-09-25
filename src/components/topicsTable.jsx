@@ -1,17 +1,17 @@
 
 import React, { Component } from 'react';
-import ConvocationForm from "./convocationForm";
+import TopicForm from './topicForm';
 
-class ConvocationsTable extends Component {
+class TopicsTable extends Component {
     constructor(props) {
         super(props);
         this.state = {
             apiUrl: props.apiUrl,
-            convocations: [],
-            convocationSelected: null,
+            topics: [],
+            topicSelected: null,
             errorMessage: null,
             componentBusy: null,
-            topicsBusy: null,
+            moreInfoBusy: null,
             open: false,
             formOpen: false
         };
@@ -22,7 +22,7 @@ class ConvocationsTable extends Component {
         this.handleNewButton = this.handleNewButton.bind(this);
         this.handleEditButton = this.handleEditButton.bind(this);
         this.toggleComponentBusy = this.toggleComponentBusy.bind(this);
-        this.toggleTopicsBusy = this.toggleTopicsBusy.bind(this);
+        this.toggleMoreInfoBusy = this.toggleMoreInfoBusy.bind(this);
     }
 
     async fetchAPI(path, subpath, objectId, filterParams, options) {
@@ -40,12 +40,12 @@ class ConvocationsTable extends Component {
         this.setErrorMessage(null);
         this.toggleComponentBusy();
 
-        const fetchResult = await this.fetchAPI('convocations');
+        const fetchResult = await this.fetchAPI('topics');
 
-        const convocations = fetchResult && fetchResult.data ? fetchResult.data : [];
+        const topics = fetchResult && fetchResult.data ? fetchResult.data : [];
         this.setState({ 
-            convocations: convocations,
-            convocationSelected: null
+            topics: topics,
+            topicSelected: null
         });
         this.toggleComponentBusy();
     }
@@ -62,22 +62,22 @@ class ConvocationsTable extends Component {
 
     async handleRowClick(event) {
         this.setErrorMessage(null);
-        this.toggleTopicsBusy();
-        this.setState({ topicsBusy: true});
+        this.toggleMoreInfoBusy();
+        this.setState({ moreInfoBusy: true});
 
-        const fetchResult = await this.fetchAPI('convocations', null, event.currentTarget.id);
-        const convocation = fetchResult && fetchResult.data ? fetchResult.data : null;
+        const fetchResult = await this.fetchAPI('topics', null, event.currentTarget.id);
+        const topic = fetchResult && fetchResult.data ? fetchResult.data : null;
         this.setState({
-            convocationSelected: convocation,
-            topicsBusy: false
+            topicSelected: topic,
+            moreInfoBusy: false
         });
-        this.toggleTopicsBusy();
+        this.toggleMoreInfoBusy();
     }
 
     handleNewButton(event) {
         this.setState({
             formOpen: true,
-            convocationSelected: null
+            topicSelected: null
         });
         setTimeout(() => { this.setState({ formOpen: false }) }, 100);
     }
@@ -91,8 +91,8 @@ class ConvocationsTable extends Component {
         this.setState({ componentBusy: this.state.componentBusy ? null : 'componentBusy' });
     }
 
-    toggleTopicsBusy() {
-        this.setState({ topicsBusy: !this.state.topicsBusy });
+    toggleMoreInfoBusy() {
+        this.setState({ moreInfoBusy: !this.state.moreInfoBusy });
     }
 
     setErrorMessage(msg) {
@@ -104,7 +104,7 @@ class ConvocationsTable extends Component {
             <section>
                 <details open={this.state.open} className={this.state.componentBusy}>
                     <summary onClick={this.handleDetailsClick} aria-busy={this.state.componentBusy ? true : false}>
-                        Convocatorias
+                        Temas
                     </summary>
                     <span className='warning'>{this.state.errorMessage}</span>
                     <a href="#" onClick={this.handleRefresh}>🔁</a>
@@ -112,34 +112,30 @@ class ConvocationsTable extends Component {
                         <thead>
                             <tr>
                                 <th scope="col"></th>
-                                <th scope="col">Nombre</th>
-                                <th scope="col">Año</th>
-                                <th scope="col">Administración</th>
-                                <th scope="col">Categoría</th>
+                                <th scope="col">Abreviatura</th>
+                                <th scope="col">Título</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {this.state.convocations.map((convocation) => {
+                            {this.state.topics.map((topic) => {
                                 return (
-                                    <tr key={convocation._id}
-                                        id={convocation._id}
+                                    <tr key={topic._id}
+                                        id={topic._id}
                                         title="Haga click para seleccionar"
-                                        className={this.state.convocationSelected && 
-                                            this.state.convocationSelected._id === convocation._id ? 
+                                        className={this.state.topicSelected && 
+                                            this.state.topicSelected._id === topic._id ? 
                                             "selected" : null }
                                         onClick={this.handleRowClick}>
                                         <th scope="row">
                                             <input type="checkbox" 
                                                 readOnly
-                                                checked={this.state.convocationSelected && 
-                                                    this.state.convocationSelected._id === convocation._id ? 
+                                                checked={this.state.topicSelected && 
+                                                    this.state.topicSelected._id === topic._id ? 
                                                     true : false }
                                             />
                                         </th>
-                                        <td>{convocation.name}</td>
-                                        <td>{convocation.year}</td>
-                                        <td>{convocation.institution}</td>
-                                        <td>{convocation.category}</td>
+                                        <td>{topic.shorthand}</td>
+                                        <td>{topic.title}</td>
                                     </tr>
                                 )
                             })}
@@ -149,39 +145,28 @@ class ConvocationsTable extends Component {
                         role="button"
                         className="primary"
                         onClick={this.handleNewButton}>
-                        Nueva Convocatoria
+                        Nuevo Tema
                     </a>
                     <a href="#"
                         role="button"
                         className="primary outline"
-                        disabled={this.state.convocationSelected ? false : true}
+                        disabled={this.state.topicSelected ? false : true}
                         onClick={this.handleEditButton}>
-                        Editar Convocatoria
+                        Editar Tema
                     </a>
-                    <h5 aria-busy={this.state.topicsBusy}>
-                        Temario de la Convocatoria
+                    <h5 aria-busy={this.state.moreInfoBusy}>
+                        Título Completo
                     </h5>
-                    <ol>
-                        {this.state.convocationSelected ?
-                            this.state.convocationSelected.topicList.map((topic) => {
-                                return (
-                                    <li id={topic._id}
-                                        key={topic._id}
-                                        title={topic.fullTitle}>
-                                        {topic.title}
-                                    </li>
-                                )
-                            }) : "Seleccione una Convocatoria ⬆️"}
-                    </ol>
+                    {this.state.topicSelected ? <p className="texto">{this.state.topicSelected.fullTitle}</p> : "Seleccione un Tema ⬆️"}
                 </details>
-                <ConvocationForm apiUrl={this.state.apiUrl}
+                <TopicForm apiUrl={this.state.apiUrl}
                     open={this.state.formOpen}
-                    convocation={this.state.convocationSelected}
+                    topic={this.state.topicSelected}
                     refreshParent={this.handleRefresh}>
-                </ConvocationForm>
+                </TopicForm>
             </section>
         )
     }
 }
 
-export default ConvocationsTable;
+export default TopicsTable;

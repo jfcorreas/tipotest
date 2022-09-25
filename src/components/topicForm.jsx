@@ -5,16 +5,14 @@ const headersList = {
     "Content-Type": "application/json"
 }
 
-class ConvocationForm extends Component {
+class TopicForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
             apiUrl: props.apiUrl,
-            convocation: props.convocation,
-            name: null,
-            year: null,
-            institution: null,
-            category: null,
+            topic: props.topic,
+            shorthand: null,
+            title: null,
             errorMessage: null,
             open: false,
             openConfirm: false,
@@ -30,7 +28,7 @@ class ConvocationForm extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleDeletion = this.handleDeletion.bind(this);
     }
-
+    // TODO: fix errorMessage on deletion an repair API
     async fetchAPI(path, subpath, objectId, filterParams, options) {
         let requestUrl = `${this.state.apiUrl}/${path}`;
         if (subpath) requestUrl = requestUrl + '/' + subpath;
@@ -49,30 +47,26 @@ class ConvocationForm extends Component {
                 errorMessage: false,
                 invalidForm: true
             });
-            if (this.props.convocation) {     // Editing Convocation
+            if (this.props.topic) {     // Editing Topic
                 this.setState({
-                    convocation: this.props.convocation,
-                    name: true,
-                    year: true,
-                    institution: true,
-                    category: true,
+                    topic: this.props.topic,
+                    shorthand: true,
+                    title: true,
                     editing: true
                 });
                 return;
             }
             this.setState({
-                convocation: null,
-                name: null,
-                year: true,
-                institution: null,
-                category: null,
+                topic: null,
+                shorthand: null,
+                title: null,
                 editing: false
             });
         }
     }
 
     handleClose() {
-        this.setState({ open: false, convocation: null });
+        this.setState({ open: false, topic: null });
     }
 
     handleCloseConfirm() {
@@ -85,32 +79,24 @@ class ConvocationForm extends Component {
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const inputName = target.name;
 
-        let updatedConvocation = this.state.convocation;
-        if (!updatedConvocation) {
-            updatedConvocation = {
-                name: '',
-                year: new Date().getFullYear(),
-                institution: '',
-                category: ''
+        let updatedTopic = this.state.topic;
+        if (!updatedTopic) {
+            updatedTopic = {
+                shorthand: '',
+                title: '',
+                fullTitle: ''
             }
         }
-
-        if (inputName === 'year' && !value) {
-            return;
-        }
-
-        updatedConvocation[inputName] = value;
+        updatedTopic[inputName] = value;
         this.setState({
-            convocation: updatedConvocation,
+            topic: updatedTopic,
             [inputName]: Boolean(value)
         });
 
         setTimeout(() => {
             const invalidForm = (
-                !this.state.name ||
-                !this.state.year ||
-                !this.state.institution ||
-                !this.state.category
+                !this.state.shorthand ||
+                !this.state.title
             );
             this.setState({ invalidForm: invalidForm });
         }, 100);
@@ -120,15 +106,15 @@ class ConvocationForm extends Component {
         let options = {
             method: 'POST',
             headers: headersList,
-            body: JSON.stringify(this.state.convocation)
+            body: JSON.stringify(this.state.topic)
         };
 
         this.setState({ busySubmit: true });
         if (this.state.editing) {  
             options.method = 'PATCH';
-            await this.fetchAPI('convocations', null, this.state.convocation._id, null, options);
+            await this.fetchAPI('topics', null, this.state.topic._id, null, options);
         } else {
-            await this.fetchAPI('convocations', null, null, null, options);
+            await this.fetchAPI('topics', null, null, null, options);
         }
         this.setState({ busySubmit: false });
         this.props.refreshParent();
@@ -148,7 +134,7 @@ class ConvocationForm extends Component {
         };
         this.setState({ busyDelete: true });
 
-        await this.fetchAPI('convocations', null, this.state.convocation._id, null, options);
+        await this.fetchAPI('topics', null, this.state.topic._id, null, options);
 
         this.setState({ busyDelete: false });
         this.props.refreshParent();
@@ -166,41 +152,32 @@ class ConvocationForm extends Component {
                             className="close"
                             onClick={this.handleClose}>
                         </a>
-                        <h3>{this.state.editing ? 'Editando Convocatoria' : 'Nueva Convocatoria'}</h3>
+                        <h3>{this.state.editing ? 'Editando Tema' : 'Nuevo Tema'}</h3>
                         <span className='warning'>{this.state.errorMessage}</span>
                         <div className='grid'>
                             <form>
                                 <label>
-                                    Nombre
-                                    <input name="name" type="text" required
-                                        placeholder="Nombre de la Convocatoria"
-                                        aria-invalid={(this.state.name === null) ? null : !this.state.name}
+                                    Abreviatura
+                                    <input name="shorthand" type="text" required
+                                        placeholder="Abreviatura del Título del Tema"
+                                        aria-invalid={(this.state.shorthand === null) ? null : !this.state.shorthand}
                                         onChange={this.handleInputChange}
-                                        value={this.state.convocation ? this.state.convocation.name : ''} />
+                                        value={this.state.topic ? this.state.topic.shorthand : ''} />
                                 </label>
                                 <label>
-                                    Año
-                                    <input name="year" type="number" required
-                                        placeholder="Año de la Convocatoria"
-                                        aria-invalid={(this.state.year === null) ? null : !this.state.year}
+                                    Título
+                                    <input name="title" type="text" required
+                                        placeholder="Título del Tema"
+                                        aria-invalid={(this.state.title === null) ? null : !this.state.title}
                                         onChange={this.handleInputChange}
-                                        value={this.state.convocation ? this.state.convocation.year : new Date().getFullYear()} />
+                                        value={this.state.topic ? this.state.topic.title : ''} />
                                 </label>
                                 <label>
-                                    Administración
-                                    <input name="institution" type="text" required
-                                        placeholder="Administración convocante"
-                                        aria-invalid={(this.state.institution === null) ? null : !this.state.institution}
+                                    Título Completo
+                                    <textarea name="fullTitle"
+                                        placeholder="Detalle de Todos los Conceptos del Tema"
                                         onChange={this.handleInputChange}
-                                        value={this.state.convocation ? this.state.convocation.institution : ''} />
-                                </label>
-                                <label>
-                                    Categoría
-                                    <input name="category" type="text" required
-                                        placeholder="Categoría profesional"
-                                        aria-invalid={(this.state.category === null) ? null : !this.state.category}
-                                        onChange={this.handleInputChange}
-                                        value={this.state.convocation ? this.state.convocation.category : ''} />
+                                        value={this.state.topic ? this.state.topic.fullTitle : ''} />
                                 </label>
                             </form>
                         </div>
@@ -214,7 +191,7 @@ class ConvocationForm extends Component {
                             <a href="#delete"
                                 role="button"
                                 className='primary outline'
-                                disabled={this.state.convocation && this.state.editing ? false : true}
+                                disabled={this.state.topic && this.state.editing ? false : true}
                                 onClick={this.handleDeletion}>
                                 Eliminar
                             </a>
@@ -223,7 +200,7 @@ class ConvocationForm extends Component {
                                 aria-busy={this.state.busySubmit}
                                 disabled={this.state.invalidForm}
                                 onClick={this.handleSubmit}>
-                                {this.state.editing ? 'Guardar Cambios' : 'Crear Convocatoria'}
+                                {this.state.editing ? 'Guardar Cambios' : 'Crear Tema'}
                             </a>
                         </footer>
                     </article>
@@ -233,8 +210,8 @@ class ConvocationForm extends Component {
                     <article>
                         <h3>Atención</h3>
                         <p>
-                            ¿Seguro que quieres borrar la convocatoria "{this.state.convocation ?
-                                this.state.convocation.fullName : undefined}"?
+                            ¿Seguro que quieres borrar el tema "{this.state.topic ?
+                                this.state.topic.title : undefined}"?
                         </p>
                         <footer>
                             <a href="#cancel"
@@ -247,7 +224,7 @@ class ConvocationForm extends Component {
                                 role="button"
                                 aria-busy={this.state.busyDelete}
                                 onClick={this.handleDeletion}>
-                                Eliminar Convocatoria
+                                Eliminar Tema
                             </a>
                         </footer>
                     </article>
@@ -257,4 +234,4 @@ class ConvocationForm extends Component {
     }
 }
 
-export default ConvocationForm;
+export default TopicForm;
