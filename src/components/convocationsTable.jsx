@@ -133,9 +133,10 @@ class ConvocationsTable extends Component {
                                         onClick={this.handleRowClick}>
                                         <th scope="row">
                                             <input type="checkbox" 
+                                                readOnly
                                                 checked={this.state.convocationSelected && 
                                                     this.state.convocationSelected._id === convocation._id ? 
-                                                    true : null }
+                                                    true : false }
                                             />
                                         </th>
                                         <td>{convocation.name}</td>
