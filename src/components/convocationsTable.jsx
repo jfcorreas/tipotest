@@ -8,10 +8,10 @@ class ConvocationsTable extends Component {
         this.state = {
             apiUrl: props.apiUrl,
             convocations: [],
-            convocationSelectedId: null,
-            topicList: [],
+            convocationSelected: null,
             errorMessage: null,
             componentBusy: null,
+            topicsBusy: null,
             open: false,
             formOpen: false
         };
@@ -19,10 +19,10 @@ class ConvocationsTable extends Component {
         this.handleRefresh = this.handleRefresh.bind(this);
         this.handleDetailsClick = this.handleDetailsClick.bind(this);
         this.handleRowClick = this.handleRowClick.bind(this);
-        this.handleRowDoubleClick = this.handleRowDoubleClick.bind(this);
         this.handleNewButton = this.handleNewButton.bind(this);
         this.handleEditButton = this.handleEditButton.bind(this);
         this.toggleComponentBusy = this.toggleComponentBusy.bind(this);
+        this.toggleTopicsBusy = this.toggleTopicsBusy.bind(this);
     }
 
     async fetchAPI(path, subpath, objectId, filterParams, options) {
@@ -43,7 +43,10 @@ class ConvocationsTable extends Component {
         const fetchResult = await this.fetchAPI('convocations');
 
         const convocations = fetchResult && fetchResult.data ? fetchResult.data : [];
-        this.setState({ convocations: convocations });
+        this.setState({ 
+            convocations: convocations,
+            convocationSelected: null
+        });
         this.toggleComponentBusy();
     }
 
@@ -57,33 +60,29 @@ class ConvocationsTable extends Component {
         this.setState({ open: true });
     }
 
-    handleRowClick(event) {
-        this.setState({
-            convocationSelectedId: event.currentTarget.id,
-        });
-    }
+    async handleRowClick(event) {
+        this.setErrorMessage(null);
+        this.toggleTopicsBusy();
+        this.setState({ topicsBusy: true});
 
-    handleRowDoubleClick(event) {
-        this.toggleComponentBusy();
+        const fetchResult = await this.fetchAPI('convocations', null, event.currentTarget.id);
+        const convocation = fetchResult && fetchResult.data ? fetchResult.data : null;
         this.setState({
-            formOpen: true,
-            convocationSelectedId: event.currentTarget.id,
-            editingConvocation: true
+            convocationSelected: convocation,
+            topicsBusy: false
         });
-        setTimeout(() => { this.setState({ formOpen: false }) }, 100);
+        this.toggleTopicsBusy();
     }
 
     handleNewButton(event) {
-        this.toggleComponentBusy();
         this.setState({
             formOpen: true,
-            convocationSelectedId: null
+            convocationSelected: null
         });
         setTimeout(() => { this.setState({ formOpen: false }) }, 100);
     }
 
     handleEditButton(event) {
-        this.toggleComponentBusy();
         this.setState({
             formOpen: true,
             editingConvocation: true
@@ -93,6 +92,10 @@ class ConvocationsTable extends Component {
 
     toggleComponentBusy() {
         this.setState({ componentBusy: this.state.componentBusy ? null : 'componentBusy' });
+    }
+
+    toggleTopicsBusy() {
+        this.setState({ topicsBusy: !this.state.topicsBusy });
     }
 
     setErrorMessage(msg) {
@@ -122,9 +125,8 @@ class ConvocationsTable extends Component {
                                 return (
                                     <tr key={convocation._id}
                                         id={convocation._id}
-                                        title="Doble click para editar"
-                                        onClick={this.handleRowClick}
-                                        onDoubleClick={this.handleRowDoubleClick}>
+                                        title="Haga click para seleccionar"
+                                        onClick={this.handleRowClick}>
                                         <th scope="row">{convocation.name}</th>
                                         <td>{convocation.year}</td>
                                         <td>{convocation.institution}</td>
@@ -143,25 +145,29 @@ class ConvocationsTable extends Component {
                     <a href="#"
                         role="button"
                         className="primary outline"
-                        disabled={this.state.convocationSelectedId ? false : true}
+                        disabled={this.state.convocationSelected ? false : true}
                         onClick={this.handleEditButton}>
                         Editar Convocatoria
                     </a>
-                    <h5 aria-busy={this.state.componentBusy ? true : false}>
+                    <h5 aria-busy={this.state.topicsBusy}>
                         Temario de la Convocatoria
                     </h5>
                     <ol>
-                        {this.state.topicList.map((topic) => {
-                            return (
-                                <li title={topic.fullTitle}>{topic.title}</li>
-                            )
-                        })}
+                        {this.state.convocationSelected ?
+                            this.state.convocationSelected.topicList.map((topic) => {
+                                return (
+                                    <li id={topic._id}
+                                        key={topic._id}
+                                        title={topic.fullTitle}>
+                                        {topic.title}
+                                    </li>
+                                )
+                            }) : "Seleccione una Convocatoria ⬆️"}
                     </ol>
                 </details>
                 <ConvocationForm apiUrl={this.state.apiUrl}
                     open={this.state.formOpen}
-                    convocationId={this.state.convocationSelectedId}
-                    cursorBusyHandler={this.toggleComponentBusy}
+                    convocation={this.state.convocationSelected}
                     refreshParent={this.handleRefresh}>
                 </ConvocationForm>
             </section>

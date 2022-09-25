@@ -10,8 +10,7 @@ class ConvocationForm extends Component {
         super(props);
         this.state = {
             apiUrl: props.apiUrl,
-            convocationId: props.convocationId,
-            convocation: null,
+            convocation: props.convocation,
             name: null,
             year: null,
             institution: null,
@@ -21,6 +20,7 @@ class ConvocationForm extends Component {
             openConfirm: false,
             busySubmit: false,
             busyDelete: false,
+            editing: false,
             invalidForm: true
         };
 
@@ -42,45 +42,37 @@ class ConvocationForm extends Component {
             .catch(err => this.setState({ errorMessage: err.message }))
     }
 
-    async componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps) {
         if (this.props.open !== prevProps.open && this.props.open === true) {
-            if (this.props.convocationId) {     // Editing Convocation
-                this.setState({ busySubmit: true });
-                const res = await this.fetchAPI('convocations', null, this.props.convocationId);
-                if (res.status === 'OK') {
-                    this.setState({
-                        open: true,
-                        convocationId: this.props.convocationId,
-                        convocation: res.data,
-                        busySubmit: false,
-                        name: true,
-                        year: true,
-                        institution: true,
-                        category: true,
-                        errorMessage: false,
-                        invalidForm: true
-                    });
-                }
-                this.props.cursorBusyHandler();
+            this.setState({
+                open: true,
+                errorMessage: false,
+                invalidForm: true
+            });
+            if (this.props.convocation) {     // Editing Convocation
+                this.setState({
+                    convocation: this.props.convocation,
+                    name: true,
+                    year: true,
+                    institution: true,
+                    category: true,
+                    editing: true
+                });
                 return;
             }
             this.setState({
-                open: true,
-                convocationId: null,
                 convocation: null,
                 name: null,
                 year: true,
                 institution: null,
                 category: null,
-                errorMessage: false,
-                invalidForm: true
+                editing: false
             });
-            this.props.cursorBusyHandler();
         }
     }
 
     handleClose() {
-        this.setState({ open: false });
+        this.setState({ open: false, convocation: null });
     }
 
     handleCloseConfirm() {
@@ -132,9 +124,9 @@ class ConvocationForm extends Component {
         };
 
         this.setState({ busySubmit: true });
-        if (this.state.convocationId) {     // Editing Convocation
+        if (this.state.editing) {  
             options.method = 'PATCH';
-            await this.fetchAPI('convocations', null, this.state.convocationId, null, options);
+            await this.fetchAPI('convocations', null, this.state.convocation._id, null, options);
         } else {
             await this.fetchAPI('convocations', null, null, null, options);
         }
@@ -156,7 +148,7 @@ class ConvocationForm extends Component {
         };
         this.setState({ busyDelete: true });
 
-        await this.fetchAPI('convocations', null, this.state.convocationId, null, options);
+        await this.fetchAPI('convocations', null, this.state.convocation._id, null, options);
 
         this.setState({ busyDelete: false });
         this.props.refreshParent();
@@ -174,7 +166,7 @@ class ConvocationForm extends Component {
                             className="close"
                             onClick={this.handleClose}>
                         </a>
-                        <h3>{this.state.convocationId ? 'Editando Convocatoria' : 'Nueva Convocatoria'}</h3>
+                        <h3>{this.state.editing ? 'Editando Convocatoria' : 'Nueva Convocatoria'}</h3>
                         <span className='warning'>{this.state.errorMessage}</span>
                         <div className='grid'>
                             <form>
@@ -222,7 +214,7 @@ class ConvocationForm extends Component {
                             <a href="#delete"
                                 role="button"
                                 className='primary outline'
-                                disabled={this.state.convocationId ? false : true}
+                                disabled={this.state.convocation && this.state.editing ? false : true}
                                 onClick={this.handleDeletion}>
                                 Eliminar
                             </a>
@@ -231,7 +223,7 @@ class ConvocationForm extends Component {
                                 aria-busy={this.state.busySubmit}
                                 disabled={this.state.invalidForm}
                                 onClick={this.handleSubmit}>
-                                {this.state.convocationId ? 'Guardar Cambios' : 'Crear Convocatoria'}
+                                {this.state.editing ? 'Guardar Cambios' : 'Crear Convocatoria'}
                             </a>
                         </footer>
                     </article>
