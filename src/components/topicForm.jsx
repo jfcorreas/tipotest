@@ -107,15 +107,19 @@ class TopicForm extends Component {
             headers: headersList,
             body: JSON.stringify(this.state.topic)
         };
-
+        let result;
         this.setState({ busySubmit: true });
         if (this.state.editing) {  
             options.method = 'PATCH';
-            await this.fetchAPI('topics', null, this.state.topic._id, null, options);
+            result = await this.fetchAPI('topics', null, this.state.topic._id, null, options);
         } else {
-            await this.fetchAPI('topics', null, null, null, options);
+            result = await this.fetchAPI('topics', null, null, null, options);
         }
         this.setState({ busySubmit: false });
+        if (result.status === "FAILED") {
+            this.setState({ errorMessage: result.data.error })
+            return;
+        }
         this.props.refreshParent();
         this.handleClose();
     }

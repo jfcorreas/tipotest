@@ -121,15 +121,19 @@ class ConvocationForm extends Component {
             headers: headersList,
             body: JSON.stringify(this.state.convocation)
         };
-
+        let result;
         this.setState({ busySubmit: true });
         if (this.state.editing) {  
             options.method = 'PATCH';
-            await this.fetchAPI('convocations', null, this.state.convocation._id, null, options);
+            result = await this.fetchAPI('convocations', null, this.state.convocation._id, null, options);
         } else {
-            await this.fetchAPI('convocations', null, null, null, options);
+            result = await this.fetchAPI('convocations', null, null, null, options);
         }
         this.setState({ busySubmit: false });
+        if (result.status === "FAILED") {
+            this.setState({ errorMessage: result.data.error })
+            return;
+        }
         this.props.refreshParent();
         this.handleClose();
     }
