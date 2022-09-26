@@ -130,7 +130,7 @@ class ConvocationForm extends Component {
             result = await this.fetchAPI('convocations', null, null, null, options);
         }
         this.setState({ busySubmit: false });
-        if (result.status === "FAILED") {
+        if (result && result.status === "FAILED") {
             this.setState({ errorMessage: result.data.error })
             return;
         }
@@ -156,7 +156,7 @@ class ConvocationForm extends Component {
         this.setState({ busyDelete: false });
 
         this.handleCloseConfirm();
-        if (result.status === "FAILED") {
+        if (result && result.status === "FAILED") {
             this.setState({ errorMessage: result.data.error })
             return;
         }

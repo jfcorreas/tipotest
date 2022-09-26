@@ -116,7 +116,7 @@ class TopicForm extends Component {
             result = await this.fetchAPI('topics', null, null, null, options);
         }
         this.setState({ busySubmit: false });
-        if (result.status === "FAILED") {
+        if (result && result.status === "FAILED") {
             this.setState({ errorMessage: result.data.error })
             return;
         }
@@ -142,7 +142,7 @@ class TopicForm extends Component {
         this.setState({ busyDelete: false });
 
         this.handleCloseConfirm();
-        if (result.status === "FAILED") {
+        if (result && result.status === "FAILED") {
             this.setState({ errorMessage: result.data.error })
             return;
         }
