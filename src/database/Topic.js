@@ -1,6 +1,6 @@
 
 const Topic = require("../database/schemas/TopicSchema");
-const Question = require("../database/schemas/QuestionSchema");
+const { Question } = require("../database/schemas/QuestionSchema");
 
 const getAllTopics = async (filterParams) => {
     try {
