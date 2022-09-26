@@ -77,7 +77,6 @@ class ConvocationForm extends Component {
 
     handleCloseConfirm() {
         this.setState({ openConfirm: false, deletionConfirmed: false });
-        this.handleClose()
     }
 
     handleInputChange(event) {
@@ -148,11 +147,17 @@ class ConvocationForm extends Component {
         };
         this.setState({ busyDelete: true });
 
-        await this.fetchAPI('convocations', null, this.state.convocation._id, null, options);
+        const result = await this.fetchAPI('convocations', null, this.state.convocation._id, null, options);
 
         this.setState({ busyDelete: false });
-        this.props.refreshParent();
+
         this.handleCloseConfirm();
+        if (result.status === "FAILED") {
+            this.setState({ errorMessage: result.data.error })
+            return;
+        }
+        this.props.refreshParent();
+        this.handleClose();
     }
 
     render() {
