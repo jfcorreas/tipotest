@@ -1,14 +1,14 @@
 
 import React, { Component } from 'react';
-import TopicForm from './topicForm';
+import QuestionForm from './questionForm';
 
-class TopicsTable extends Component {
+class QuestionsTable extends Component {
     constructor(props) {
         super(props);
         this.state = {
             apiUrl: props.apiUrl,
-            topics: [],
-            topicSelected: null,
+            questions: [],
+            questionSelected: null,
             errorMessage: null,
             componentBusy: null,
             moreInfoBusy: null,
@@ -40,12 +40,12 @@ class TopicsTable extends Component {
         this.setErrorMessage(null);
         this.toggleComponentBusy();
 
-        const fetchResult = await this.fetchAPI('topics');
+        const fetchResult = await this.fetchAPI('questions');
 
-        const topics = fetchResult && fetchResult.data ? fetchResult.data : [];
-        this.setState({ 
-            topics: topics,
-            topicSelected: null
+        const questions = fetchResult && fetchResult.data ? fetchResult.data : [];
+        this.setState({
+            questions: questions,
+            questionSelected: null
         });
         this.toggleComponentBusy();
     }
@@ -63,12 +63,12 @@ class TopicsTable extends Component {
     async handleRowClick(event) {
         this.setErrorMessage(null);
         this.toggleMoreInfoBusy();
-        this.setState({ moreInfoBusy: true});
+        this.setState({ moreInfoBusy: true });
 
-        const fetchResult = await this.fetchAPI('topics', null, event.currentTarget.id);
-        const topic = fetchResult && fetchResult.data ? fetchResult.data : null;
+        const fetchResult = await this.fetchAPI('questions', null, event.currentTarget.id);
+        const question = fetchResult && fetchResult.data ? fetchResult.data : null;
         this.setState({
-            topicSelected: topic,
+            questionSelected: question,
             moreInfoBusy: false
         });
         this.toggleMoreInfoBusy();
@@ -77,7 +77,7 @@ class TopicsTable extends Component {
     handleNewButton(event) {
         this.setState({
             formOpen: true,
-            topicSelected: null
+            questionSelected: null
         });
         setTimeout(() => { this.setState({ formOpen: false }) }, 100);
     }
@@ -103,10 +103,10 @@ class TopicsTable extends Component {
         return (
             <section>
                 <details open={this.state.open} className={this.state.componentBusy}>
-                    <summary role='button' className='contrast outline'
+                    <summary role='button' className='primary outline'
                         onClick={this.handleDetailsClick}
                         aria-busy={this.state.componentBusy ? true : false}>
-                        Temas
+                        Preguntas
                     </summary>
                     <span className='warning'>{this.state.errorMessage}</span>
                     <a href="#" onClick={this.handleRefresh}>🔁 Actualizar</a>
@@ -114,30 +114,30 @@ class TopicsTable extends Component {
                         <thead>
                             <tr>
                                 <th scope="col"></th>
-                                <th scope="col">Abreviatura</th>
-                                <th scope="col">Título</th>
+                                <th scope="col">Texto</th>
+                                <th scope="col">#Respuestas</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {this.state.topics.map((topic) => {
+                            {this.state.questions.map((question) => {
                                 return (
-                                    <tr key={topic._id}
-                                        id={topic._id}
+                                    <tr key={question._id}
+                                        id={question._id}
                                         title="Haga click para seleccionar"
-                                        className={this.state.topicSelected && 
-                                            this.state.topicSelected._id === topic._id ? 
-                                            "selected" : null }
+                                        className={this.state.questionSelected &&
+                                            this.state.questionSelected._id === question._id ?
+                                            "selected" : null}
                                         onClick={this.handleRowClick}>
                                         <th scope="row">
-                                            <input type="checkbox" 
+                                            <input type="checkbox"
                                                 readOnly
-                                                checked={this.state.topicSelected && 
-                                                    this.state.topicSelected._id === topic._id ? 
-                                                    true : false }
+                                                checked={this.state.questionSelected &&
+                                                    this.state.questionSelected._id === question._id ?
+                                                    true : false}
                                             />
                                         </th>
-                                        <td>{topic.shorthand}</td>
-                                        <td>{topic.title}</td>
+                                        <td>{question.text}</td>
+                                        <td>{question.answers.length}</td>
                                     </tr>
                                 )
                             })}
@@ -147,28 +147,42 @@ class TopicsTable extends Component {
                         role="button"
                         className="primary"
                         onClick={this.handleNewButton}>
-                        Nuevo Tema
+                        Nueva Pregunta
                     </a>
                     <a href="#"
                         role="button"
                         className="primary outline"
-                        disabled={this.state.topicSelected ? false : true}
+                        disabled={this.state.questionSelected ? false : true}
                         onClick={this.handleEditButton}>
-                        Editar Tema
+                        Editar Pregunta
                     </a>
                     <h5 aria-busy={this.state.moreInfoBusy}>
-                        Título Completo
+                        Tema
                     </h5>
-                    {this.state.topicSelected ? <p className="texto">{this.state.topicSelected.fullTitle}</p> : "Seleccione un Tema ⬆️"}
+                    {this.state.questionSelected ?
+                        <p>{this.state.questionSelected.topic.title}</p> :
+                        "Seleccione una Pregunta ⬆️"}
+                    <ul>
+                    {this.state.questionSelected ?
+                        this.state.questionSelected.answers.map((answer) => {
+                            return (
+                                <li id={answer._id}
+                                    key={answer._id}
+                                    className={answer.isCorrect? 'trueQuestion' : null}>
+                                    {answer.text}
+                                </li>
+                            )
+                        }) : null}
+                    </ul>
                 </details>
-                <TopicForm apiUrl={this.state.apiUrl}
+                <QuestionForm apiUrl={this.state.apiUrl}
                     open={this.state.formOpen}
-                    topic={this.state.topicSelected}
+                    question={this.state.questionSelected}
                     refreshParent={this.handleRefresh}>
-                </TopicForm>
+                </QuestionForm>
             </section>
         )
     }
 }
 
-export default TopicsTable;
+export default QuestionsTable;

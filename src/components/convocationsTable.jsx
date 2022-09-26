@@ -103,11 +103,13 @@ class ConvocationsTable extends Component {
         return (
             <section>
                 <details open={this.state.open} className={this.state.componentBusy}>
-                    <summary onClick={this.handleDetailsClick} aria-busy={this.state.componentBusy ? true : false}>
-                        Convocatorias
+                    <summary role='button' className='primary outline'
+                        onClick={this.handleDetailsClick}
+                        aria-busy={this.state.componentBusy ? true : false}>
+                        Convocatorias 
                     </summary>
                     <span className='warning'>{this.state.errorMessage}</span>
-                    <a href="#" onClick={this.handleRefresh}>🔁</a>
+                    <a href="#" onClick={this.handleRefresh}>🔁 Actualizar</a>
                     <table role="grid">
                         <thead>
                             <tr>

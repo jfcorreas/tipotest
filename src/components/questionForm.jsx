@@ -5,19 +5,21 @@ const headersList = {
     "Content-Type": "application/json"
 }
 
-class TopicForm extends Component {
+class QuestionForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
             apiUrl: props.apiUrl,
-            topic: props.topic,
-            shorthand: null,
-            title: null,
+            question: props.question,
+            topics: null,
+            text: null,
+            topic: null,
             errorMessage: null,
             open: false,
             openConfirm: false,
             busySubmit: false,
             busyDelete: false,
+            busyTopics: false,
             editing: false,
             invalidForm: true
         };
@@ -40,62 +42,68 @@ class TopicForm extends Component {
             .catch(err => this.setState({ errorMessage: err.message }))
     }
 
-    componentDidUpdate(prevProps) {
+    async componentDidUpdate(prevProps) {
         if (this.props.open !== prevProps.open && this.props.open === true) {
+            
+            this.setState({ busyTopics: true });
+            const fetchResult = await this.fetchAPI('topics');
+            const topics = fetchResult && fetchResult.data ? fetchResult.data : [];
+            this.setState({ busyTopics: false });
+
             this.setState({
+                topics: topics,
                 open: true,
                 errorMessage: false,
                 invalidForm: true
             });
-            if (this.props.topic) {     // Editing Topic
+            if (this.props.question) {     // Editing Question
                 this.setState({
-                    topic: this.props.topic,
-                    shorthand: true,
-                    title: true,
+                    question: this.props.question,
+                    text: true,
+                    topic: true,
                     editing: true
                 });
                 return;
             }
             this.setState({
+                question: null,
+                text: null,
                 topic: null,
-                shorthand: null,
-                title: null,
                 editing: false
             });
         }
     }
 
     handleClose() {
-        this.setState({ open: false, topic: null });
+        this.setState({ open: false, question: null });
     }
 
     handleCloseConfirm() {
         this.setState({ openConfirm: false, deletionConfirmed: false });
     }
-
+    // FIXME: Topic selection on new question 
     handleInputChange(event) {
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const inputName = target.name;
 
-        let updatedTopic = this.state.topic;
-        if (!updatedTopic) {
-            updatedTopic = {
-                shorthand: '',
-                title: '',
-                fullTitle: ''
+        let updatedQuestion = this.state.question;
+        if (!updatedQuestion) {
+            updatedQuestion = {
+                text: '',
+                topic: ''
             }
         }
-        updatedTopic[inputName] = value;
+        updatedQuestion[inputName] = value;
         this.setState({
-            topic: updatedTopic,
+            question: updatedQuestion,
             [inputName]: Boolean(value)
         });
 
         setTimeout(() => {
             const invalidForm = (
-                !this.state.shorthand ||
-                !this.state.title
+                !this.state.text ||
+                !this.state.topic
             );
             this.setState({ invalidForm: invalidForm });
         }, 100);
@@ -105,15 +113,15 @@ class TopicForm extends Component {
         let options = {
             method: 'POST',
             headers: headersList,
-            body: JSON.stringify(this.state.topic)
+            body: JSON.stringify(this.state.question)
         };
         let result;
         this.setState({ busySubmit: true });
         if (this.state.editing) {  
             options.method = 'PATCH';
-            result = await this.fetchAPI('topics', null, this.state.topic._id, null, options);
+            result = await this.fetchAPI('questions', null, this.state.question._id, null, options);
         } else {
-            result = await this.fetchAPI('topics', null, null, null, options);
+            result = await this.fetchAPI('questions', null, null, null, options);
         }
         this.setState({ busySubmit: false });
         if (result && result.status === "FAILED") {
@@ -137,7 +145,7 @@ class TopicForm extends Component {
         };
         this.setState({ busyDelete: true });
 
-        const result = await this.fetchAPI('topics', null, this.state.topic._id, null, options);
+        const result = await this.fetchAPI('questions', null, this.state.question._id, null, options);
 
         this.setState({ busyDelete: false });
 
@@ -161,32 +169,37 @@ class TopicForm extends Component {
                             className="close"
                             onClick={this.handleClose}>
                         </a>
-                        <h3>{this.state.editing ? 'Editando Tema' : 'Nuevo Tema'}</h3>
+                        <h3>{this.state.editing ? 'Editando Pregunta' : 'Nueva Pregunta'}</h3>
                         <span className='warning'>{this.state.errorMessage}</span>
                         <div className='grid'>
                             <form>
                                 <label>
-                                    Abreviatura
-                                    <input name="shorthand" type="text" required
-                                        placeholder="Abreviatura del Título del Tema"
-                                        aria-invalid={(this.state.shorthand === null) ? null : !this.state.shorthand}
+                                    Texto
+                                    <input name="text" type="text" required
+                                        placeholder="Texto de la Pregunta"
+                                        aria-invalid={(this.state.text === null) ? null : !this.state.text}
                                         onChange={this.handleInputChange}
-                                        value={this.state.topic ? this.state.topic.shorthand : ''} />
+                                        value={this.state.question ? this.state.question.text : ''} />
                                 </label>
                                 <label>
-                                    Título
-                                    <input name="title" type="text" required
-                                        placeholder="Título del Tema"
-                                        aria-invalid={(this.state.title === null) ? null : !this.state.title}
-                                        onChange={this.handleInputChange}
-                                        value={this.state.topic ? this.state.topic.title : ''} />
+                                    Tema
+                                    <select name="topic" type="text" required
+                                        placeholder="Tema al que Corresponde la Pregunta"
+                                        aria-invalid={(this.state.topic === null) ? null : !this.state.topic}
+                                        onChange={this.handleInputChange}>
+                                        {this.state.question? null :
+                                            <option value="">Seleccione un Tema...</option>
+                                        }
+                                        {this.state.topics? this.state.topics.map((topic) => {
+                                            return (
+                                                <option key={topic._id} value={topic._id}>{topic.title}</option>
+                                            )
+                                        }) : null }
+                                    </select>
                                 </label>
                                 <label>
-                                    Título Completo
-                                    <textarea name="fullTitle"
-                                        placeholder="Detalle de Todos los Conceptos del Tema"
-                                        onChange={this.handleInputChange}
-                                        value={this.state.topic ? this.state.topic.fullTitle : ''} />
+                                    Respuestas
+
                                 </label>
                             </form>
                         </div>
@@ -200,7 +213,7 @@ class TopicForm extends Component {
                             <a href="#delete"
                                 role="button"
                                 className='primary outline'
-                                disabled={this.state.topic && this.state.editing ? false : true}
+                                disabled={this.state.question && this.state.editing ? false : true}
                                 onClick={this.handleDeletion}>
                                 Eliminar
                             </a>
@@ -209,7 +222,7 @@ class TopicForm extends Component {
                                 aria-busy={this.state.busySubmit}
                                 disabled={this.state.invalidForm}
                                 onClick={this.handleSubmit}>
-                                {this.state.editing ? 'Guardar Cambios' : 'Crear Tema'}
+                                {this.state.editing ? 'Guardar Cambios' : 'Crear Pregunta'}
                             </a>
                         </footer>
                     </article>
@@ -219,8 +232,8 @@ class TopicForm extends Component {
                     <article>
                         <h3>Atención</h3>
                         <p>
-                            ¿Seguro que quieres borrar el tema "{this.state.topic ?
-                                this.state.topic.title : undefined}"?
+                            ¿Seguro que quieres borrar la pregunta "{this.state.question ?
+                                this.state.question.text : undefined}"?
                         </p>
                         <footer>
                             <a href="#cancel"
@@ -233,7 +246,7 @@ class TopicForm extends Component {
                                 role="button"
                                 aria-busy={this.state.busyDelete}
                                 onClick={this.handleDeletion}>
-                                Eliminar Tema
+                                Eliminar Pregunta
                             </a>
                         </footer>
                     </article>
@@ -243,4 +256,4 @@ class TopicForm extends Component {
     }
 }
 
-export default TopicForm;
+export default QuestionForm;
