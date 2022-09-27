@@ -81,7 +81,7 @@ class QuestionForm extends Component {
     handleCloseConfirm() {
         this.setState({ openConfirm: false, deletionConfirmed: false });
     }
-    // FIXME: Topic selection on new question 
+     
     handleInputChange(event) {
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
@@ -186,8 +186,9 @@ class QuestionForm extends Component {
                                     <select name="topic" type="text" required
                                         placeholder="Tema al que Corresponde la Pregunta"
                                         aria-invalid={(this.state.topic === null) ? null : !this.state.topic}
-                                        onChange={this.handleInputChange}>
-                                        {this.state.question? null :
+                                        onChange={this.handleInputChange}
+                                        value={this.state.question? this.state.question.topic : ""}>
+                                        {this.state.question && this.state.question.topic? null :
                                             <option value="">Seleccione un Tema...</option>
                                         }
                                         {this.state.topics? this.state.topics.map((topic) => {
