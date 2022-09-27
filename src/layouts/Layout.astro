@@ -6,22 +6,49 @@ export interface Props {
 const { title } = Astro.props;
 
 // TODO: if (import.meta.env.MODE === 'production') console.log = function () {};
-
 ---
 
 <!DOCTYPE html>
 <html lang="es">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="generator" content={Astro.generator} />
 		<link rel="icon" type="image/icon" href="/favicon.ico" />
-    	<link rel="stylesheet" href="./node_modules/@picocss/pico/css/pico.min.css">
+		<link
+			rel="stylesheet"
+			href="./node_modules/@picocss/pico/css/pico.min.css"
+		/>
 		<title>{title}</title>
 	</head>
 	<body>
 		<main class="container">
 			<slot />
+
+			<footer>
+				<ul>
+					<li>
+						<strong>MODE:</strong>
+						{import.meta.env.MODE}
+					</li>
+					<li>
+						<strong>BASE URL:</strong>
+						{import.meta.env.BASE_URL}
+					</li>
+					<li>
+						<strong>SITE:</strong>
+						{import.meta.env.SITE}
+					</li>
+					<li>
+						<strong>API URL:</strong>
+						{import.meta.env.API_URL}
+					</li>
+					<li>
+						<strong>APP TITLE:</strong>
+						{import.meta.env.PUBLIC_APP_TITLE}
+					</li>
+				</ul>
+			</footer>
 		</main>
 	</body>
 </html>
@@ -40,7 +67,7 @@ const { title } = Astro.props;
 		color: orangered;
 	}
 	a[role="button"] {
-  		margin-right: calc(var(--spacing) * .5);
+		margin-right: calc(var(--spacing) * 0.5);
 	}
 	p.texto {
 		white-space: pre-line;

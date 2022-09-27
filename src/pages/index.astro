@@ -1,43 +1,31 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import NavBar from "../layouts/NavBar.astro";
-import APIForm from "../components/getApi";
 
 const fetchInfo = (apiPath) => {
     return fetch(`${import.meta.env.API_URL}/${apiPath}`)
-        .then(res => res.json())
-        .catch(err => console.error(err))
-}
+        .then((res) => res.json())
+        .catch((err) => console.error(err));
+};
 
-const fetchResult = await fetchInfo('convocations');  
-const convocations = fetchResult && fetchResult.data? fetchResult.data : [];
-
+const fetchResult = await fetchInfo("convocations");
+const convocations = fetchResult && fetchResult.data ? fetchResult.data : [];
 ---
 
 <Layout title={import.meta.env.PUBLIC_APP_TITLE}>
-        <NavBar title={import.meta.env.PUBLIC_APP_TITLE}></NavBar>     
-        <section>
-            <select>
-                {convocations.map(convocation => (
+    <NavBar title={import.meta.env.PUBLIC_APP_TITLE} />
+    <section>
+        <select>
+            {
+                convocations.map((convocation) => (
                     <option value={convocation._id}>{convocation.name}</option>
-                  ))}
-            </select>
-            <details>
-                <summary>Últimos Tests</summary>
-                <ul>
-                  <li>…</li>
-                  <li>…</li>
-                </ul>
-              </details>              
-        </section>
-        <section>
-            <APIForm apiUrl={import.meta.env.API_URL} client:load></APIForm>
-        </section>
-        <p class="instructions">
-            <strong>MODE:</strong> { import.meta.env.MODE } <br />
-            <strong>BASE URL:</strong> { import.meta.env.BASE_URL } <br />
-            <strong>SITE:</strong> { import.meta.env.SITE } <br />
-            <strong>API URL:</strong> { import.meta.env.API_URL } <br />
-            <strong>APP TITLE:</strong> { import.meta.env.PUBLIC_APP_TITLE } <br />
-        </p>
+                ))
+            }
+        </select>
+        <h3>Últimos Tests</h3>
+        <ul>
+            <li>…</li>
+            <li>…</li>
+        </ul>
+    </section>
 </Layout>
