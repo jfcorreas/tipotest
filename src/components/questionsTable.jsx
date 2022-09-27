@@ -156,12 +156,19 @@ class QuestionsTable extends Component {
                         onClick={this.handleEditButton}>
                         Editar Pregunta
                     </a>
+                    <div className='grid'>
+                            <div>
+
                     <h5 aria-busy={this.state.moreInfoBusy}>
                         Tema
                     </h5>
                     {this.state.questionSelected ?
-                        <p>{this.state.questionSelected.topic.title}</p> :
-                        "Seleccione una Pregunta ⬆️"}
+                        <p>{this.state.questionSelected.topic.title}</p>
+                        : "Seleccione una Pregunta ⬆️"}
+                            </div>
+                            <div>
+
+                    <h5>Respuestas</h5>
                     <ul>
                     {this.state.questionSelected ?
                         this.state.questionSelected.answers.map((answer) => {
@@ -174,6 +181,8 @@ class QuestionsTable extends Component {
                             )
                         }) : null}
                     </ul>
+                            </div>
+                    </div>
                 </details>
                 <QuestionForm apiUrl={this.state.apiUrl}
                     open={this.state.formOpen}

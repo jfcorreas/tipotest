@@ -198,10 +198,6 @@ class QuestionForm extends Component {
                                         }) : null }
                                     </select>
                                 </label>
-                                <label>
-                                    Respuestas
-
-                                </label>
                             </form>
                         </div>
                         <footer>
