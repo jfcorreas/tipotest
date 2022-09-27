@@ -1,20 +1,19 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import NavBar from "../layouts/NavBar.astro";
-import ConvocationsTable from "../components/convocationsTable";
-import TopicsTable from "../components/topicsTable";
-import QuestionsTable from "../components/questionsTable";
 
 const config = {
-    apiUrl: import.meta.env.API_URL,
     appTitle: import.meta.env.PUBLIC_APP_TITLE
 }
 
 ---
 
 <Layout title={config.appTitle}>
-        <NavBar title={config.appTitle}></NavBar>     
-        <ConvocationsTable apiUrl={config.apiUrl} client:load></ConvocationsTable>
-        <TopicsTable apiUrl={config.apiUrl} client:load></TopicsTable>
-        <QuestionsTable apiUrl={config.apiUrl} client:load></QuestionsTable>
+        <NavBar title={config.appTitle}></NavBar>   
+        <section class="grid">
+            <a href="/admin/convocations"><article>Convocatorias</article></a>
+            <a href="/admin/topics"><article>Temas</article></a>
+            <a href="/admin/questions"><article>Preguntas</article></a>
+            <a href="/admin/tests"><article>Tests</article></a>
+        </section>  
 </Layout>
