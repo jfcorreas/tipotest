@@ -12,12 +12,10 @@ class TopicsTable extends Component {
             errorMessage: null,
             componentBusy: null,
             moreInfoBusy: null,
-            open: false,
             formOpen: false
         };
 
         this.handleRefresh = this.handleRefresh.bind(this);
-        this.handleDetailsClick = this.handleDetailsClick.bind(this);
         this.handleRowClick = this.handleRowClick.bind(this);
         this.handleNewButton = this.handleNewButton.bind(this);
         this.handleEditButton = this.handleEditButton.bind(this);
@@ -36,6 +34,10 @@ class TopicsTable extends Component {
             .catch(err => this.setErrorMessage(err.message));
     }
 
+    async componentDidMount() {
+        await this.handleRefresh();
+    }
+
     async handleRefresh() {
         this.setErrorMessage(null);
         this.toggleComponentBusy();
@@ -43,27 +45,17 @@ class TopicsTable extends Component {
         const fetchResult = await this.fetchAPI('topics');
 
         const topics = fetchResult && fetchResult.data ? fetchResult.data : [];
-        this.setState({ 
+        this.setState({
             topics: topics,
             topicSelected: null
         });
         this.toggleComponentBusy();
     }
 
-    async handleDetailsClick(event) {
-        event.preventDefault();
-        if (this.state.open) {
-            this.setState(() => ({ open: false }));
-            return;
-        }
-        await this.handleRefresh();
-        this.setState({ open: true });
-    }
-
     async handleRowClick(event) {
         this.setErrorMessage(null);
         this.toggleMoreInfoBusy();
-        this.setState({ moreInfoBusy: true});
+        this.setState({ moreInfoBusy: true });
 
         const fetchResult = await this.fetchAPI('topics', null, event.currentTarget.id);
         const topic = fetchResult && fetchResult.data ? fetchResult.data : null;
@@ -101,16 +93,14 @@ class TopicsTable extends Component {
 
     render() {
         return (
-            <section>
-                <details open={this.state.open} className={this.state.componentBusy}>
-                    <summary role='button' className='contrast outline'
-                        onClick={this.handleDetailsClick}
-                        aria-busy={this.state.componentBusy ? true : false}>
-                        Temas
-                    </summary>
-                    <span className='warning'>{this.state.errorMessage}</span>
+            <div>
+                <h4 aria-busy={this.state.componentBusy ? true : false}>
+                    Temas
+                </h4>
+                <section className={this.state.componentBusy}>
+                    <div className='warning'>{this.state.errorMessage}</div>
                     <a href="#" onClick={this.handleRefresh}>🔁 Actualizar</a>
-                    <table role="grid">
+                    <table>
                         <thead>
                             <tr>
                                 <th scope="col"></th>
@@ -124,16 +114,16 @@ class TopicsTable extends Component {
                                     <tr key={topic._id}
                                         id={topic._id}
                                         title="Haga click para seleccionar"
-                                        className={this.state.topicSelected && 
-                                            this.state.topicSelected._id === topic._id ? 
-                                            "selected" : null }
+                                        className={this.state.topicSelected &&
+                                            this.state.topicSelected._id === topic._id ?
+                                            "selected" : null}
                                         onClick={this.handleRowClick}>
                                         <th scope="row">
-                                            <input type="checkbox" 
+                                            <input type="checkbox"
                                                 readOnly
-                                                checked={this.state.topicSelected && 
-                                                    this.state.topicSelected._id === topic._id ? 
-                                                    true : false }
+                                                checked={this.state.topicSelected &&
+                                                    this.state.topicSelected._id === topic._id ?
+                                                    true : false}
                                             />
                                         </th>
                                         <td>{topic.shorthand}</td>
@@ -160,13 +150,13 @@ class TopicsTable extends Component {
                         Título Completo
                     </h5>
                     {this.state.topicSelected ? <p className="texto">{this.state.topicSelected.fullTitle}</p> : "Seleccione un Tema ⬆️"}
-                </details>
-                <TopicForm apiUrl={this.state.apiUrl}
-                    open={this.state.formOpen}
-                    topic={this.state.topicSelected}
-                    refreshParent={this.handleRefresh}>
-                </TopicForm>
-            </section>
+                    <TopicForm apiUrl={this.state.apiUrl}
+                        open={this.state.formOpen}
+                        topic={this.state.topicSelected}
+                        refreshParent={this.handleRefresh}>
+                    </TopicForm>
+                </section>
+            </div>
         )
     }
 }

@@ -12,12 +12,10 @@ class ConvocationsTable extends Component {
             errorMessage: null,
             componentBusy: null,
             topicsBusy: null,
-            open: false,
             formOpen: false
         };
 
         this.handleRefresh = this.handleRefresh.bind(this);
-        this.handleDetailsClick = this.handleDetailsClick.bind(this);
         this.handleRowClick = this.handleRowClick.bind(this);
         this.handleNewButton = this.handleNewButton.bind(this);
         this.handleEditButton = this.handleEditButton.bind(this);
@@ -36,6 +34,10 @@ class ConvocationsTable extends Component {
             .catch(err => this.setErrorMessage(err.message));
     }
 
+    async componentDidMount() {
+        await this.handleRefresh();
+    }
+
     async handleRefresh() {
         this.setErrorMessage(null);
         this.toggleComponentBusy();
@@ -48,16 +50,6 @@ class ConvocationsTable extends Component {
             convocationSelected: null
         });
         this.toggleComponentBusy();
-    }
-
-    async handleDetailsClick(event) {
-        event.preventDefault();
-        if (this.state.open) {
-            this.setState(() => ({ open: false }));
-            return;
-        }
-        await this.handleRefresh();
-        this.setState({ open: true });
     }
 
     async handleRowClick(event) {
@@ -101,16 +93,14 @@ class ConvocationsTable extends Component {
 
     render() {
         return (
-            <section>
-                <details open={this.state.open} className={this.state.componentBusy}>
-                    <summary role='button' className='primary outline'
-                        onClick={this.handleDetailsClick}
-                        aria-busy={this.state.componentBusy ? true : false}>
+            <div>
+                    <h4 aria-busy={this.state.componentBusy ? true : false}>
                         Convocatorias 
-                    </summary>
-                    <span className='warning'>{this.state.errorMessage}</span>
+                    </h4>
+            <section className={this.state.componentBusy}>
+                    <div className='warning'>{this.state.errorMessage}</div>
                     <a href="#" onClick={this.handleRefresh}>🔁 Actualizar</a>
-                    <table role="grid">
+                    <table>
                         <thead>
                             <tr>
                                 <th scope="col"></th>
@@ -175,13 +165,13 @@ class ConvocationsTable extends Component {
                                 )
                             }) : "Seleccione una Convocatoria ⬆️"}
                     </ol>
-                </details>
                 <ConvocationForm apiUrl={this.state.apiUrl}
                     open={this.state.formOpen}
                     convocation={this.state.convocationSelected}
                     refreshParent={this.handleRefresh}>
                 </ConvocationForm>
             </section>
+            </div>
         )
     }
 }
