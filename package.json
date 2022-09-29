@@ -24,12 +24,11 @@
     "@astrojs/react": "^1.1.2",
     "@picocss/pico": "^1.5.3",
     "astro": "^1.2.2",
+    "cors": "^2.8.5",
     "express": "^4.18.1",
-    "mongoose": "^6.5.3",
-    "uuid": "^8.3.2"
+    "mongoose": "^6.5.3"
   },
   "devDependencies": {
-    "live-server": "^1.1.0",
     "nodemon": "^2.0.19"
   }
 }
