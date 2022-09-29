@@ -1,6 +1,7 @@
 
 import React, { Component } from 'react';
 import ConvocationForm from "./convocationForm";
+import ConvocationTopicsForm from './convocationTopicsForm';
 
 class ConvocationsTable extends Component {
     constructor(props) {
@@ -12,13 +13,15 @@ class ConvocationsTable extends Component {
             errorMessage: null,
             componentBusy: null,
             topicsBusy: null,
-            formOpen: false
+            editFormOpen: false,
+            topicsFormOpen:false
         };
 
         this.handleRefresh = this.handleRefresh.bind(this);
         this.handleRowClick = this.handleRowClick.bind(this);
         this.handleNewButton = this.handleNewButton.bind(this);
         this.handleEditButton = this.handleEditButton.bind(this);
+        this.handleTopicsButton = this.handleTopicsButton.bind(this);
         this.toggleComponentBusy = this.toggleComponentBusy.bind(this);
         this.toggleTopicsBusy = this.toggleTopicsBusy.bind(this);
     }
@@ -68,15 +71,21 @@ class ConvocationsTable extends Component {
 
     handleNewButton(event) {
         this.setState({
-            formOpen: true,
+            editFormOpen: true,
             convocationSelected: null
         });
-        setTimeout(() => { this.setState({ formOpen: false }) }, 100);
+        setTimeout(() => { this.setState({ editFormOpen: false }) }, 100);
     }
 
     handleEditButton(event) {
-        this.setState({ formOpen: true });
-        setTimeout(() => { this.setState({ formOpen: false }) }, 100);
+        this.setState({ editFormOpen: true });
+        setTimeout(() => { this.setState({ editFormOpen: false }) }, 100);
+    }
+
+    handleTopicsButton(event) {
+        this.setState({ topicsFormOpen: true });
+        this.toggleComponentBusy();
+        setTimeout(() => { this.setState({ topicsFormOpen: false }) }, 100);
     }
 
     toggleComponentBusy() {
@@ -137,18 +146,25 @@ class ConvocationsTable extends Component {
                             })}
                         </tbody>
                     </table>
-                    <a href="#"
+                    <a href="#new"
                         role="button"
                         className="primary"
                         onClick={this.handleNewButton}>
                         Nueva Convocatoria
                     </a>
-                    <a href="#"
+                    <a href="#edit"
                         role="button"
                         className="primary outline"
                         disabled={this.state.convocationSelected ? false : true}
                         onClick={this.handleEditButton}>
                         Editar Convocatoria
+                    </a>
+                    <a href="#topics"
+                        role="button"
+                        className="primary outline"
+                        disabled={this.state.convocationSelected ? false : true}
+                        onClick={this.handleTopicsButton}>
+                        Editar Temario
                     </a>
                     <h5 aria-busy={this.state.topicsBusy}>
                         Temario de la Convocatoria
@@ -166,10 +182,16 @@ class ConvocationsTable extends Component {
                             }) : "Seleccione una Convocatoria ⬆️"}
                     </ol>
                 <ConvocationForm apiUrl={this.state.apiUrl}
-                    open={this.state.formOpen}
+                    open={this.state.editFormOpen}
                     convocation={this.state.convocationSelected}
                     refreshParent={this.handleRefresh}>
                 </ConvocationForm>
+                <ConvocationTopicsForm apiUrl={this.state.apiUrl}
+                    open={this.state.topicsFormOpen}
+                    convocation={this.state.convocationSelected}
+                    toggleParentBusy={this.toggleComponentBusy}
+                    refreshParent={this.handleRefresh}>
+                </ConvocationTopicsForm>
             </section>
             </div>
         )
