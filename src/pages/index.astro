@@ -6,8 +6,8 @@ let errorMessage = '';
 
 const fetchAPI = async (path, subpath, objectId, filterParams, options) => {
         let requestUrl = `${import.meta.env.API_URL}/${path}`;
-        if (subpath) requestUrl = requestUrl + '/' + subpath;
         if (objectId) requestUrl = requestUrl + '/' + objectId;
+        if (subpath) requestUrl = requestUrl + '/' + subpath;
         if (filterParams) requestUrl = requestUrl + '?' + filterParams;
 
         return fetch(requestUrl, options)

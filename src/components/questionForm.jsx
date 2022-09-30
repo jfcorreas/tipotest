@@ -33,8 +33,8 @@ class QuestionForm extends Component {
 
     async fetchAPI(path, subpath, objectId, filterParams, options) {
         let requestUrl = `${this.state.apiUrl}/${path}`;
-        if (subpath) requestUrl = requestUrl + '/' + subpath;
         if (objectId) requestUrl = requestUrl + '/' + objectId;
+        if (subpath) requestUrl = requestUrl + '/' + subpath;
         if (filterParams) requestUrl = requestUrl + '?' + filterParams;
 
         return fetch(requestUrl, options)
@@ -157,7 +157,7 @@ class QuestionForm extends Component {
         this.props.refreshParent();
         this.handleClose();
     }
-
+    // FIXME: select current topic of the question, not the first topic of BBDD
     render() {
         return (
             <div>

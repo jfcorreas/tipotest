@@ -28,8 +28,8 @@ class ConvocationsTable extends Component {
 
     async fetchAPI(path, subpath, objectId, filterParams, options) {
         let requestUrl = `${this.state.apiUrl}/${path}`;
-        if (subpath) requestUrl = requestUrl + '/' + subpath;
         if (objectId) requestUrl = requestUrl + '/' + objectId;
+        if (subpath) requestUrl = requestUrl + '/' + subpath;
         if (filterParams) requestUrl = requestUrl + '?' + filterParams;
 
         return fetch(requestUrl, options)
@@ -129,14 +129,14 @@ class ConvocationsTable extends Component {
                                             this.state.convocationSelected._id === convocation._id ? 
                                             "selected" : null }
                                         onClick={this.handleRowClick}>
-                                        <th scope="row">
+                                        <td scope="row">
                                             <input type="checkbox" 
                                                 readOnly
                                                 checked={this.state.convocationSelected && 
                                                     this.state.convocationSelected._id === convocation._id ? 
                                                     true : false }
                                             />
-                                        </th>
+                                        </td>
                                         <td>{convocation.name}</td>
                                         <td>{convocation.year}</td>
                                         <td>{convocation.institution}</td>

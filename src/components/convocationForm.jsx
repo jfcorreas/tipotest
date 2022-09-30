@@ -33,8 +33,8 @@ class ConvocationForm extends Component {
 
     async fetchAPI(path, subpath, objectId, filterParams, options) {
         let requestUrl = `${this.state.apiUrl}/${path}`;
-        if (subpath) requestUrl = requestUrl + '/' + subpath;
         if (objectId) requestUrl = requestUrl + '/' + objectId;
+        if (subpath) requestUrl = requestUrl + '/' + subpath;
         if (filterParams) requestUrl = requestUrl + '?' + filterParams;
 
         return fetch(requestUrl, options)

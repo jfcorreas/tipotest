@@ -12,6 +12,9 @@ class ConvocationTopicsForm extends Component {
             apiUrl: props.apiUrl,
             convocation: props.convocation,
             selectableTopics: [],
+            selectedTopic: null,
+            selectedTopicIndex: null,
+            topicToAdd: null,
             errorMessage: null,
             open: false,
             busySubmit: false,
@@ -19,14 +22,16 @@ class ConvocationTopicsForm extends Component {
         };
 
         this.handleClose = this.handleClose.bind(this);
-        this.handleInputChange = this.handleInputChange.bind(this);
+        this.handleRowClick = this.handleRowClick.bind(this);
+        this.handleNewTopicChange = this.handleNewTopicChange.bind(this);
+        this.handleNewTopicSubmit = this.handleNewTopicSubmit.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     async fetchAPI(path, subpath, objectId, filterParams, options) {
         let requestUrl = `${this.state.apiUrl}/${path}`;
-        if (subpath) requestUrl = requestUrl + '/' + subpath;
         if (objectId) requestUrl = requestUrl + '/' + objectId;
+        if (subpath) requestUrl = requestUrl + '/' + subpath;
         if (filterParams) requestUrl = requestUrl + '?' + filterParams;
 
         return fetch(requestUrl, options)
@@ -37,14 +42,15 @@ class ConvocationTopicsForm extends Component {
     async componentDidUpdate(prevProps) {
         if (this.props.open !== prevProps.open &&
             this.props.open === true &&
-            this.props.convocation ) {
+            this.props.convocation) {
             const fetchResult = await this.fetchAPI('topics');
             const allTopics = fetchResult && fetchResult.data ? fetchResult.data : [];
-            console.log(this.props.convocation);
-            const selectableTopics = allTopics.filter((topic) => !this.props.convocation.topicList.includes(topic));
+            const selectableTopics = allTopics.filter((topic) =>
+                !this.props.convocation.topicList.find(topicFind => topicFind._id === topic._id));
+
             this.props.toggleParentBusy();
             this.setState({
-                convocation: this.props.convocation,
+                convocation: structuredClone(this.props.convocation),
                 selectableTopics: selectableTopics,
                 open: true,
                 errorMessage: false
@@ -52,61 +58,67 @@ class ConvocationTopicsForm extends Component {
         }
     }
 
-    handleClose() {
-        this.setState({ open: false, convocation: null });
+    handleClose(event, isSubmit) {
+        this.setState({
+            convocation: null,
+            selectableTopics: [],
+            selectedTopic: null,
+            selectedTopicIndex: null,
+            topicToAdd: null,
+            errorMessage: null,
+            open: false,
+            busySubmit: false,
+            invalidForm: true
+        });
+        if (isSubmit) this.props.refreshParent();
     }
 
-    handleInputChange(event) {
-        const target = event.target;
-        const value = target.type === 'checkbox' ? target.checked : target.value;
-        const inputName = target.name;
+    handleRowClick(event) {
+        const target = event.currentTarget;
+        const topicId = target.id;
+        const topicIndex = target.tabIndex;
 
-        let updatedConvocation = this.state.convocation;
-        if (!updatedConvocation) {
-            updatedConvocation = {
-                name: '',
-                year: new Date().getFullYear(),
-                institution: '',
-                category: ''
-            }
-        }
+        const selectedTopic = this.state.convocation.topicList.filter(topic => topic._id === topicId)[0];
 
-        if (inputName === 'year' && !value) {
-            return;
-        }
-
-        updatedConvocation[inputName] = value;
         this.setState({
-            convocation: updatedConvocation,
-            [inputName]: Boolean(value)
-        });
+            selectedTopic: selectedTopic,
+            selectedTopicIndex: topicIndex
 
-        setTimeout(() => {
-            const invalidForm = (
-                !this.state.name ||
-                !this.state.year ||
-                !this.state.institution ||
-                !this.state.category
-            );
-            this.setState({ invalidForm: invalidForm });
-        }, 100);
+        });
+    }
+
+    handleNewTopicChange(event) {
+        const target = event.target;
+        const newTopicId = target.value;
+
+        this.setState({
+            topicToAdd: newTopicId
+        });
+    }
+
+    handleNewTopicSubmit(event) {
+
+        const index = this.state.selectableTopics.findIndex(topic => topic._id === this.state.topicToAdd);
+        const topicToAdd = this.state.selectableTopics.splice(index,1)[0];
+        this.state.convocation.topicList.push(topicToAdd);
+        this.setState({
+            topicToAdd: null,
+            invalidForm: false
+        });
     }
 
     async handleSubmit() {
         let options = {
-            method: 'POST',
+            method: 'PATCH',
             headers: headersList,
             body: JSON.stringify(this.state.convocation)
         };
+
         let result;
         this.setState({ busySubmit: true });
-        if (this.state.editing) {  
-            options.method = 'PATCH';
-            result = await this.fetchAPI('convocations', null, this.state.convocation._id, null, options);
-        } else {
-            result = await this.fetchAPI('convocations', null, null, null, options);
-        }
+        result = await this.fetchAPI('convocations', 'topics', this.state.convocation._id, null, options);
         this.setState({ busySubmit: false });
+
         if (result && result.status === "FAILED") {
             this.setState({ errorMessage: result.data.error })
             return;
@@ -126,25 +138,90 @@ class ConvocationTopicsForm extends Component {
                             className="close"
                             onClick={this.handleClose}>
                         </a>
-                        <h3>Editando Temario</h3>
+                        <h3>Temas de la Convocatoria</h3>
                         <span className='warning'>{this.state.errorMessage}</span>
                         <div className='grid'>
-
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th scope="col"></th>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Título</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {this.state.convocation &&
+                                        this.state.convocation.topicList.map((topic, index) => {
+                                            return (
+                                                <tr key={topic._id}
+                                                    id={topic._id}
+                                                    tabIndex={index}
+                                                    title="Haga click para seleccionar"
+                                                    className={this.state.selectedTopic &&
+                                                        this.state.selectedTopic._id === topic._id ?
+                                                        "selected" : null}
+                                                    onClick={this.handleRowClick}>
+                                                    <td scope="row">
+                                                        <input type="checkbox"
+                                                            readOnly
+                                                            checked={this.state.selectedTopic &&
+                                                                this.state.selectedTopic._id === topic._id ?
+                                                                true : false}
+                                                        />
+                                                    </td>
+                                                    <td>{index + 1}</td>
+                                                    <td>{topic.title}</td>
+                                                </tr>
+                                            )
+                                        })}
+                                </tbody>
+                            </table>
                         </div>
                         <footer>
-                            <a href="#cancel"
-                                role="button"
-                                className="secondary"
-                                onClick={this.handleClose}>
-                                Cancelar
-                            </a>
-                            <a href="#confirm"
-                                role="button"
-                                aria-busy={this.state.busySubmit}
-                                disabled={this.state.invalidForm}
-                                onClick={this.handleSubmit}>
-                                Guardar Cambios
-                            </a>
+                            <div className='grid'>
+                                <label htmlFor="availableTopics">
+                                    Temas disponibles
+                                <select name="availableTopics" type="text"
+                                    placeholder="Todos los Temas disponibles"
+                                    aria-disabled={this.state.selectableTopics.length === 0}
+                                    onChange={this.handleNewTopicChange}
+                                    value={this.state.topicToAdd? this.state.topicToAdd : ""}>
+                                    {this.state.selectableTopics.length > 0 ? 
+                                        <option value="">Seleccione un Tema para añadir...</option> :
+                                        <option value="">No quedan Temas para añadir</option>
+                                    }
+                                    {this.state.selectableTopics ? this.state.selectableTopics.map((topic) => {
+                                        return (
+                                            <option key={topic._id} value={topic._id}>{topic.title}</option>
+                                        )
+                                    }) : null}
+                                </select>
+                                </label>
+                                <a href="#newTopic"
+                                    role="button"
+                                    className="contrast outline"
+                                    disabled={!this.state.topicToAdd}
+                                    onClick={this.handleNewTopicSubmit}>
+                                    Añadir Tema
+                                </a>
+                            </div>
+                            <section>
+                                <a href="#cancel"
+                                    role="button"
+                                    className="secondary"
+                                    onClick={this.handleClose}>
+                                    Cancelar
+                                </a>
+
+                                <a href="#confirm"
+                                    role="button"
+                                    aria-busy={this.state.busySubmit}
+                                    disabled={this.state.invalidForm}
+                                    onClick={this.handleSubmit}>
+                                    Guardar Cambios
+                                </a>
+                            </section>
+
                         </footer>
                     </article>
 
