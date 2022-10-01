@@ -13,8 +13,9 @@ class ConvocationTopicsForm extends Component {
             convocation: props.convocation,
             selectableTopics: [],
             selectedTopic: null,
-            selectedTopicIndex: null,
+            selectedTopicIndex: -1,
             topicToAdd: null,
+            newTopicPosition: -1,
             errorMessage: null,
             open: false,
             busySubmit: false,
@@ -26,6 +27,8 @@ class ConvocationTopicsForm extends Component {
         this.handleDeleteTopic = this.handleDeleteTopic.bind(this);
         this.handleNewTopicChange = this.handleNewTopicChange.bind(this);
         this.handleNewTopicSubmit = this.handleNewTopicSubmit.bind(this);
+        this.handleNewPositionChange = this.handleNewPositionChange.bind(this);
+        this.handleNewPositionSubmit = this.handleNewPositionSubmit.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
@@ -64,8 +67,9 @@ class ConvocationTopicsForm extends Component {
             convocation: null,
             selectableTopics: [],
             selectedTopic: null,
-            selectedTopicIndex: null,
+            selectedTopicIndex: -1,
             topicToAdd: null,
+            newTopicPosition: -1,
             errorMessage: null,
             open: false,
             busySubmit: false,
@@ -83,19 +87,38 @@ class ConvocationTopicsForm extends Component {
 
         this.setState({
             selectedTopic: selectedTopic,
-            selectedTopicIndex: topicIndex
-
+            selectedTopicIndex: topicIndex,
+            newTopicPosition: topicIndex,
         });
     }
 
     handleDeleteTopic(event) {
-        const index = this.state.convocation.topicList.findIndex(topic => topic._id === this.state.selectedTopic._id);
-
-        const topicToDelete = this.state.convocation.topicList.splice(index, 1)[0];
+        const topicToDelete = this.state.convocation.topicList.splice(this.state.selectedTopicIndex, 1)[0];
         this.state.selectableTopics.push(topicToDelete);
 
         this.setState({
             selectedTopic: null,
+            selectedTopicIndex: -1,
+            newTopicPosition: -1,
+            invalidForm: false
+        });
+    }
+
+    handleNewPositionChange(event) {
+        const target = event.target;
+        const newPosition = target.value;
+
+        if (newPosition > 0) this.setState({ newTopicPosition: Number(newPosition - 1) });
+    }
+
+    handleNewPositionSubmit(event) {
+        const topicToMove = this.state.convocation.topicList.splice(this.state.selectedTopicIndex, 1)[0];
+        this.state.convocation.topicList.splice(this.state.newTopicPosition, 0, topicToMove);
+
+        this.setState({
+            selectedTopic: null,
+            selectedTopicIndex: -1,
+            newTopicPosition: -1,
             invalidForm: false
         });
     }
@@ -110,7 +133,6 @@ class ConvocationTopicsForm extends Component {
     }
 
     handleNewTopicSubmit(event) {
-
         const index = this.state.selectableTopics.findIndex(topic => topic._id === this.state.topicToAdd);
         const topicToAdd = this.state.selectableTopics.splice(index, 1)[0];
         this.state.convocation.topicList.push(topicToAdd);
@@ -136,8 +158,7 @@ class ConvocationTopicsForm extends Component {
             this.setState({ errorMessage: result.data.error })
             return;
         }
-        this.props.refreshParent();
-        this.handleClose();
+        this.handleClose(null, true);
     }
 
     render() {
@@ -189,16 +210,32 @@ class ConvocationTopicsForm extends Component {
                                         })}
                                 </tbody>
                             </table>
-                            <a href="#deleteTopic"
+                            <button
+                                className="contrast"
+                                disabled={!this.state.selectedTopic}
+                                onClick={this.handleDeleteTopic}>
+                                Eliminar Tema
+                            </button>
+                            <label>
+                                Cambiar posición del Tema seleccionado:
+                                <input name="topicOrder" type="number"
+                                    min="1"
+                                    placeholder="Ningún tema seleccionado"
+                                    aria-disabled={!(this.state.selectedTopicIndex > -1)}
+                                    readOnly={!(this.state.selectedTopicIndex > -1)}
+                                    onChange={this.handleNewPositionChange}
+                                    value={this.state.newTopicPosition > -1 ? this.state.newTopicPosition + 1 : ""} />
+                                <button
                                     role="button"
-                                    className="contrast"
-                                    disabled={!this.state.selectedTopic}
-                                    onClick={this.handleDeleteTopic}>
-                                    Eliminar Tema
-                                </a>
+                                    className="contrast outline"
+                                    disabled={this.state.newTopicPosition === this.state.selectedTopicIndex}
+                                    onClick={this.handleNewPositionSubmit}>
+                                    Confirmar nueva posición
+                                </button>
+                            </label>
                         </div>
                         <footer>
-                            <div className='grid'>
+                            <section className='grid'>
                                 <label htmlFor="availableTopics">
                                     Temas disponibles
                                     <select name="availableTopics" type="text"
@@ -216,15 +253,14 @@ class ConvocationTopicsForm extends Component {
                                             )
                                         }) : null}
                                     </select>
-                                    <a href="#newTopic"
-                                        role="button"
+                                    <button
                                         className="contrast outline"
                                         disabled={!this.state.topicToAdd}
                                         onClick={this.handleNewTopicSubmit}>
                                         Añadir Tema
-                                    </a>
+                                    </button>
                                 </label>
-                            </div>
+                            </section>
                             <section>
                                 <a href="#cancel"
                                     role="button"

@@ -92,11 +92,17 @@ const updateOneConvocationTopics = async (convocationId, topics) => {
                 message: `Found duplicated topics`
             };
         }        
-        
+
         const existentTopics = await Topic.find({ _id: { $in: topics } }, "_id" );
-        const filteredTopics = existentTopics.map( (topic) => {
+        const existentTopicsIds = existentTopics.map( (topic) => {
+            return topic._id.toString();
+        }); 
+
+        const topicsIds = topics.map((topic) => {
             return topic._id;
         });
+
+        const filteredTopics = topicsIds.filter((topicId) => existentTopicsIds.includes(topicId));
 
         convocationToUpdate.topicList = filteredTopics; 
         convocationToUpdate.updatedAt = new Date().toLocaleString("en-US", {timeZone: "UTC"});
