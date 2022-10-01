@@ -157,7 +157,7 @@ class QuestionForm extends Component {
         this.props.refreshParent();
         this.handleClose();
     }
-    // FIXME: select current topic of the question, not the first topic of BBDD
+
     render() {
         return (
             <div>
@@ -187,7 +187,7 @@ class QuestionForm extends Component {
                                         placeholder="Tema al que Corresponde la Pregunta"
                                         aria-invalid={(this.state.topic === null) ? null : !this.state.topic}
                                         onChange={this.handleInputChange}
-                                        value={this.state.question? this.state.question.topic : ""}>
+                                        value={this.state.question? this.state.question.topic._id : ""}>
                                         {this.state.question && this.state.question.topic? null :
                                             <option value="">Seleccione un Tema...</option>
                                         }
