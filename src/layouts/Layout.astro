@@ -29,24 +29,20 @@ const { title } = Astro.props;
 				{import.meta.env.MODE === 'development'?
 					<ul>
 						<li>
-							<strong>MODE:</strong>
-							{import.meta.env.MODE}
+							MODE:
+							<strong>{import.meta.env.MODE}</strong>
 						</li>
 						<li>
-							<strong>BASE URL:</strong>
-							{import.meta.env.BASE_URL}
+							BASE URL:
+							<strong>{import.meta.env.BASE_URL}</strong>
 						</li>
 						<li>
-							<strong>SITE:</strong>
-							{import.meta.env.SITE}
+							SITE:
+							<strong>{import.meta.env.SITE}</strong>
 						</li>
 						<li>
-							<strong>API URL:</strong>
-							{import.meta.env.API_URL}
-						</li>
-						<li>
-							<strong>APP TITLE:</strong>
-							{import.meta.env.PUBLIC_APP_TITLE}
+							API URL:
+							<strong>{import.meta.env.API_URL}</strong>
 						</li>
 					</ul>
 					: null
@@ -83,5 +79,17 @@ const { title } = Astro.props;
 	}
 	main.container {
 		padding-top: 0px;
+	}
+	footer {
+		text-align: center;
+		border-top: 1px solid grey;
+	}
+	footer ul li {
+		display: inline;
+		font-size: smaller;
+		border-right: 1px solid grey;
+		border-left: 1px solid grey;
+		padding-left: 5px;
+		padding-right: 5px;
 	}
 </style>
