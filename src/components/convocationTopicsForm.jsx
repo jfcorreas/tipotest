@@ -23,6 +23,7 @@ class ConvocationTopicsForm extends Component {
 
         this.handleClose = this.handleClose.bind(this);
         this.handleRowClick = this.handleRowClick.bind(this);
+        this.handleDeleteTopic = this.handleDeleteTopic.bind(this);
         this.handleNewTopicChange = this.handleNewTopicChange.bind(this);
         this.handleNewTopicSubmit = this.handleNewTopicSubmit.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -87,6 +88,18 @@ class ConvocationTopicsForm extends Component {
         });
     }
 
+    handleDeleteTopic(event) {
+        const index = this.state.convocation.topicList.findIndex(topic => topic._id === this.state.selectedTopic._id);
+
+        const topicToDelete = this.state.convocation.topicList.splice(index, 1)[0];
+        this.state.selectableTopics.push(topicToDelete);
+
+        this.setState({
+            selectedTopic: null,
+            invalidForm: false
+        });
+    }
+
     handleNewTopicChange(event) {
         const target = event.target;
         const newTopicId = target.value;
@@ -99,7 +112,7 @@ class ConvocationTopicsForm extends Component {
     handleNewTopicSubmit(event) {
 
         const index = this.state.selectableTopics.findIndex(topic => topic._id === this.state.topicToAdd);
-        const topicToAdd = this.state.selectableTopics.splice(index,1)[0];
+        const topicToAdd = this.state.selectableTopics.splice(index, 1)[0];
         this.state.convocation.topicList.push(topicToAdd);
         this.setState({
             topicToAdd: null,
@@ -176,34 +189,41 @@ class ConvocationTopicsForm extends Component {
                                         })}
                                 </tbody>
                             </table>
+                            <a href="#deleteTopic"
+                                    role="button"
+                                    className="contrast"
+                                    disabled={!this.state.selectedTopic}
+                                    onClick={this.handleDeleteTopic}>
+                                    Eliminar Tema
+                                </a>
                         </div>
                         <footer>
                             <div className='grid'>
                                 <label htmlFor="availableTopics">
                                     Temas disponibles
-                                <select name="availableTopics" type="text"
-                                    placeholder="Todos los Temas disponibles"
-                                    aria-disabled={this.state.selectableTopics.length === 0}
-                                    onChange={this.handleNewTopicChange}
-                                    value={this.state.topicToAdd? this.state.topicToAdd : ""}>
-                                    {this.state.selectableTopics.length > 0 ? 
-                                        <option value="">Seleccione un Tema para añadir...</option> :
-                                        <option value="">No quedan Temas para añadir</option>
-                                    }
-                                    {this.state.selectableTopics ? this.state.selectableTopics.map((topic) => {
-                                        return (
-                                            <option key={topic._id} value={topic._id}>{topic.title}</option>
-                                        )
-                                    }) : null}
-                                </select>
+                                    <select name="availableTopics" type="text"
+                                        placeholder="Todos los Temas disponibles"
+                                        aria-disabled={this.state.selectableTopics.length === 0}
+                                        onChange={this.handleNewTopicChange}
+                                        value={this.state.topicToAdd ? this.state.topicToAdd : ""}>
+                                        {this.state.selectableTopics.length > 0 ?
+                                            <option value="">Seleccione un Tema para añadir...</option> :
+                                            <option value="">No quedan Temas para añadir</option>
+                                        }
+                                        {this.state.selectableTopics ? this.state.selectableTopics.map((topic) => {
+                                            return (
+                                                <option key={topic._id} value={topic._id}>{topic.title}</option>
+                                            )
+                                        }) : null}
+                                    </select>
+                                    <a href="#newTopic"
+                                        role="button"
+                                        className="contrast outline"
+                                        disabled={!this.state.topicToAdd}
+                                        onClick={this.handleNewTopicSubmit}>
+                                        Añadir Tema
+                                    </a>
                                 </label>
-                                <a href="#newTopic"
-                                    role="button"
-                                    className="contrast outline"
-                                    disabled={!this.state.topicToAdd}
-                                    onClick={this.handleNewTopicSubmit}>
-                                    Añadir Tema
-                                </a>
                             </div>
                             <section>
                                 <a href="#cancel"
