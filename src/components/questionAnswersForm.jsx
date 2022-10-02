@@ -12,12 +12,10 @@ class QuestionAnswersForm extends Component {
             apiUrl: props.apiUrl,
             question: props.question,
             selectedAnswer: null,
-            selectedAnswerIndex: -1,
             answerToAdd: null,
             errorMessage: null,
             open: false,
-            busySubmit: false,
-            invalidForm: true
+            busyDelete: false
         };
 
         this.handleClose = this.handleClose.bind(this);
@@ -25,7 +23,6 @@ class QuestionAnswersForm extends Component {
         this.handleDeleteAnswer = this.handleDeleteAnswer.bind(this);
         this.handleNewAnswerChange = this.handleNewAnswerChange.bind(this);
         this.handleNewAnswerSubmit = this.handleNewAnswerSubmit.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     async fetchAPI(path, subpath, objectId, subObjectId, filterParams, options) {
@@ -53,40 +50,51 @@ class QuestionAnswersForm extends Component {
         }
     }
 
-    handleClose(event, isSubmit) {
+    handleClose(event) {
         this.setState({
             question: null,
             selectedAnswer: null,
-            selectedAnswerIndex: -1,
             answerToAdd: null,
             errorMessage: null,
             open: false,
-            busySubmit: false,
-            invalidForm: true
+            busyDelete: false
         });
-        if (isSubmit) this.props.refreshParent();
+        this.props.refreshParent();
     }
 
     handleRowClick(event) {
         const target = event.currentTarget;
         const answerId = target.id;
-        const answerIndex = target.tabIndex;
 
         const selectedAnswer = this.state.question.answers.filter(answer => answer._id === answerId)[0];
 
         this.setState({
-            selectedAnswer: selectedAnswer,
-            selectedAnswerIndex: answerIndex
+            selectedAnswer: selectedAnswer
         });
     }
 
-    handleDeleteAnswer(event) {
-        const answerToDelete = this.state.question.answers.splice(this.state.selectedAnswerIndex, 1)[0];
+    async handleDeleteAnswer(event) {
+        let options = {
+            method: 'DELETE',
+            headers: headersList,
+            body: JSON.stringify(this.state.question)
+        };
+
+        let result;
+        this.setState({ busyDelete: true });
+        result = await this.fetchAPI('questions', 'answers', this.state.question._id, this.state.selectedAnswer._id, null, options);
+        this.setState({ busyDelete: false });
+
+        if (result && result.status === "FAILED") {
+            this.setState({ errorMessage: result.data.error })
+            return;
+        }
+
+        const questionModified = result.data;
 
         this.setState({
-            selectedAnswer: null,
-            selectedAnswerIndex: -1,
-            invalidForm: false
+            question: questionModified,
+            selectedAnswer: null
         });
     }
 
@@ -107,25 +115,6 @@ class QuestionAnswersForm extends Component {
         });
     }
 
-    async handleSubmit() {
-        let options = {
-            method: 'PATCH',
-            headers: headersList,
-            body: JSON.stringify(this.state.question)
-        };
-
-        let result;
-        this.setState({ busySubmit: true });
-        result = await this.fetchAPI('questions', 'answers', this.state.question._id, null, options);
-        this.setState({ busySubmit: false });
-
-        if (result && result.status === "FAILED") {
-            this.setState({ errorMessage: result.data.error })
-            return;
-        }
-        this.handleClose(null, true);
-    }
-
     render() {
         return (
             <div>
@@ -138,48 +127,40 @@ class QuestionAnswersForm extends Component {
                             onClick={this.handleClose}>
                         </a>
                         <h3>Respuestas de la pregunta:</h3>
-                        <p>{this.state.question? this.state.question.text : ""}</p>
+                        <p>{this.state.question ? this.state.question.text : ""}</p>
                         <span className='warning'>{this.state.errorMessage}</span>
                         <div className='grid'>
-
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th scope="col"></th>
-                                                <th scope="col">Texto</th>
-                                                <th scope="col">¿Correcta?</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {this.state.question &&
-                                                this.state.question.answers.map((answer, index) => {
-                                                    return (
-                                                        <tr key={answer._id}
-                                                            id={answer._id}
-                                                            tabIndex={index}
-                                                            title="Haga click para seleccionar"
-                                                            className={this.state.selectedAnswer &&
+                            <table>
+                                <tbody>
+                                    {this.state.question &&
+                                        this.state.question.answers.map((answer) => {
+                                            return (
+                                                <tr key={answer._id}
+                                                    id={answer._id}
+                                                    title="Haga click para seleccionar"
+                                                    className={this.state.selectedAnswer &&
+                                                        this.state.selectedAnswer._id === answer._id ?
+                                                        "selected" : null}
+                                                    onClick={this.handleRowClick}>
+                                                    <td scope="row">
+                                                        <input type="checkbox"
+                                                            readOnly
+                                                            checked={this.state.selectedAnswer &&
                                                                 this.state.selectedAnswer._id === answer._id ?
-                                                                "selected" : null}
-                                                            onClick={this.handleRowClick}>
-                                                            <td scope="row">
-                                                                <input type="checkbox"
-                                                                    readOnly
-                                                                    checked={this.state.selectedAnswer &&
-                                                                        this.state.selectedAnswer._id === answer._id ?
-                                                                        true : false}
-                                                                />
-                                                            </td>
-                                                            <td>{answer.text}</td>
-                                                            <td>{answer.isCorrect? "✅" : ""}</td>
-                                                        </tr>
-                                                    )
-                                                })}
-                                        </tbody>
-                                    </table>
+                                                                true : false}
+                                                        />
+                                                    </td>
+                                                    <td>{answer.text}</td>
+                                                    <td>{answer.isCorrect ? "✅" : ""}</td>
+                                                </tr>
+                                            )
+                                        })}
+                                </tbody>
+                            </table>
                             <button
                                 className="contrast"
                                 disabled={!this.state.selectedAnswer}
+                                aria-busy={this.state.busyDelete}
                                 onClick={this.handleDeleteAnswer}>
                                 Eliminar Respuesta
                             </button>
