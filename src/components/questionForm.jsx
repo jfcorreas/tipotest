@@ -14,6 +14,7 @@ class QuestionForm extends Component {
             topics: null,
             text: null,
             topic: null,
+            selectedAnswer: null,
             errorMessage: null,
             open: false,
             openConfirm: false,
@@ -27,6 +28,7 @@ class QuestionForm extends Component {
         this.handleClose = this.handleClose.bind(this);
         this.handleCloseConfirm = this.handleCloseConfirm.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
+        this.handleRowClick = this.handleRowClick.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleDeletion = this.handleDeletion.bind(this);
     }
@@ -44,7 +46,7 @@ class QuestionForm extends Component {
 
     async componentDidUpdate(prevProps) {
         if (this.props.open !== prevProps.open && this.props.open === true) {
-            
+
             this.setState({ busyTopics: true });
             const fetchResult = await this.fetchAPI('topics');
             const topics = fetchResult && fetchResult.data ? fetchResult.data : [];
@@ -52,6 +54,7 @@ class QuestionForm extends Component {
 
             this.setState({
                 topics: topics,
+                selectedAnswer: null,
                 open: true,
                 errorMessage: false,
                 invalidForm: true
@@ -74,14 +77,15 @@ class QuestionForm extends Component {
         }
     }
 
-    handleClose() {
-        this.setState({ open: false, question: null });
+    handleClose(event, isSubmit) {
+        this.setState({ open: false, question: null, selectedAnswer: null });
+        if (isSubmit) this.props.refreshParent();
     }
 
     handleCloseConfirm() {
         this.setState({ openConfirm: false, deletionConfirmed: false });
     }
-     
+
     handleInputChange(event) {
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
@@ -109,6 +113,20 @@ class QuestionForm extends Component {
         }, 100);
     }
 
+    handleRowClick(event) {
+        const target = event.currentTarget;
+        const answerId = target.id;
+        const answerIndex = target.tabIndex;
+
+        /* const selectedTopic = this.state.convocation.topicList.filter(topic => topic._id === topicId)[0];
+
+        this.setState({
+            selectedTopic: selectedTopic,
+            selectedTopicIndex: topicIndex,
+            newTopicPosition: topicIndex,
+        });*/
+    } 
+
     async handleSubmit() {
         let options = {
             method: 'POST',
@@ -117,7 +135,7 @@ class QuestionForm extends Component {
         };
         let result;
         this.setState({ busySubmit: true });
-        if (this.state.editing) {  
+        if (this.state.editing) {
             options.method = 'PATCH';
             result = await this.fetchAPI('questions', null, this.state.question._id, null, options);
         } else {
@@ -128,8 +146,7 @@ class QuestionForm extends Component {
             this.setState({ errorMessage: result.data.error })
             return;
         }
-        this.props.refreshParent();
-        this.handleClose();
+        this.handleClose(null, true);
     }
 
     async handleDeletion() {
@@ -154,8 +171,7 @@ class QuestionForm extends Component {
             this.setState({ errorMessage: result.data.error })
             return;
         }
-        this.props.refreshParent();
-        this.handleClose();
+        this.handleClose(null, true);
     }
 
     render() {
@@ -187,15 +203,15 @@ class QuestionForm extends Component {
                                         placeholder="Tema al que Corresponde la Pregunta"
                                         aria-invalid={(this.state.topic === null) ? null : !this.state.topic}
                                         onChange={this.handleInputChange}
-                                        value={this.state.question? this.state.question.topic._id : ""}>
-                                        {this.state.question && this.state.question.topic? null :
+                                        value={this.state.question ? this.state.question.topic._id : ""}>
+                                        {this.state.question && this.state.question.topic ? null :
                                             <option value="">Seleccione un Tema...</option>
                                         }
-                                        {this.state.topics? this.state.topics.map((topic) => {
+                                        {this.state.topics ? this.state.topics.map((topic) => {
                                             return (
                                                 <option key={topic._id} value={topic._id}>{topic.title}</option>
                                             )
-                                        }) : null }
+                                        }) : null}
                                     </select>
                                 </label>
                             </form>

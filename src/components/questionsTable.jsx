@@ -1,6 +1,7 @@
 
 import React, { Component } from 'react';
 import QuestionForm from './questionForm';
+import QuestionAnswersForm from './questionAnswersForm';
 
 class QuestionsTable extends Component {
     constructor(props) {
@@ -12,13 +13,15 @@ class QuestionsTable extends Component {
             errorMessage: null,
             componentBusy: null,
             moreInfoBusy: null,
-            formOpen: false
+            formOpen: false,
+            formAnswersOpen: false
         };
 
         this.handleRefresh = this.handleRefresh.bind(this);
         this.handleRowClick = this.handleRowClick.bind(this);
         this.handleNewButton = this.handleNewButton.bind(this);
         this.handleEditButton = this.handleEditButton.bind(this);
+        this.handleAnswersButton = this.handleAnswersButton.bind(this);
         this.toggleComponentBusy = this.toggleComponentBusy.bind(this);
         this.toggleMoreInfoBusy = this.toggleMoreInfoBusy.bind(this);
     }
@@ -79,6 +82,11 @@ class QuestionsTable extends Component {
         setTimeout(() => { this.setState({ formOpen: false }) }, 100);
     }
 
+    handleAnswersButton(event) {
+        this.setState({ formAnswersOpen: true });
+        setTimeout(() => { this.setState({ formAnswersOpen: false }) }, 100);
+    }
+
     toggleComponentBusy() {
         this.setState({ componentBusy: this.state.componentBusy ? null : 'componentBusy' });
     }
@@ -133,18 +141,25 @@ class QuestionsTable extends Component {
                         })}
                     </tbody>
                 </table>
-                <a href="#"
+                <a href="#newQuestion"
                     role="button"
                     className="primary"
                     onClick={this.handleNewButton}>
                     Nueva Pregunta
                 </a>
-                <a href="#"
+                <a href="#editQuestion"
                     role="button"
-                    className="primary outline"
+                    className="secondary"
                     disabled={this.state.questionSelected ? false : true}
                     onClick={this.handleEditButton}>
                     Editar Pregunta
+                </a>
+                <a href="#editAnswers"
+                    role="button"
+                    className="primary outline"
+                    disabled={this.state.questionSelected ? false : true}
+                    onClick={this.handleAnswersButton}>
+                    Editar Respuestas
                 </a>
                 </section>
                 <section className='grid'>
@@ -179,6 +194,11 @@ class QuestionsTable extends Component {
                     question={this.state.questionSelected}
                     refreshParent={this.handleRefresh}>
                 </QuestionForm>
+                <QuestionAnswersForm apiUrl={this.state.apiUrl}
+                    open={this.state.formAnswersOpen}
+                    question={this.state.questionSelected}
+                    refreshParent={this.handleRefresh}>
+                </QuestionAnswersForm>
             </section>
             </div>
         )
