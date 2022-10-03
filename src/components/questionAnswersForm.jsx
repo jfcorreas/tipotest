@@ -15,14 +15,17 @@ class QuestionAnswersForm extends Component {
             answerToAdd: null,
             errorMessage: null,
             open: false,
-            busyDelete: false
+            busyDelete: false,
+            busyNew: false,
+            invalidNew: true,
+            invalidEdit: true
         };
 
         this.handleClose = this.handleClose.bind(this);
         this.handleRowClick = this.handleRowClick.bind(this);
         this.handleDeleteAnswer = this.handleDeleteAnswer.bind(this);
-        this.handleNewAnswerChange = this.handleNewAnswerChange.bind(this);
-        this.handleNewAnswerSubmit = this.handleNewAnswerSubmit.bind(this);
+        this.handleInputChange = this.handleInputChange.bind(this);
+        this.handleNewAnswer = this.handleNewAnswer.bind(this);
     }
 
     async fetchAPI(path, subpath, objectId, subObjectId, filterParams, options) {
@@ -57,7 +60,10 @@ class QuestionAnswersForm extends Component {
             answerToAdd: null,
             errorMessage: null,
             open: false,
-            busyDelete: false
+            busyDelete: false,
+            busyNew: false,
+            invalidNew: true,
+            invalidEdit: true
         });
         this.props.refreshParent();
     }
@@ -69,7 +75,9 @@ class QuestionAnswersForm extends Component {
         const selectedAnswer = this.state.question.answers.filter(answer => answer._id === answerId)[0];
 
         this.setState({
-            selectedAnswer: selectedAnswer
+            selectedAnswer: selectedAnswer,
+            errorMessage: null,
+            invalidEdit: false
         });
     }
 
@@ -94,24 +102,70 @@ class QuestionAnswersForm extends Component {
 
         this.setState({
             question: questionModified,
-            selectedAnswer: null
-        });
-    }
-
-    handleNewAnswerChange(event) {
-        const target = event.target;
-        const newAnswerId = target.value;
-
-        this.setState({
-            answerToAdd: newTopicId
-        });
-    }
-
-    handleNewAnswerSubmit(event) {
-        this.state.question.answers.push(answerToAdd);
-        this.setState({
+            selectedAnswer: null,
             answerToAdd: null,
-            invalidForm: false
+            errorMessage: null,
+            invalidNew: true,
+            invalidEdit: true
+        });
+    }
+
+    handleInputChange(event) {
+        const target = event.target;
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const inputName = target.name;
+
+        let updatedAnswer = this.state.answerToAdd;
+        if (!updatedAnswer) {
+            updatedAnswer = {
+                text: '',
+                isCorrect: false
+            }
+        }
+        updatedAnswer[inputName] = value;
+        this.setState({
+            answerToAdd: updatedAnswer
+        });
+
+        setTimeout(() => {
+            const invalidForm = (
+                !this.state.answerToAdd.text
+            );
+            this.setState((prevState) => 
+                ({
+                invalidNew: invalidForm,
+                invalidEdit: invalidForm || prevState.invalidEdit 
+             }));
+        }, 100);
+    }
+
+    async handleNewAnswer(event) {
+        let options = {
+            method: 'POST',
+            headers: headersList,
+            body: JSON.stringify(this.state.answerToAdd)
+        };
+
+        let result;
+        this.setState({ busyNew: true });
+        result = await this.fetchAPI('questions', 'answers', this.state.question._id, null, null, options);
+        this.setState({ busyNew: false });
+
+        if (result && result.status === "FAILED") {
+            this.setState({ errorMessage: result.data.error })
+            return;
+        }
+
+        const answerAdded = result.data;
+        
+        this.state.question.answers.push(answerAdded);
+        
+        this.setState({
+            selectedAnswer: null,
+            answerToAdd: null,
+            errorMessage: null,
+            invalidNew: true,
+            invalidEdit: true
         });
     }
 
@@ -157,27 +211,43 @@ class QuestionAnswersForm extends Component {
                                         })}
                                 </tbody>
                             </table>
-                            <button
-                                className="contrast"
-                                disabled={!this.state.selectedAnswer}
-                                aria-busy={this.state.busyDelete}
-                                onClick={this.handleDeleteAnswer}>
-                                Eliminar Respuesta
-                            </button>
-                        </div>
-                        <footer>
                             <section className='grid'>
                                 <label htmlFor="availableTopics">
-                                    Introducir nueva respuesta
+                                    Gestionar la Respuesta:
+                                    <form>
+                                        <input name="text" type="text" required
+                                            placeholder="Selecciona una Respuesta o escribe una nueva"
+                                            aria-invalid={!(this.state.answerToAdd && this.state.answerToAdd.text)}
+                                            onChange={this.handleInputChange}
+                                            value={this.state.answerToAdd ? this.state.answerToAdd.text : ''} />
+                                        <label>
+                                            ¿Es Correcta?
+                                            <input name="isCorrect" type="checkbox"
+                                                title="¿Es una Respuesta correcta?"
+                                                onChange={this.handleInputChange}
+                                                value={this.state.answerToAdd ? this.state.answerToAdd.isCorrect : false} />
+                                        </label>
+                                    </form>
 
-                                    <button
+                                    <a href="#addAnswer"
+                                        role="button"
                                         className="contrast outline"
-                                        disabled={!this.state.answerToAdd}
-                                        onClick={this.handleNewAnswerSubmit}>
-                                        Añadir Respuesta
-                                    </button>
+                                        disabled={this.state.invalidNew}
+                                        onClick={this.handleNewAnswer}>
+                                        Añadir Nueva
+                                    </a>
+                                    <a href="#delAnswer"
+                                        role="button"
+                                        className="contrast"
+                                        disabled={this.state.invalidEdit}
+                                        aria-busy={this.state.busyDelete}
+                                        onClick={this.handleDeleteAnswer}>
+                                        Eliminar Respuesta
+                                    </a>
                                 </label>
                             </section>
+                        </div>
+                        <footer>
                             <section>
                                 <a href="#end"
                                     role="button"
