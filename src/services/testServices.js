@@ -49,29 +49,40 @@ const createNewTest = async (newTest, topicList, numQuestions) => {
     try {
         const convocation = await Convocation.getConvocationById(newTest.convocationId);
 
-        let validTopics = await Topic.getExistingTopics(topicList);
-        validTopics = validTopics.map( (topic) => {
-            return topic._id;
-        });
+        let validTopics = [];
 
-        if (!convocation && validTopics < 1) {
+        if (topicList){
+           validTopics = await Topic.getExistingTopics(topicList);
+           validTopics = validTopics.map( (topic) => {
+               return topic._id;
+           });
+        }
+
+        if (!convocation && validTopics.length < 1) {
             throw {
                 status: 400,
                 message: `No topics available for the Test`,
             };
         }
         
-        let topicsForTest = validTopics;
-        if (convocation){
-            topicsForTest = validTopics.filter( topic => convocation.topicList.includes(topic));
+        let topicsForTest = [];
+        if (convocation) {
+            topicsForTest = topicsForTest.concat(convocation.topicList);
+            topicsForTest = topicsForTest.map( (topic) => {
+                return topic._id;
+            });
+        }
+        if (convocation && validTopics.length > 0){
+            topicsForTest = topicsForTest.filter( topic => validTopics.includes(topic));
         } 
 
-        if (topicsForTest < 1) {
+        if (topicsForTest.length === 0) {
             throw {
                 status: 400,
                 message: `No topics available for the Test`,
             };
         }
+        console.log(topicsForTest)
         let questionsForTest = [];
         for (const topic of topicsForTest) {
             const selectedQuestions = await getQuestionsForTest(topic, numQuestions / topicsForTest.length, newTest.numChoices);

@@ -51,14 +51,14 @@ const createNewTest = async (req, res) => {
                             body.topicList.constructor.name == "Array" &&
                             body.topicList.length > 0);
 
-    if ( !body.convocationId && !validTopicList ) {
+    if ( !body.convocationId ) {
         res
             .status(400)
             .send({
                 status: "FAILED",
                 data: {
                     error:
-                        "The following keys are missing, are empty or are not valid in request body: 'convocationId' and 'topicList'",
+                        "The following keys are missing, are empty or are not valid in request body: 'convocationId'",
                 },
             });
         return;
