@@ -17,6 +17,7 @@ class QuestionAnswersForm extends Component {
             open: false,
             busyDelete: false,
             busyNew: false,
+            busyEdit: false,
             invalidNew: true,
             invalidEdit: true
         };
@@ -26,6 +27,7 @@ class QuestionAnswersForm extends Component {
         this.handleDeleteAnswer = this.handleDeleteAnswer.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleNewAnswer = this.handleNewAnswer.bind(this);
+        this.handleEditAnswer = this.handleEditAnswer.bind(this);
     }
 
     async fetchAPI(path, subpath, objectId, subObjectId, filterParams, options) {
@@ -62,6 +64,7 @@ class QuestionAnswersForm extends Component {
             open: false,
             busyDelete: false,
             busyNew: false,
+            busyEdit: false,
             invalidNew: true,
             invalidEdit: true
         });
@@ -76,8 +79,10 @@ class QuestionAnswersForm extends Component {
 
         this.setState({
             selectedAnswer: selectedAnswer,
-            errorMessage: null,
-            invalidEdit: false
+            answerToAdd: structuredClone(selectedAnswer),
+            invalidEdit: true,
+            invalidNew: true,
+            errorMessage: null
         });
     }
 
@@ -127,6 +132,10 @@ class QuestionAnswersForm extends Component {
             answerToAdd: updatedAnswer
         });
 
+        const validEdit = this.state.selectedAnswer && 
+            (this.state.selectedAnswer.text !== updatedAnswer.text ||
+                this.state.selectedAnswer.isCorrect !== updatedAnswer.isCorrect);
+
         setTimeout(() => {
             const invalidForm = (
                 !this.state.answerToAdd.text
@@ -134,7 +143,7 @@ class QuestionAnswersForm extends Component {
             this.setState((prevState) => 
                 ({
                 invalidNew: invalidForm,
-                invalidEdit: invalidForm || prevState.invalidEdit 
+                invalidEdit: !validEdit || invalidForm
              }));
         }, 100);
     }
@@ -169,6 +178,37 @@ class QuestionAnswersForm extends Component {
         });
     }
 
+    async handleEditAnswer(event) {
+        let options = {
+            method: 'PATCH',
+            headers: headersList,
+            body: JSON.stringify(this.state.answerToAdd)
+        };
+
+        let result;
+        this.setState({ busyEdit: true });
+        result = await this.fetchAPI('questions', 'answers', this.state.question._id, this.state.selectedAnswer._id, null, options);
+        this.setState({ busyEdit: false });
+
+        if (result && result.status === "FAILED") {
+            this.setState({ errorMessage: result.data.error })
+            return;
+        }
+
+        const answerEdited = result.data;
+
+        const answerIndex = this.state.question.answers.findIndex((answer) => answer._id === answerEdited._id);
+        this.state.question.answers.splice(answerIndex, 1, answerEdited);
+        
+        this.setState({
+            selectedAnswer: null,
+            answerToAdd: null,
+            errorMessage: null,
+            invalidNew: true,
+            invalidEdit: true
+        });
+    }
+
     render() {
         return (
             <div>
@@ -181,7 +221,7 @@ class QuestionAnswersForm extends Component {
                             onClick={this.handleClose}>
                         </a>
                         <h3>Respuestas de la pregunta:</h3>
-                        <p>{this.state.question ? this.state.question.text : ""}</p>
+                        <p>{this.state.question ? this.state.question.text : ""}:</p>
                         <span className='warning'>{this.state.errorMessage}</span>
                         <div className='grid'>
                             <table>
@@ -212,8 +252,8 @@ class QuestionAnswersForm extends Component {
                                 </tbody>
                             </table>
                             <section className='grid'>
-                                <label htmlFor="availableTopics">
-                                    Gestionar la Respuesta:
+                                <label>
+                                    <h4>Gestionar la Respuesta:</h4>
                                     <form>
                                         <input name="text" type="text" required
                                             placeholder="Selecciona una Respuesta o escribe una nueva"
@@ -221,30 +261,37 @@ class QuestionAnswersForm extends Component {
                                             onChange={this.handleInputChange}
                                             value={this.state.answerToAdd ? this.state.answerToAdd.text : ''} />
                                         <label>
-                                            ¿Es Correcta?
+                                            ¿La Respuesta es correcta?
                                             <input name="isCorrect" type="checkbox"
                                                 title="¿Es una Respuesta correcta?"
                                                 onChange={this.handleInputChange}
-                                                value={this.state.answerToAdd ? this.state.answerToAdd.isCorrect : false} />
+                                                checked={this.state.answerToAdd ? this.state.answerToAdd.isCorrect : false} />
                                         </label>
                                     </form>
 
                                     <a href="#addAnswer"
                                         role="button"
-                                        className="contrast outline"
+                                        className="primary outline"
                                         disabled={this.state.invalidNew}
                                         onClick={this.handleNewAnswer}>
                                         Añadir Nueva
                                     </a>
+                                    <a href="#editAnswer"
+                                        role="button"
+                                        className="contrast outline"
+                                        disabled={this.state.invalidEdit}
+                                        onClick={this.handleEditAnswer}>
+                                        Modificar
+                                    </a>
                                     <a href="#delAnswer"
                                         role="button"
                                         className="contrast"
-                                        disabled={this.state.invalidEdit}
+                                        disabled={!this.state.selectedAnswer}
                                         aria-busy={this.state.busyDelete}
                                         onClick={this.handleDeleteAnswer}>
-                                        Eliminar Respuesta
+                                        Eliminar
                                     </a>
-                                </label>
+                                    </label>
                             </section>
                         </div>
                         <footer>
