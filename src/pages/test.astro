@@ -1,0 +1,10 @@
+---
+import Layout from "../layouts/Layout.astro";
+import NavBar from "../layouts/NavBar.astro";
+import DoTest from "../components/doTest";
+
+---
+<Layout title={import.meta.env.PUBLIC_APP_TITLE}>
+    <NavBar title={import.meta.env.PUBLIC_APP_TITLE} />
+    <DoTest apiUrl={import.meta.env.API_URL} client:load></DoTest>
+</Layout>

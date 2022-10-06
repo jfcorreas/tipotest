@@ -27,6 +27,8 @@ const getOneTest = async (testId, projection = null) => {
 const createNewTest = async (newTest) => {
     try {
         const createdTest = new Test(newTest);
+        createdTest.createdAt = new Date();
+        createdTest.updatedAt = new Date();
         await Test.create(createdTest);
         return createdTest;
     } catch (error) {

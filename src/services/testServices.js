@@ -82,7 +82,7 @@ const createNewTest = async (newTest, topicList, numQuestions) => {
                 message: `No topics available for the Test`,
             };
         }
-        console.log(topicsForTest)
+
         let questionsForTest = [];
         for (const topic of topicsForTest) {
             const selectedQuestions = await getQuestionsForTest(topic, numQuestions / topicsForTest.length, newTest.numChoices);
