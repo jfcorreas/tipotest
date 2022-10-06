@@ -188,7 +188,7 @@ class QuestionsTable extends Component {
                                 }) : null}
                         </ul>
                     </div>
-                
+                </section>
                 <QuestionForm apiUrl={this.state.apiUrl}
                     open={this.state.formOpen}
                     question={this.state.questionSelected}
@@ -199,7 +199,7 @@ class QuestionsTable extends Component {
                     question={this.state.questionSelected}
                     refreshParent={this.handleRefresh}>
                 </QuestionAnswersForm>
-            </section>
+            
             </div>
         )
     }

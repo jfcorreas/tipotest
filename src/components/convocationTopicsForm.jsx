@@ -174,7 +174,7 @@ class ConvocationTopicsForm extends Component {
                         </a>
                         <h3>Temas de la Convocatoria</h3>
                         <span className='warning'>{this.state.errorMessage}</span>
-                        <div className='grid'>
+                        <div>
                             <table>
                                 <thead>
                                     <tr>
@@ -235,7 +235,7 @@ class ConvocationTopicsForm extends Component {
                             </label>
                         </div>
                         <footer>
-                            <section className='grid'>
+                            <section>
                                 <label htmlFor="availableTopics">
                                     Temas disponibles
                                     <select name="availableTopics" type="text"

@@ -223,7 +223,7 @@ class QuestionAnswersForm extends Component {
                         <h3>Respuestas de la pregunta:</h3>
                         <p>{this.state.question ? this.state.question.text : ""}:</p>
                         <span className='warning'>{this.state.errorMessage}</span>
-                        <div className='grid'>
+                        <div>
                             <table>
                                 <tbody>
                                     {this.state.question &&
@@ -251,7 +251,7 @@ class QuestionAnswersForm extends Component {
                                         })}
                                 </tbody>
                             </table>
-                            <section className='grid'>
+                            <section>
                                 <label>
                                     <h4>Gestionar la Respuesta:</h4>
                                     <form>

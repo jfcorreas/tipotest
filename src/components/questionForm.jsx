@@ -28,7 +28,6 @@ class QuestionForm extends Component {
         this.handleClose = this.handleClose.bind(this);
         this.handleCloseConfirm = this.handleCloseConfirm.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
-        this.handleRowClick = this.handleRowClick.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleDeletion = this.handleDeletion.bind(this);
     }
@@ -112,20 +111,6 @@ class QuestionForm extends Component {
             this.setState({ invalidForm: invalidForm });
         }, 100);
     }
-
-    handleRowClick(event) {
-        const target = event.currentTarget;
-        const answerId = target.id;
-        const answerIndex = target.tabIndex;
-
-        /* const selectedTopic = this.state.convocation.topicList.filter(topic => topic._id === topicId)[0];
-
-        this.setState({
-            selectedTopic: selectedTopic,
-            selectedTopicIndex: topicIndex,
-            newTopicPosition: topicIndex,
-        });*/
-    } 
 
     async handleSubmit() {
         let options = {
