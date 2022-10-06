@@ -28,6 +28,8 @@ const getConvocationById = async (convocationId) => {
 const createNewConvocation = async (newConvocation) => {
     try {
         const createdConvocation = new Convocation(newConvocation);
+        createdConvocation.updatedAt = new Date();
+        createdConvocation.createdAt = new Date();
         await Convocation.create(createdConvocation);
         return createdConvocation;
     } catch (error) {
@@ -53,7 +55,7 @@ const updateOneConvocation = async (convocationId, changes) => {
         if (changes.year) convocationToUpdate.year = changes.year;
         if (changes.institution) convocationToUpdate.institution = changes.institution;
         if (changes.category) convocationToUpdate.category = changes.category;
-        convocationToUpdate.updatedAt = new Date().toLocaleString("en-US", {timeZone: "UTC"});
+        convocationToUpdate.updatedAt = new Date();
             
         const updatedConvocation = await convocationToUpdate.save();
         return updatedConvocation;
@@ -105,7 +107,7 @@ const updateOneConvocationTopics = async (convocationId, topics) => {
         const filteredTopics = topicsIds.filter((topicId) => existentTopicsIds.includes(topicId));
 
         convocationToUpdate.topicList = filteredTopics; 
-        convocationToUpdate.updatedAt = new Date().toLocaleString("en-US", {timeZone: "UTC"});
+        convocationToUpdate.updatedAt = new Date();
             
         const updatedConvocation = await convocationToUpdate.save();
         return updatedConvocation;

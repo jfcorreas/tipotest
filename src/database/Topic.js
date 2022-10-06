@@ -41,6 +41,8 @@ const getTopicById = async (topicId) => {
 const createNewTopic = async (newTopic) => {
     try {
         const createdTopic = new Topic(newTopic);
+        createdTopic.createdAt = new Date();
+        createdTopic.updatedAt = new Date();
         await Topic.create(createdTopic);
         return createdTopic;
     } catch (error) {
@@ -65,7 +67,7 @@ const updateOneTopic = async (topicId, changes) => {
         if (changes.title) topicToUpdate.title = changes.title;
         if (changes.shorthand) topicToUpdate.shorthand = changes.shorthand;
         if (changes.fullTitle) topicToUpdate.fullTitle = changes.fullTitle;
-        topicToUpdate.updatedAt = new Date().toLocaleString("en-US", {timeZone: "UTC"});
+        topicToUpdate.updatedAt = new Date();
             
         const updatedTocic = await topicToUpdate.save();
         return updatedTocic;

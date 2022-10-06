@@ -45,6 +45,8 @@ const getQuestionSample = async (topicId, numQuestions) => {
 const createNewQuestion = async (newQuestion) => {
     try {
         const createdQuestion = new Question(newQuestion);
+        createdQuestion.createdAt = new Date();
+        createdQuestion.updatedAt = new Date();
         await Question.create(createdQuestion);
         return createdQuestion;
     } catch (error) {
@@ -69,7 +71,7 @@ const updateOneQuestion = async (questionId, changes) => {
 
         if (changes.text) questionChanges.text = changes.text;
         if (topic) questionChanges.topic = topic._id;
-        questionChanges.updatedAt = new Date().toLocaleString("en-US", {timeZone: "UTC"});
+        questionChanges.updatedAt = new Date();
 
         const updatedQuestion = await questionChanges.save();
         return updatedQuestion;
@@ -127,7 +129,7 @@ const addNewAnswer = async (questionId, newAnswer) => {
         }
 
         question.answers.push(newAnswer);
-        question.updatedAt = new Date().toLocaleString("en-US", {timeZone: "UTC"});
+        question.updatedAt = new Date();
         await question.save();
 
         let createdAnswer = await Question.find( 
@@ -181,8 +183,8 @@ const updateOneAnswer = async (questionId, answerId, changes) => {
             "$set": {
                 "answers.$.text": changes.text,
                 "answers.$.isCorrect": changes.isCorrect,
-                "answers.$.updatedAt": new Date().toLocaleString("en-US", {timeZone: "UTC"}),
-                "updatedAt": new Date().toLocaleString("en-US", {timeZone: "UTC"})
+                "answers.$.updatedAt": new Date(),
+                "updatedAt": new Date()
             }
         });
 
@@ -212,7 +214,7 @@ const deleteOneAnswer = async (questionId, answerId) => {
         }        
 
         question.answers.pull({ _id: answerId });
-        question.updatedAt = new Date().toLocaleString("en-US", {timeZone: "UTC"});
+        question.updatedAt = new Date();
         await question.save();
         
         return question;

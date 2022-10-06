@@ -52,7 +52,7 @@ const completeOneTest = async (testId, testResponses, newScore) => {
         if (testResponses) completedTest.responses = testResponses;
         if (newScore) completedTest.score = newScore;
         completedTest.submitted = true;
-        completedTest.updatedAt = new Date().toLocaleString("en-US", {timeZone: "UTC"});
+        completedTest.updatedAt = new Date();
 
         const updatedTest = await completedTest.save();
         return updatedTest;
