@@ -20,10 +20,10 @@ const TestSchema = new Schema(
          }],
         responses: [{ type: Number }],
         scoringFormula: { type: String, required: true, default: DEFAULT_SCORING_FORMULA },
-        score: { type: Number, required: true, default: 0 },
+        score: { type: Number, required: true, default: -1 },
         submitted: { type: Boolean, required: true, default: false},
-        createdAt: { type: Date, required: true, default: new Date().toLocaleString("en-US", { timeZone: "UTC"})},
-        updatedAt: { type: Date, required: true, default: new Date().toLocaleString("en-US", { timeZone: "UTC"})}
+        createdAt: { type: Date, required: true, default: new Date()},
+        updatedAt: { type: Date, required: true, default: new Date()}
     }
 );
 

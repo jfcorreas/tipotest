@@ -74,7 +74,7 @@ const createNewTest = async (req, res) => {
         questionList: [],
         responses: [],
         scoringFormula: body.scoringFormula || DEFAULT_SCORING_FORMULA,
-        score: 0,
+        score: -1,
         submitted: false
     };
 

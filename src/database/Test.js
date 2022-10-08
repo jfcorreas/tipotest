@@ -50,7 +50,7 @@ const completeOneTest = async (testId, testResponses, newScore) => {
         }    
 
         if (testResponses) completedTest.responses = testResponses;
-        if (newScore) completedTest.score = newScore;
+        if (newScore >= 0) completedTest.score = newScore;
         completedTest.submitted = true;
         completedTest.updatedAt = new Date();
 
