@@ -19,6 +19,7 @@ class doTest extends Component {
             currentTest: null,
             correctAnswers: [],
             checkedAnswers: [],
+            showResults: false,
             errorMessage: null,
             componentBusy: null
         };
@@ -28,6 +29,7 @@ class doTest extends Component {
         this.handleCheckAnswer = this.handleCheckAnswer.bind(this);
         this.handleCleanAnswer = this.handleCleanAnswer.bind(this);
         this.handleSubmitTest = this.handleSubmitTest.bind(this);
+        this.toggleShowResults = this.toggleShowResults.bind(this);
         this.toggleComponentBusy = this.toggleComponentBusy.bind(this);
     }
 
@@ -135,8 +137,8 @@ class doTest extends Component {
         this.toggleComponentBusy();
         const fetchResult = await this.fetchAPI('tests', null, this.state.currentTest._id, null, options);
         this.toggleComponentBusy();
-        
-        if (fetchResult.status === "FAILED"){
+
+        if (fetchResult.status === "FAILED") {
             this.setErrorMessage(fetchResult.data.error);
             return;
         }
@@ -145,6 +147,10 @@ class doTest extends Component {
         this.setState({
             currentTest: finishedTest
         });
+    }
+
+    toggleShowResults() {
+        this.setState((prevState) => ({ showResults: !prevState.showResults }));
     }
 
     toggleComponentBusy() {
@@ -177,6 +183,7 @@ class doTest extends Component {
                         className="primary"
                         disabled={!this.state.convocationSelected}
                         aria-disabled={!this.state.convocationSelected}
+                        aria-busy={this.state.componentBusy ? true : false}
                         onClick={this.handleStartTest}>
                         Comenzar Test
                     </button>
@@ -208,7 +215,13 @@ class doTest extends Component {
                                                             value={answer.text}
                                                             checked={this.state.checkedAnswers[questionIndex] === Number(answerIndex)}
                                                             onChange={this.handleCheckAnswer} />
-                                                        {answer.text}
+                                                        {this.state.showResults ?
+                                                            this.state.correctAnswers[questionIndex] === Number(answerIndex) ?
+                                                                <ins>{answer.text}</ins>
+                                                                : this.state.checkedAnswers[questionIndex] === Number(answerIndex) ?
+                                                                    <del>{answer.text}</del>
+                                                                    : answer.text
+                                                            : answer.text}
                                                     </label>
                                                 )
                                             })}
@@ -230,17 +243,25 @@ class doTest extends Component {
                     className="contrast"
                     disabled={!this.state.currentTest}
                     aria-disabled={!this.state.currentTest}
+                    aria-busy={this.state.componentBusy ? true : false}
                     hidden={!this.state.currentTest}
                     onClick={this.handleSubmitTest}>
                     {this.state.currentTest && this.state.currentTest.score < 0 ?
                         "Terminar Test" : "Volver a enviar Test"}
                 </button>
+
                 <div className='warning'>{this.state.errorMessage}</div>
                 <article hidden={!this.state.currentTest || this.state.currentTest.score === -1}>
                     Puntuación Obtenida: &nbsp;
                     <strong>{this.state.currentTest ? this.state.currentTest.score : ''}</strong>&nbsp;
                     sobre {this.state.currentTest ? this.state.currentTest.questionList.length : ''}
-
+                    <label>
+                        <input type="checkbox"
+                            hidden={this.state.currentTest && this.state.currentTest.score < 0}
+                            onChange={this.toggleShowResults} />
+                        Mostrar Respuestas
+                    </label>
+                    <a href="/test" role="button" className="secondary">Terminar y empezar un nuevo Test</a>
                 </article>
             </div>
         )
