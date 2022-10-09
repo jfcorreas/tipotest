@@ -132,7 +132,10 @@ const completeOneTest = async (testId, testResponses ) => {
         
         let hits = 0, faults = 0;
         testResponses.forEach( (choice, index) => {
-            if ( (choice > 0) && undoneTest.questionList[index].answers[choice].isCorrect ) {
+            if ( choice !== null &&
+                 choice >= 0 && 
+                 choice < undoneTest.numChoices && 
+                 undoneTest.questionList[index].answers[choice].isCorrect ) {
                 hits++;
             } else {
                 faults++;

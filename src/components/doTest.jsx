@@ -26,6 +26,7 @@ class doTest extends Component {
         this.handleSelectConvocation = this.handleSelectConvocation.bind(this);
         this.handleStartTest = this.handleStartTest.bind(this);
         this.handleCheckAnswer = this.handleCheckAnswer.bind(this);
+        this.handleCleanAnswer = this.handleCleanAnswer.bind(this);
         this.handleSubmitTest = this.handleSubmitTest.bind(this);
         this.toggleComponentBusy = this.toggleComponentBusy.bind(this);
     }
@@ -96,18 +97,32 @@ class doTest extends Component {
         const target = event.target;
         const questionId = target.name;
         const answerId = target.id;
-        
-        const questionIndex = 
-            this.state.currentTest.questionList.findIndex(question => 
+
+        const questionIndex =
+            this.state.currentTest.questionList.findIndex(question =>
                 question._id === questionId
             );
 
-        const answerIndex = 
-            this.state.currentTest.questionList[questionIndex].answers.findIndex(answer => 
-                answer._id === answerId 
+        const answerIndex =
+            this.state.currentTest.questionList[questionIndex].answers.findIndex(answer =>
+                answer._id === answerId
             );
 
-        this.state.checkedAnswers[questionIndex] = Number(answerIndex);
+        const newCheckedAnswers = this.state.checkedAnswers;
+        newCheckedAnswers[questionIndex] = Number(answerIndex);
+
+        this.setState({ checkedAnswers: newCheckedAnswers })
+    }
+
+    handleCleanAnswer(event) {
+        event.preventDefault();
+        const target = event.target;
+        const questionIndex = target.target;
+
+        const newCheckedAnswers = this.state.checkedAnswers;
+        newCheckedAnswers[questionIndex] = undefined;
+
+        this.setState({ checkedAnswers: newCheckedAnswers })
     }
 
     async handleSubmitTest(event) {
@@ -118,17 +133,18 @@ class doTest extends Component {
             body: JSON.stringify({ testResponses: this.state.checkedAnswers })
         };
         this.toggleComponentBusy();
-
         const fetchResult = await this.fetchAPI('tests', null, this.state.currentTest._id, null, options);
-        const finishedTest = fetchResult && fetchResult.data ? fetchResult.data : null;
+        this.toggleComponentBusy();
+        
+        if (fetchResult.status === "FAILED"){
+            this.setErrorMessage(fetchResult.data.error);
+            return;
+        }
 
+        const finishedTest = fetchResult && fetchResult.data ? fetchResult.data : null;
         this.setState({
             currentTest: finishedTest
         });
-        this.toggleComponentBusy();
-        console.log(this.state.checkedAnswers)
-        console.log(this.state.correctAnswers)
-        console.log(finishedTest)
     }
 
     toggleComponentBusy() {
@@ -170,8 +186,8 @@ class doTest extends Component {
                         <h2 aria-busy={this.state.componentBusy ? true : false}>Test</h2>
                         <h4>
                             {this.state.currentTest ?
-                                <p>{new Date(this.state.currentTest.createdAt).toLocaleString(dateLocale, dateOptions)} -
-                                   - {this.state.currentTest.questionList.length} preguntas</p>
+                                <p>{new Date(this.state.currentTest.createdAt).toLocaleString(dateLocale, dateOptions)}&nbsp;
+                                    - {this.state.currentTest.questionList.length} preguntas</p>
                                 : null
                             }
                         </h4>
@@ -183,20 +199,28 @@ class doTest extends Component {
                                     <article key={question._id} id={question._id}>
                                         <fieldset>
                                             <legend><strong>{questionIndex + 1}. {question.text}:</strong></legend><br></br>
-                                            {question.answers.map((answer) => {
+                                            {question.answers.map((answer, answerIndex) => {
                                                 return (
                                                     <label htmlFor={answer._id} key={answer._id}>
                                                         <input type="radio"
                                                             id={answer._id}
                                                             name={question._id}
                                                             value={answer.text}
-                                                            onClick={this.handleCheckAnswer} />
+                                                            checked={this.state.checkedAnswers[questionIndex] === Number(answerIndex)}
+                                                            onChange={this.handleCheckAnswer} />
                                                         {answer.text}
                                                     </label>
                                                 )
                                             })}
 
                                         </fieldset>
+                                        <footer>
+                                            <a href="#"
+                                                target={questionIndex}
+                                                onClick={this.handleCleanAnswer}>
+                                                Limpiar Respuesta
+                                            </a>
+                                        </footer>
                                     </article>
                                 )
                             }) : null}
@@ -209,10 +233,13 @@ class doTest extends Component {
                     hidden={!this.state.currentTest}
                     onClick={this.handleSubmitTest}>
                     {this.state.currentTest && this.state.currentTest.score < 0 ?
-                        "Terminar Test" : "Repetir Test"}
+                        "Terminar Test" : "Volver a enviar Test"}
                 </button>
+                <div className='warning'>{this.state.errorMessage}</div>
                 <article hidden={!this.state.currentTest || this.state.currentTest.score === -1}>
-                    Puntuación Obtenida: {this.state.currentTest ? this.state.currentTest.score : ''} sobre {this.state.currentTest ? this.state.currentTest.questionList.length : ''}
+                    Puntuación Obtenida: &nbsp;
+                    <strong>{this.state.currentTest ? this.state.currentTest.score : ''}</strong>&nbsp;
+                    sobre {this.state.currentTest ? this.state.currentTest.questionList.length : ''}
 
                 </article>
             </div>
