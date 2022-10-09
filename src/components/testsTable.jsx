@@ -1,6 +1,11 @@
 
 import React, { Component } from 'react';
 
+const headersList = {
+    "Accept": "*/*",
+    "Content-Type": "application/json"
+}
+
 class TestsTable extends Component {
     constructor(props) {
         super(props);
@@ -9,11 +14,16 @@ class TestsTable extends Component {
             tests: [],
             testSelected: null,
             errorMessage: null,
-            componentBusy: null
+            componentBusy: null,
+            busyDelete: false,
+            openConfirm: false,
+            deletionConfirmed: false
         };
 
         this.handleRefresh = this.handleRefresh.bind(this);
         this.handleRowClick = this.handleRowClick.bind(this);
+        this.handleCloseConfirm = this.handleCloseConfirm.bind(this);
+        this.handleDeletion = this.handleDeletion.bind(this);
         this.toggleComponentBusy = this.toggleComponentBusy.bind(this);
     }
 
@@ -39,9 +49,11 @@ class TestsTable extends Component {
         const fetchResult = await this.fetchAPI('tests');
 
         const tests = fetchResult && fetchResult.data ? fetchResult.data : [];
-        this.setState({ 
+        this.setState({
             tests: tests,
-            testSelected: null
+            testSelected: null,
+            openConfirm: false,
+            deletionConfirmed: false
         });
         this.toggleComponentBusy();
     }
@@ -56,6 +68,35 @@ class TestsTable extends Component {
         });
     }
 
+    handleCloseConfirm() {
+        this.setState({ openConfirm: false, deletionConfirmed: false });
+    }
+
+    async handleDeletion() {
+
+        if (!this.state.deletionConfirmed) {
+            this.setState({ openConfirm: true, deletionConfirmed: true })
+            return;
+        }
+
+        let options = {
+            method: 'DELETE',
+            headers: headersList
+        };
+        this.setState({ busyDelete: true });
+
+        const result = await this.fetchAPI('tests', null, this.state.testSelected._id, null, options);
+
+        this.setState({ busyDelete: false });
+
+        this.handleCloseConfirm();
+        if (result && result.status === "FAILED") {
+            this.setState({ errorMessage: result.data.error })
+            return;
+        }
+        this.handleRefresh();
+    }
+
     toggleComponentBusy() {
         this.setState({ componentBusy: this.state.componentBusy ? null : 'componentBusy' });
     }
@@ -67,10 +108,10 @@ class TestsTable extends Component {
     render() {
         return (
             <div>
-                    <h4 aria-busy={this.state.componentBusy ? true : false}>
-                        Tests Realizados 
-                    </h4>
-            <section className={this.state.componentBusy}>
+                <h4 aria-busy={this.state.componentBusy ? true : false}>
+                    Tests Realizados ({this.state.tests.length})
+                </h4>
+                <section className={this.state.componentBusy}>
                     <div className='warning'>{this.state.errorMessage}</div>
                     <a href="#" onClick={this.handleRefresh}>🔁 Actualizar</a>
                     <table>
@@ -88,19 +129,19 @@ class TestsTable extends Component {
                                     <tr key={test._id}
                                         id={test._id}
                                         title="Haga click para seleccionar"
-                                        className={this.state.testSelected && 
-                                            this.state.testSelected._id === test._id ? 
-                                            "selected" : null }
+                                        className={this.state.testSelected &&
+                                            this.state.testSelected._id === test._id ?
+                                            "selected" : null}
                                         onClick={this.handleRowClick}>
                                         <td scope="row">
-                                            <input type="checkbox" 
+                                            <input type="checkbox"
                                                 readOnly
-                                                checked={this.state.testSelected && 
-                                                    this.state.testSelected._id === test._id ? 
-                                                    true : false }
+                                                checked={this.state.testSelected &&
+                                                    this.state.testSelected._id === test._id ?
+                                                    true : false}
                                             />
                                         </td>
-                                        <td>{test.submitted? test.updatedAt : "Sin completar"}</td>
+                                        <td>{test.submitted ? test.updatedAt : "Sin completar"}</td>
                                         <td>{test.questionList.length}</td>
                                         <td>{test.score}</td>
                                     </tr>
@@ -108,7 +149,36 @@ class TestsTable extends Component {
                             })}
                         </tbody>
                     </table>
-            </section>
+                    <a href="#delete"
+                        role="button"
+                        className='primary outline'
+                        disabled={!this.state.testSelected}
+                        onClick={this.handleDeletion}>
+                        Eliminar
+                    </a>
+                </section>
+                <dialog open={this.state.openConfirm}>
+                    <article>
+                        <h3>Atención</h3>
+                        <p>
+                            ¿Seguro que quieres borrar el test seleccionado?
+                        </p>
+                        <footer>
+                            <a href="#cancel"
+                                role="button"
+                                className="secondary"
+                                onClick={this.handleCloseConfirm}>
+                                Cancelar
+                            </a>
+                            <a href="#confirmDeletion"
+                                role="button"
+                                aria-busy={this.state.busyDelete}
+                                onClick={this.handleDeletion}>
+                                Eliminar Test
+                            </a>
+                        </footer>
+                    </article>
+                </dialog>
             </div>
         )
     }
