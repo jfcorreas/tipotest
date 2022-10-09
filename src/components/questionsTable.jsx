@@ -103,7 +103,7 @@ class QuestionsTable extends Component {
         return (
             <div>
                 <h4 aria-busy={this.state.componentBusy ? true : false}>
-                    Preguntas
+                    Preguntas ({this.state.questions.length})
                 </h4>
             <section className={this.state.componentBusy}>
                 <div className='warning'>{this.state.errorMessage}</div>

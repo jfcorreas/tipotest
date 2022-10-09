@@ -95,7 +95,7 @@ class TopicsTable extends Component {
         return (
             <div>
                 <h4 aria-busy={this.state.componentBusy ? true : false}>
-                    Temas
+                    Temas ({this.state.topics.length})
                 </h4>
                 <section className={this.state.componentBusy}>
                     <div className='warning'>{this.state.errorMessage}</div>

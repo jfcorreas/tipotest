@@ -104,7 +104,7 @@ class ConvocationsTable extends Component {
         return (
             <div>
                     <h4 aria-busy={this.state.componentBusy ? true : false}>
-                        Convocatorias 
+                        Convocatorias ({this.state.convocations.length})
                     </h4>
             <section className={this.state.componentBusy}>
                     <div className='warning'>{this.state.errorMessage}</div>
