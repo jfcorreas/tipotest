@@ -1,14 +1,16 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+
 const config = require("./config");
+require('dotenv').config();
 
 const v1ConvocationRoutes = require("./v1/routes/convocationRoutes");
 const v1TopicRoutes = require("./v1/routes/topicRoutes");
 const v1QuestionRoutes = require("./v1/routes/questionRoutes");
 const v1TestRoutes = require("./v1/routes/testRoutes");
 
-const mongoDB = `mongodb://${config.db.host}:${config.db.port}/${config.db.name}`;
+const mongoDB = process.env.DB_CONNECTION_STRING;
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true});
 
 const db = mongoose.connection;
@@ -51,5 +53,5 @@ app.use(function(req, res, next){
 });
 
 app.listen(config.app.port, () => {
-    console.log(`🌎 ${config.app.name} running on port ${config.app.port}`)
+    console.log(`🌎 ${config.app.name} running on port ${config.app.port} - ${process.env.NODE_ENV} MODE`)
 });

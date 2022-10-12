@@ -14,7 +14,11 @@
     "api-test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "node", "API", "REST", "MongoDB", "AstroJS"
+    "node",
+    "API",
+    "REST",
+    "MongoDB",
+    "AstroJS"
   ],
   "author": "@jfcorreas",
   "license": "MIT",
@@ -23,6 +27,7 @@
     "@picocss/pico": "^1.5.3",
     "astro": "^1.2.2",
     "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
     "express": "^4.18.1",
     "mongoose": "^6.5.3"
   },
