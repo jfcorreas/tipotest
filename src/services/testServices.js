@@ -161,6 +161,7 @@ const completeOneTest = async (testId, testResponses ) => {
 const deleteOneTest = async (testId) => {
     try {
         await Test.deleteOneTest(testId);
+        await TopicTest.deleteTestTopics(testId);
     } catch (error) {
         throw error;
     }

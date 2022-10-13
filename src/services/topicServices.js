@@ -58,6 +58,7 @@ const updateOneTopic = async (topicId, changes) => {
 const deleteOneTopic = async (topicId) => {
     try {
         await Topic.deleteOneTopic(topicId);
+        await TopicTest.deleteTopicTests(topicId);
     } catch (error) {
         throw error;
     }

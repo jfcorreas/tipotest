@@ -36,10 +36,34 @@ const createNewTopicsForTest = async (newTopicsForTest) => {
     }
 };
 
-// TODO: Implement deleteTopicTests and deleteTestTopics and call from respective functions in deleteTopic and deleteTest
+const deleteTopicTests = async (deletedTopicId) => {
+    try {
+        const numberOfDeletions = await TopicTest.deleteMany({topicId: deletedTopicId});
+        return numberOfDeletions;
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error,
+        }
+    }
+};
+
+const deleteTestTopics = async (deletedTestId) => {
+    try {
+        const numberOfDeletions = await TopicTest.deleteMany({testId: deletedTestId});
+        return numberOfDeletions;
+    } catch (error) {
+        throw {
+            status: error?.status || 500,
+            message: error?.message || error,
+        }
+    }
+};
 
 module.exports = {
     getTestTopics,
     getTopicTests,
-    createNewTopicsForTest
+    createNewTopicsForTest,
+    deleteTopicTests,
+    deleteTestTopics
 }
