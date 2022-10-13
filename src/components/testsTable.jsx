@@ -24,6 +24,7 @@ class TestsTable extends Component {
         this.handleRowClick = this.handleRowClick.bind(this);
         this.handleCloseConfirm = this.handleCloseConfirm.bind(this);
         this.handleDeletion = this.handleDeletion.bind(this);
+        this.handleKeyDown = this.handleKeyDown.bind(this);
         this.toggleComponentBusy = this.toggleComponentBusy.bind(this);
     }
 
@@ -97,6 +98,13 @@ class TestsTable extends Component {
         this.handleRefresh();
     }
 
+    handleKeyDown(event) {
+        const keyName = event.key;
+        console.log(keyName);
+        if (this.state.testSelected && keyName === "Enter") this.handleDeletion();
+        if (this.state.openConfirm && keyName === "Escape") this.handleCloseConfirm();
+    }
+
     toggleComponentBusy() {
         this.setState({ componentBusy: this.state.componentBusy ? null : 'componentBusy' });
     }
@@ -107,7 +115,7 @@ class TestsTable extends Component {
 
     render() {
         return (
-            <div>
+            <div tabIndex="0" onKeyDown={this.handleKeyDown}>
                 <h4 aria-busy={this.state.componentBusy ? true : false}>
                     Tests Realizados ({this.state.tests.length})
                 </h4>

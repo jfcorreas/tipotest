@@ -18,7 +18,7 @@ const fetchAPI = async (path, subpath, objectId, filterParams, options) => {
 const fetchResult = await fetchAPI("tests", null, null, null, undefined);
 const tests = fetchResult && fetchResult.data ? fetchResult.data : [];
 
-//TODO: Fix index.astro in build
+//TODO: Rebuild index.astro with react component
 ---
 
 <Layout title={import.meta.env.PUBLIC_APP_TITLE}>
