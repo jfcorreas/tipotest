@@ -141,12 +141,6 @@ class QuestionsTable extends Component {
                         })}
                     </tbody>
                 </table>
-                <a href="#newQuestion"
-                    role="button"
-                    className="primary"
-                    onClick={this.handleNewButton}>
-                    Nueva Pregunta
-                </a>
                 <a href="#editQuestion"
                     role="button"
                     className="secondary"
@@ -162,6 +156,11 @@ class QuestionsTable extends Component {
                     Editar Respuestas
                 </a>
                 </section>
+                <button
+                    className="primary"
+                    onClick={this.handleNewButton}>
+                    Nueva Pregunta
+                </button>
                 <section className='grid'>
                     <div>
 

@@ -1,11 +1,9 @@
 ---
 export interface Props {
     title: string;
-    
 }
 
 const { title } = Astro.props;
-
 ---
 
 <nav>
@@ -13,14 +11,38 @@ const { title } = Astro.props;
         <li><a href="/"><h2>{title}</h2></a></li>
     </ul>
     <ul>
-    { (Astro.url.pathname.includes('/admin')) && 
-        <li><a href="/admin/convocations">Convocatorias</a></li>
-        <li><a href="/admin/topics">Temas</a></li>
-        <li><a href="/admin/questions">Preguntas</a></li>
-        <li><a href="/admin/tests">Tests</a></li>}
+        {
+            Astro.url.pathname.includes("/admin") && (
+                <details role="list">
+                    <summary aria-haspopup="listbox">
+                        Administrar...
+                    </summary>
+                    <ul>
+                        <li>
+                            <a href="/admin/convocations">Convocatorias</a>
+                        </li>
+                        <li>
+                            <a href="/admin/topics">Temas</a>
+                        </li>
+                        <li>
+                            <a href="/admin/questions">Preguntas</a>
+                        </li>
+                        <li>
+                            <a href="/admin/tests">Tests</a>
+                        </li>
+                    </ul>
+                </details>
+            )
+        }
     </ul>
     <ul>
-        { (Astro.url.pathname === '/') && <li><a href="admin">Admin</a></li>}
+        {
+            Astro.url.pathname === "/" && (
+                <li>
+                    <a href="admin">Admin</a>
+                </li>
+            )
+        }
         <li><a href="/test" role="button">Nuevo Test</a></li>
     </ul>
 </nav>

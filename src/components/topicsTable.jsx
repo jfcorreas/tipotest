@@ -135,17 +135,19 @@ class TopicsTable extends Component {
                     </table>
                     <a href="#"
                         role="button"
-                        className="primary"
-                        onClick={this.handleNewButton}>
-                        Nuevo Tema
-                    </a>
-                    <a href="#"
-                        role="button"
                         className="primary outline"
                         disabled={this.state.topicSelected ? false : true}
                         onClick={this.handleEditButton}>
                         Editar Tema
                     </a>
+                    <a href="#"
+                        role="button"
+                        className="primary"
+                        onClick={this.handleNewButton}>
+                        Nuevo Tema
+                    </a>
+                </section>
+                <section>
                     <h5 aria-busy={this.state.moreInfoBusy}>
                         Título Completo
                     </h5>

@@ -14,7 +14,7 @@ class ConvocationsTable extends Component {
             componentBusy: null,
             topicsBusy: null,
             editFormOpen: false,
-            topicsFormOpen:false
+            topicsFormOpen: false
         };
 
         this.handleRefresh = this.handleRefresh.bind(this);
@@ -48,7 +48,7 @@ class ConvocationsTable extends Component {
         const fetchResult = await this.fetchAPI('convocations');
 
         const convocations = fetchResult && fetchResult.data ? fetchResult.data : [];
-        this.setState({ 
+        this.setState({
             convocations: convocations,
             convocationSelected: null
         });
@@ -58,7 +58,7 @@ class ConvocationsTable extends Component {
     async handleRowClick(event) {
         this.setErrorMessage(null);
         this.toggleTopicsBusy();
-        this.setState({ topicsBusy: true});
+        this.setState({ topicsBusy: true });
 
         const fetchResult = await this.fetchAPI('convocations', null, event.currentTarget.id);
         const convocation = fetchResult && fetchResult.data ? fetchResult.data : null;
@@ -103,10 +103,10 @@ class ConvocationsTable extends Component {
     render() {
         return (
             <div>
-                    <h4 aria-busy={this.state.componentBusy ? true : false}>
-                        Convocatorias ({this.state.convocations.length})
-                    </h4>
-            <section className={this.state.componentBusy}>
+                <h4 aria-busy={this.state.componentBusy ? true : false}>
+                    Convocatorias ({this.state.convocations.length})
+                </h4>
+                <section className={this.state.componentBusy}>
                     <div className='warning'>{this.state.errorMessage}</div>
                     <a href="#" onClick={this.handleRefresh}>🔁 Actualizar</a>
                     <table>
@@ -125,16 +125,16 @@ class ConvocationsTable extends Component {
                                     <tr key={convocation._id}
                                         id={convocation._id}
                                         title="Haga click para seleccionar"
-                                        className={this.state.convocationSelected && 
-                                            this.state.convocationSelected._id === convocation._id ? 
-                                            "selected" : null }
+                                        className={this.state.convocationSelected &&
+                                            this.state.convocationSelected._id === convocation._id ?
+                                            "selected" : null}
                                         onClick={this.handleRowClick}>
                                         <td scope="row">
-                                            <input type="checkbox" 
+                                            <input type="checkbox"
                                                 readOnly
-                                                checked={this.state.convocationSelected && 
-                                                    this.state.convocationSelected._id === convocation._id ? 
-                                                    true : false }
+                                                checked={this.state.convocationSelected &&
+                                                    this.state.convocationSelected._id === convocation._id ?
+                                                    true : false}
                                             />
                                         </td>
                                         <td>{convocation.name}</td>
@@ -146,15 +146,9 @@ class ConvocationsTable extends Component {
                             })}
                         </tbody>
                     </table>
-                    <a href="#new"
-                        role="button"
-                        className="primary"
-                        onClick={this.handleNewButton}>
-                        Nueva Convocatoria
-                    </a>
                     <a href="#edit"
                         role="button"
-                        className="primary outline"
+                        className="secondary"
                         disabled={this.state.convocationSelected ? false : true}
                         onClick={this.handleEditButton}>
                         Editar Convocatoria
@@ -166,6 +160,13 @@ class ConvocationsTable extends Component {
                         onClick={this.handleTopicsButton}>
                         Editar Temario
                     </a>
+                </section>
+                <button
+                    className="primary"
+                    onClick={this.handleNewButton}>
+                    Nueva Convocatoria
+                </button>
+                <section>
                     <h5 aria-busy={this.state.topicsBusy}>
                         Temario de la Convocatoria
                     </h5>
@@ -181,18 +182,18 @@ class ConvocationsTable extends Component {
                                 )
                             }) : "Seleccione una Convocatoria ⬆️"}
                     </ol>
-                <ConvocationForm apiUrl={this.state.apiUrl}
-                    open={this.state.editFormOpen}
-                    convocation={this.state.convocationSelected}
-                    refreshParent={this.handleRefresh}>
-                </ConvocationForm>
-                <ConvocationTopicsForm apiUrl={this.state.apiUrl}
-                    open={this.state.topicsFormOpen}
-                    convocation={this.state.convocationSelected}
-                    toggleParentBusy={this.toggleComponentBusy}
-                    refreshParent={this.handleRefresh}>
-                </ConvocationTopicsForm>
-            </section>
+                    <ConvocationForm apiUrl={this.state.apiUrl}
+                        open={this.state.editFormOpen}
+                        convocation={this.state.convocationSelected}
+                        refreshParent={this.handleRefresh}>
+                    </ConvocationForm>
+                    <ConvocationTopicsForm apiUrl={this.state.apiUrl}
+                        open={this.state.topicsFormOpen}
+                        convocation={this.state.convocationSelected}
+                        toggleParentBusy={this.toggleComponentBusy}
+                        refreshParent={this.handleRefresh}>
+                    </ConvocationTopicsForm>
+                </section>
             </div>
         )
     }
