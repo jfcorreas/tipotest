@@ -19,6 +19,7 @@ class TopicsTable extends Component {
         this.handleRowClick = this.handleRowClick.bind(this);
         this.handleNewButton = this.handleNewButton.bind(this);
         this.handleEditButton = this.handleEditButton.bind(this);
+        this.toggleFormOpen = this.toggleFormOpen.bind(this);
         this.toggleComponentBusy = this.toggleComponentBusy.bind(this);
         this.toggleMoreInfoBusy = this.toggleMoreInfoBusy.bind(this);
     }
@@ -67,16 +68,12 @@ class TopicsTable extends Component {
     }
 
     handleNewButton(event) {
-        this.setState({
-            formOpen: true,
-            topicSelected: null
-        });
-        setTimeout(() => { this.setState({ formOpen: false }) }, 100);
+        this.setState({ topicSelected: null });
+        this.toggleFormOpen();
     }
 
     handleEditButton(event) {
-        this.setState({ formOpen: true });
-        setTimeout(() => { this.setState({ formOpen: false }) }, 100);
+        this.toggleFormOpen();
     }
 
     toggleComponentBusy() {
@@ -85,6 +82,10 @@ class TopicsTable extends Component {
 
     toggleMoreInfoBusy() {
         this.setState({ moreInfoBusy: !this.state.moreInfoBusy });
+    }
+
+    toggleFormOpen() {
+        this.setState( prevState => ({ formOpen: !prevState.formOpen }));
     }
 
     setErrorMessage(msg) {
@@ -155,6 +156,7 @@ class TopicsTable extends Component {
                     <TopicForm apiUrl={this.state.apiUrl}
                         open={this.state.formOpen}
                         topic={this.state.topicSelected}
+                        toggleModalOpen={this.toggleFormOpen}
                         refreshParent={this.handleRefresh}>
                     </TopicForm>
                 </section>

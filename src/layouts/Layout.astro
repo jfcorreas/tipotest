@@ -42,7 +42,7 @@ const { title } = Astro.props;
 							<strong>{import.meta.env.API_URL}</strong>
 						</li>
 					</ul>
-					: "By @jfcorreas"
+					: `By @jfcorreas - Using API: ${import.meta.env.API_URL}` 
 				}
 			</footer>
 		</main>

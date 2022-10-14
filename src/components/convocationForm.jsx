@@ -73,6 +73,7 @@ class ConvocationForm extends Component {
 
     handleClose() {
         this.setState({ open: false, convocation: null });
+        this.props.toggleModalOpen();
     }
 
     handleCloseConfirm() {

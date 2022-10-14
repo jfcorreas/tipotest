@@ -69,6 +69,7 @@ class QuestionAnswersForm extends Component {
             invalidEdit: true
         });
         this.props.refreshParent();
+        this.props.toggleModalOpen();
     }
 
     handleRowClick(event) {

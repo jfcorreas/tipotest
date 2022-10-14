@@ -22,8 +22,11 @@ class ConvocationsTable extends Component {
         this.handleNewButton = this.handleNewButton.bind(this);
         this.handleEditButton = this.handleEditButton.bind(this);
         this.handleTopicsButton = this.handleTopicsButton.bind(this);
+        this.handleKeyDown = this.handleKeyDown.bind(this);
         this.toggleComponentBusy = this.toggleComponentBusy.bind(this);
         this.toggleTopicsBusy = this.toggleTopicsBusy.bind(this);
+        this.toggleEditFormOpen = this.toggleEditFormOpen.bind(this);
+        this.toggleTopicsFormOpen = this.toggleTopicsFormOpen.bind(this);
     }
 
     async fetchAPI(path, subpath, objectId, filterParams, options) {
@@ -70,22 +73,27 @@ class ConvocationsTable extends Component {
     }
 
     handleNewButton(event) {
-        this.setState({
-            editFormOpen: true,
-            convocationSelected: null
-        });
-        setTimeout(() => { this.setState({ editFormOpen: false }) }, 100);
+        this.setState({ convocationSelected: null });
+        this.toggleEditFormOpen();
     }
 
     handleEditButton(event) {
-        this.setState({ editFormOpen: true });
-        setTimeout(() => { this.setState({ editFormOpen: false }) }, 100);
+        this.toggleEditFormOpen();
     }
 
     handleTopicsButton(event) {
-        this.setState({ topicsFormOpen: true });
         this.toggleComponentBusy();
-        setTimeout(() => { this.setState({ topicsFormOpen: false }) }, 100);
+        this.toggleTopicsFormOpen();
+    }
+
+    handleKeyDown(event) {
+        const keyName = event.key;
+
+        if (!this.state.convocationSelected && !this.state.editFormOpen &&
+            !this.state.topicsFormOpen && keyName === "Enter") {
+
+                this.handleNewButton();
+        } 
     }
 
     toggleComponentBusy() {
@@ -96,13 +104,21 @@ class ConvocationsTable extends Component {
         this.setState({ topicsBusy: !this.state.topicsBusy });
     }
 
+    toggleEditFormOpen() {
+        this.setState( prevState => ({ editFormOpen: !prevState.editFormOpen }));
+    }
+
+    toggleTopicsFormOpen() {
+        this.setState( prevState => ({ topicsFormOpen: !prevState.topicsFormOpen }));
+    }
+
     setErrorMessage(msg) {
         this.setState({ errorMessage: msg });
     }
 
     render() {
         return (
-            <div>
+            <div tabIndex="0" onKeyDown={this.handleKeyDown}>
                 <h4 aria-busy={this.state.componentBusy ? true : false}>
                     Convocatorias ({this.state.convocations.length})
                 </h4>
@@ -185,12 +201,14 @@ class ConvocationsTable extends Component {
                     <ConvocationForm apiUrl={this.state.apiUrl}
                         open={this.state.editFormOpen}
                         convocation={this.state.convocationSelected}
+                        toggleModalOpen={this.toggleEditFormOpen}
                         refreshParent={this.handleRefresh}>
                     </ConvocationForm>
                     <ConvocationTopicsForm apiUrl={this.state.apiUrl}
                         open={this.state.topicsFormOpen}
                         convocation={this.state.convocationSelected}
                         toggleParentBusy={this.toggleComponentBusy}
+                        toggleModalOpen={this.toggleTopicsFormOpen}
                         refreshParent={this.handleRefresh}>
                     </ConvocationTopicsForm>
                 </section>

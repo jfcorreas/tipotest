@@ -76,6 +76,7 @@ class ConvocationTopicsForm extends Component {
             invalidForm: true
         });
         if (isSubmit) this.props.refreshParent();
+        this.props.toggleModalOpen();
     }
 
     handleRowClick(event) {

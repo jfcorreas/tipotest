@@ -67,6 +67,7 @@ class TopicForm extends Component {
 
     handleClose() {
         this.setState({ open: false, topic: null });
+        this.props.toggleModalOpen();
     }
 
     handleCloseConfirm() {

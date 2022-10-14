@@ -79,6 +79,7 @@ class QuestionForm extends Component {
     handleClose(event, isSubmit) {
         this.setState({ open: false, question: null, selectedAnswer: null });
         if (isSubmit) this.props.refreshParent();
+        this.props.toggleModalOpen();
     }
 
     handleCloseConfirm() {

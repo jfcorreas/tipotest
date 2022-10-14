@@ -14,7 +14,7 @@ class QuestionsTable extends Component {
             componentBusy: null,
             moreInfoBusy: null,
             formOpen: false,
-            formAnswersOpen: false
+            answersFormOpen: false
         };
 
         this.handleRefresh = this.handleRefresh.bind(this);
@@ -24,6 +24,8 @@ class QuestionsTable extends Component {
         this.handleAnswersButton = this.handleAnswersButton.bind(this);
         this.toggleComponentBusy = this.toggleComponentBusy.bind(this);
         this.toggleMoreInfoBusy = this.toggleMoreInfoBusy.bind(this);
+        this.toggleFormOpen = this.toggleFormOpen.bind(this);
+        this.toggleAnswersFormOpen = this.toggleAnswersFormOpen.bind(this);
     }
 
     async fetchAPI(path, subpath, objectId, filterParams, options) {
@@ -70,21 +72,16 @@ class QuestionsTable extends Component {
     }
 
     handleNewButton(event) {
-        this.setState({
-            formOpen: true,
-            questionSelected: null
-        });
-        setTimeout(() => { this.setState({ formOpen: false }) }, 100);
+        this.setState({ questionSelected: null });
+        this.toggleFormOpen();
     }
 
     handleEditButton(event) {
-        this.setState({ formOpen: true });
-        setTimeout(() => { this.setState({ formOpen: false }) }, 100);
+        this.toggleFormOpen();
     }
 
     handleAnswersButton(event) {
-        this.setState({ formAnswersOpen: true });
-        setTimeout(() => { this.setState({ formAnswersOpen: false }) }, 100);
+        this.toggleAnswersFormOpen();
     }
 
     toggleComponentBusy() {
@@ -93,6 +90,14 @@ class QuestionsTable extends Component {
 
     toggleMoreInfoBusy() {
         this.setState({ moreInfoBusy: !this.state.moreInfoBusy });
+    }
+
+    toggleFormOpen() {
+        this.setState( prevState => ({ formOpen: !prevState.formOpen }));
+    }
+
+    toggleAnswersFormOpen() {
+        this.setState( prevState => ({ answersFormOpen: !prevState.answersFormOpen }));
     }
 
     setErrorMessage(msg) {
@@ -191,11 +196,13 @@ class QuestionsTable extends Component {
                 <QuestionForm apiUrl={this.state.apiUrl}
                     open={this.state.formOpen}
                     question={this.state.questionSelected}
+                    toggleModalOpen={this.toggleFormOpen}
                     refreshParent={this.handleRefresh}>
                 </QuestionForm>
                 <QuestionAnswersForm apiUrl={this.state.apiUrl}
-                    open={this.state.formAnswersOpen}
+                    open={this.state.answersFormOpen}
                     question={this.state.questionSelected}
+                    toggleModalOpen={this.toggleAnswersFormOpen}
                     refreshParent={this.handleRefresh}>
                 </QuestionAnswersForm>
             
