@@ -154,15 +154,17 @@ class TopicForm extends Component {
 
     handleKeyDown(event) {
         const keyName = event.key;
+        
+        if (keyName === "Enter" && !this.state.openConfirm && !this.state.invalidForm ) this.handleSubmit();
+        if (keyName === "Escape" && this.state.openConfirm ) this.handleCloseConfirm();
+        if (keyName === "Escape" && !this.state.openConfirm) this.handleClose();
 
-        if (keyName === "Escape") this.handleClose();
-        if (!this.state.invalidForm && keyName === "Enter") this.handleSubmit();
     }
 
     render() {
         return (
             <div tabIndex="0"
-                onKeyDown={this.state.open && !this.state.openConfirm?  this.handleKeyDown : null}>
+                onKeyDown={this.state.open?  this.handleKeyDown : null}>
                 <dialog open={this.state.open}>
 
                     <article>

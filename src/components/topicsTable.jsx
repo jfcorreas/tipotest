@@ -80,8 +80,8 @@ class TopicsTable extends Component {
     handleKeyDown(event) {
         const keyName = event.key;
 
-        if (this.state.topicSelected && keyName === "Enter") this.handleEditButton();
-        if (keyName === "Escape") this.handleRefresh();
+        if (keyName === "Enter" && this.state.topicSelected) this.handleEditButton();
+        if (keyName === "Escape" && !this.state.formOpen) this.handleRefresh();
     }
 
     toggleComponentBusy() {
