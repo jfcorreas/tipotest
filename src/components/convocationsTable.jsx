@@ -89,11 +89,8 @@ class ConvocationsTable extends Component {
     handleKeyDown(event) {
         const keyName = event.key;
 
-        if (!this.state.convocationSelected && !this.state.editFormOpen &&
-            !this.state.topicsFormOpen && keyName === "Enter") {
-
-                this.handleNewButton();
-        } 
+        if (keyName === "Enter" && this.state.convocationSelected) this.handleEditButton();
+        if (keyName === "Escape" && !this.state.editFormOpen && !this.state.topicsFormOpen) this.handleRefresh();
     }
 
     toggleComponentBusy() {
@@ -118,7 +115,8 @@ class ConvocationsTable extends Component {
 
     render() {
         return (
-            <div tabIndex="0" onKeyDown={this.handleKeyDown}>
+            <div tabIndex="0"
+                onKeyDown={this.state.editFormOpen || this.state.topicsFormOpen? null : this.handleKeyDown}>
                 <h4 aria-busy={this.state.componentBusy ? true : false}>
                     Convocatorias ({this.state.convocations.length})
                 </h4>

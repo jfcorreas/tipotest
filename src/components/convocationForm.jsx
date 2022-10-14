@@ -29,6 +29,7 @@ class ConvocationForm extends Component {
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleDeletion = this.handleDeletion.bind(this);
+        this.handleKeyDown = this.handleKeyDown.bind(this);
     }
 
     async fetchAPI(path, subpath, objectId, filterParams, options) {
@@ -165,9 +166,19 @@ class ConvocationForm extends Component {
         this.handleClose();
     }
 
+    handleKeyDown(event) {
+        const keyName = event.key;
+        
+        if (keyName === "Enter" && !this.state.openConfirm && !this.state.invalidForm ) this.handleSubmit();
+        if (keyName === "Escape" && this.state.openConfirm ) this.handleCloseConfirm();
+        if (keyName === "Escape" && !this.state.openConfirm) this.handleClose();
+
+    }
+
     render() {
         return (
-            <div>
+            <div tabIndex="0"
+                onKeyDown={this.state.open?  this.handleKeyDown : null}>
                 <dialog open={this.state.open}>
 
                     <article>

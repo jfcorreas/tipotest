@@ -30,6 +30,7 @@ class ConvocationTopicsForm extends Component {
         this.handleNewPositionChange = this.handleNewPositionChange.bind(this);
         this.handleNewPositionSubmit = this.handleNewPositionSubmit.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleKeyDown = this.handleKeyDown.bind(this);
     }
 
     async fetchAPI(path, subpath, objectId, filterParams, options) {
@@ -162,9 +163,22 @@ class ConvocationTopicsForm extends Component {
         this.handleClose(null, true);
     }
 
+    handleKeyDown(event) {
+        const keyName = event.key;
+
+        if (keyName === "Enter") {
+            if (this.state.topicToAdd) this.handleNewTopicSubmit();
+            if (this.state.selectedTopic &&
+                this.state.newTopicPosition !== this.state.selectedTopicIndex) this.handleNewPositionSubmit();
+        } 
+        if (keyName === "Escape" ) this.handleClose();
+
+    }    
+
     render() {
         return (
-            <div>
+            <div tabIndex="0"
+                onKeyDown={this.state.open?  this.handleKeyDown : null}>
                 <dialog open={this.state.open}>
 
                     <article>
