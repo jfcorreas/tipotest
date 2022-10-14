@@ -19,6 +19,7 @@ class TopicsTable extends Component {
         this.handleRowClick = this.handleRowClick.bind(this);
         this.handleNewButton = this.handleNewButton.bind(this);
         this.handleEditButton = this.handleEditButton.bind(this);
+        this.handleKeyDown = this.handleKeyDown.bind(this);
         this.toggleFormOpen = this.toggleFormOpen.bind(this);
         this.toggleComponentBusy = this.toggleComponentBusy.bind(this);
         this.toggleMoreInfoBusy = this.toggleMoreInfoBusy.bind(this);
@@ -76,6 +77,13 @@ class TopicsTable extends Component {
         this.toggleFormOpen();
     }
 
+    handleKeyDown(event) {
+        const keyName = event.key;
+
+        if (this.state.topicSelected && keyName === "Enter") this.handleEditButton();
+        if (keyName === "Escape") this.handleRefresh();
+    }
+
     toggleComponentBusy() {
         this.setState({ componentBusy: this.state.componentBusy ? null : 'componentBusy' });
     }
@@ -94,7 +102,7 @@ class TopicsTable extends Component {
 
     render() {
         return (
-            <div>
+            <div tabIndex="0" onKeyDown={this.state.formOpen? null : this.handleKeyDown}>
                 <h4 aria-busy={this.state.componentBusy ? true : false}>
                     Temas ({this.state.topics.length})
                 </h4>
@@ -141,13 +149,12 @@ class TopicsTable extends Component {
                         onClick={this.handleEditButton}>
                         Editar Tema
                     </a>
-                    <a href="#"
-                        role="button"
+                </section>
+                    <button
                         className="primary"
                         onClick={this.handleNewButton}>
                         Nuevo Tema
-                    </a>
-                </section>
+                    </button>
                 <section>
                     <h5 aria-busy={this.state.moreInfoBusy}>
                         Título Completo

@@ -27,6 +27,7 @@ class TopicForm extends Component {
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleDeletion = this.handleDeletion.bind(this);
+        this.handleKeyDown = this.handleKeyDown.bind(this);
     }
 
     async fetchAPI(path, subpath, objectId, filterParams, options) {
@@ -151,9 +152,17 @@ class TopicForm extends Component {
         this.handleClose();
     }
 
+    handleKeyDown(event) {
+        const keyName = event.key;
+
+        if (keyName === "Escape") this.handleClose();
+        if (!this.state.invalidForm && keyName === "Enter") this.handleSubmit();
+    }
+
     render() {
         return (
-            <div>
+            <div tabIndex="0"
+                onKeyDown={this.state.open && !this.state.openConfirm?  this.handleKeyDown : null}>
                 <dialog open={this.state.open}>
 
                     <article>
