@@ -167,6 +167,7 @@ class ConvocationTopicsForm extends Component {
         const keyName = event.key;
 
         if (keyName === "Enter") {
+            event.preventDefault();
             if (this.state.topicToAdd) this.handleNewTopicSubmit();
             if (this.state.selectedTopic &&
                 this.state.newTopicPosition !== this.state.selectedTopicIndex) this.handleNewPositionSubmit();

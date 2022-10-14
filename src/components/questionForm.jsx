@@ -30,6 +30,7 @@ class QuestionForm extends Component {
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleDeletion = this.handleDeletion.bind(this);
+        this.handleKeyDown = this.handleKeyDown.bind(this);
     }
 
     async fetchAPI(path, subpath, objectId, filterParams, options) {
@@ -160,9 +161,23 @@ class QuestionForm extends Component {
         this.handleClose(null, true);
     }
 
+    handleKeyDown(event) {
+        const keyName = event.key;
+        
+        if (keyName === "Enter") {
+            event.preventDefault();
+            if (!this.state.openConfirm && !this.state.invalidForm ) this.handleSubmit();  
+            if (this.state.openConfirm) this.handleDeletion();
+        }
+        if (keyName === "Escape" && this.state.openConfirm ) this.handleCloseConfirm();
+        if (keyName === "Escape" && !this.state.openConfirm) this.handleClose();
+
+    }
+
     render() {
         return (
-            <div>
+            <div tabIndex="0"
+                onKeyDown={this.state.open?  this.handleKeyDown : null}>
                 <dialog open={this.state.open}>
 
                     <article>

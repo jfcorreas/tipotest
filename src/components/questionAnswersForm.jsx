@@ -28,6 +28,7 @@ class QuestionAnswersForm extends Component {
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleNewAnswer = this.handleNewAnswer.bind(this);
         this.handleEditAnswer = this.handleEditAnswer.bind(this);
+        this.handleKeyDown = this.handleKeyDown.bind(this);
     }
 
     async fetchAPI(path, subpath, objectId, subObjectId, filterParams, options) {
@@ -210,9 +211,22 @@ class QuestionAnswersForm extends Component {
         });
     }
 
+    handleKeyDown(event) {
+        const keyName = event.key;
+
+        if (keyName === "Enter") {
+            event.preventDefault();
+            if (!this.state.selectedAnswer && this.state.answerToAdd && !this.state.invalidNew) this.handleNewAnswer();
+            if (this.state.selectedAnswer && !this.state.invalidEdit) this.handleEditAnswer();
+        } 
+        if (keyName === "Escape" ) this.handleClose();
+
+    }    
+
     render() {
         return (
-            <div>
+            <div tabIndex="0"
+                onKeyDown={this.state.open?  this.handleKeyDown : null}>
                 <dialog open={this.state.open}>
 
                     <article>
@@ -270,13 +284,6 @@ class QuestionAnswersForm extends Component {
                                         </label>
                                     </form>
 
-                                    <a href="#addAnswer"
-                                        role="button"
-                                        className="primary outline"
-                                        disabled={this.state.invalidNew}
-                                        onClick={this.handleNewAnswer}>
-                                        Añadir Nueva
-                                    </a>
                                     <a href="#editAnswer"
                                         role="button"
                                         className="contrast outline"
@@ -294,13 +301,19 @@ class QuestionAnswersForm extends Component {
                                     </a>
                                     </label>
                             </section>
+                            <button
+                                className="primary outline"
+                                disabled={this.state.invalidNew}
+                                onClick={this.handleNewAnswer}>
+                                Añadir Nueva
+                            </button>
                         </div>
                         <footer>
                             <section>
                                 <a href="#end"
                                     role="button"
                                     className="secondary"
-                                    onClick={this.handleClose}>
+                                    >
                                     Terminar
                                 </a>
                             </section>

@@ -101,7 +101,10 @@ class TestsTable extends Component {
     handleKeyDown(event) {
         const keyName = event.key;
 
-        if (keyName === "Enter" && this.state.testSelected) this.handleDeletion();
+        if (keyName === "Enter") {
+            event.preventDefault();
+            if (this.state.testSelected) this.handleDeletion();
+        } 
         if (keyName === "Escape" && this.state.openConfirm) this.handleCloseConfirm();
         if (keyName === "Escape" && !this.state.openConfirm) this.handleRefresh();
     }

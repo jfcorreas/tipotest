@@ -22,6 +22,7 @@ class QuestionsTable extends Component {
         this.handleNewButton = this.handleNewButton.bind(this);
         this.handleEditButton = this.handleEditButton.bind(this);
         this.handleAnswersButton = this.handleAnswersButton.bind(this);
+        this.handleKeyDown = this.handleKeyDown.bind(this);
         this.toggleComponentBusy = this.toggleComponentBusy.bind(this);
         this.toggleMoreInfoBusy = this.toggleMoreInfoBusy.bind(this);
         this.toggleFormOpen = this.toggleFormOpen.bind(this);
@@ -84,6 +85,13 @@ class QuestionsTable extends Component {
         this.toggleAnswersFormOpen();
     }
 
+    handleKeyDown(event) {
+        const keyName = event.key;
+
+        if (keyName === "Enter" && this.state.questionSelected) this.handleEditButton();
+        if (keyName === "Escape" && !this.state.formOpen && !this.state.answersFormOpen) this.handleRefresh();
+    }    
+
     toggleComponentBusy() {
         this.setState({ componentBusy: this.state.componentBusy ? null : 'componentBusy' });
     }
@@ -106,7 +114,8 @@ class QuestionsTable extends Component {
 
     render() {
         return (
-            <div>
+            <div tabIndex="0"
+                onKeyDown={this.state.formOpen || this.state.answersFormOpen? null : this.handleKeyDown}>
                 <h4 aria-busy={this.state.componentBusy ? true : false}>
                     Preguntas ({this.state.questions.length})
                 </h4>

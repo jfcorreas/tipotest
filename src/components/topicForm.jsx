@@ -155,7 +155,11 @@ class TopicForm extends Component {
     handleKeyDown(event) {
         const keyName = event.key;
         
-        if (keyName === "Enter" && !this.state.openConfirm && !this.state.invalidForm ) this.handleSubmit();
+        if (keyName === "Enter") {
+            event.preventDefault();
+            if (!this.state.openConfirm && !this.state.invalidForm ) this.handleSubmit();  
+            if (this.state.openConfirm) this.handleDeletion();
+        }
         if (keyName === "Escape" && this.state.openConfirm ) this.handleCloseConfirm();
         if (keyName === "Escape" && !this.state.openConfirm) this.handleClose();
 
