@@ -1,37 +1,15 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import NavBar from "../layouts/NavBar.astro";
+import TestsTable from "../components/testsTable";
 
-let errorMessage = '';
-
-const fetchAPI = async (path, subpath, objectId, filterParams, options) => {
-        let requestUrl = `${import.meta.env.API_URL}/${path}`;
-        if (objectId) requestUrl = requestUrl + '/' + objectId;
-        if (subpath) requestUrl = requestUrl + '/' + subpath;
-        if (filterParams) requestUrl = requestUrl + '?' + filterParams;
-
-        return fetch(requestUrl, options)
-            .then(res => res.json())
-            .catch(err => errorMessage = err.message);
-    }
-
-const fetchResult = await fetchAPI("tests", null, null, null, undefined);
-const tests = fetchResult && fetchResult.data ? fetchResult.data : [];
-
-//TODO: Rebuild index.astro with react component
+const config = {
+    apiUrl: import.meta.env.API_URL,
+    appTitle: import.meta.env.PUBLIC_APP_TITLE
+}
 ---
 
 <Layout title={import.meta.env.PUBLIC_APP_TITLE}>
     <NavBar title={import.meta.env.PUBLIC_APP_TITLE} />
-    <div class='warning'>{errorMessage}</div>
-    <section>
-        <h4>Últimos Tests</h4>
-        <ul>
-            {
-                tests.map((test) => (
-                    <li value={test._id}>{test.updatedAt} - Puntuación: {test.score} sobre {test.questionList.length}</li>
-                ))
-            }
-        </ul>
-    </section>
+    <TestsTable apiUrl={config.apiUrl} adminPage={false} client:load></TestsTable>
 </Layout>

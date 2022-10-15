@@ -12,5 +12,5 @@ const config = {
 
 <Layout title={config.appTitle}>
         <NavBar title={config.appTitle}></NavBar>     
-        <TestsTable apiUrl={config.apiUrl} client:load></TestsTable>
+        <TestsTable apiUrl={config.apiUrl} adminPage={true} client:load></TestsTable>
 </Layout>

@@ -1,5 +1,6 @@
 
 import React, { Component } from 'react';
+import ReviewTest from './reviewTest';
 
 const headersList = {
     "Accept": "*/*",
@@ -11,11 +12,13 @@ class TestsTable extends Component {
         super(props);
         this.state = {
             apiUrl: props.apiUrl,
+            adminMode: props.adminPage,
             tests: [],
             testSelected: null,
             errorMessage: null,
             componentBusy: null,
             busyDelete: false,
+            reviewFormOpen: false,
             openConfirm: false,
             deletionConfirmed: false
         };
@@ -24,8 +27,10 @@ class TestsTable extends Component {
         this.handleRowClick = this.handleRowClick.bind(this);
         this.handleCloseConfirm = this.handleCloseConfirm.bind(this);
         this.handleDeletion = this.handleDeletion.bind(this);
+        this.handleReview = this.handleReview.bind(this);
         this.handleKeyDown = this.handleKeyDown.bind(this);
         this.toggleComponentBusy = this.toggleComponentBusy.bind(this);
+        this.toggleReviewFormOpen = this.toggleReviewFormOpen.bind(this);
     }
 
     async fetchAPI(path, subpath, objectId, filterParams, options) {
@@ -98,12 +103,17 @@ class TestsTable extends Component {
         this.handleRefresh();
     }
 
+    handleReview() {
+        this.toggleReviewFormOpen();
+    }
+
     handleKeyDown(event) {
         const keyName = event.key;
 
         if (keyName === "Enter") {
             event.preventDefault();
-            if (this.state.testSelected) this.handleDeletion();
+            if (this.state.testSelected && this.state.adminMode) this.handleDeletion();
+            if (this.state.testSelected && !this.state.adminMode) this.handleReview();
         } 
         if (keyName === "Escape" && this.state.openConfirm) this.handleCloseConfirm();
         if (keyName === "Escape" && !this.state.openConfirm) this.handleRefresh();
@@ -111,6 +121,10 @@ class TestsTable extends Component {
 
     toggleComponentBusy() {
         this.setState({ componentBusy: this.state.componentBusy ? null : 'componentBusy' });
+    }
+
+    toggleReviewFormOpen() {
+        this.setState( prevState => ({ reviewFormOpen: !prevState.reviewFormOpen }));
     }
 
     setErrorMessage(msg) {
@@ -153,7 +167,13 @@ class TestsTable extends Component {
                                                     true : false}
                                             />
                                         </td>
-                                        <td>{test.submitted ? test.updatedAt : "Sin completar"}</td>
+                                        <td>{test.submitted ? 
+                                            new Intl.DateTimeFormat('es-ES', {
+                                                dateStyle: 'long',
+                                                timeStyle: 'short'
+                                            }).format(new Date(test.updatedAt))
+                                            : "Sin completar"}
+                                        </td>
                                         <td>{test.questionList.length}</td>
                                         <td>{test.score}</td>
                                     </tr>
@@ -164,12 +184,21 @@ class TestsTable extends Component {
                     <a href="#delete"
                         role="button"
                         className='primary outline'
+                        hidden={!this.state.adminMode}
                         disabled={!this.state.testSelected}
                         onClick={this.handleDeletion}>
                         Eliminar
                     </a>
+                    <a href="#review"
+                        role="button"
+                        className='secondary'
+                        hidden={this.state.adminMode}
+                        disabled={!this.state.testSelected}
+                        onClick={this.handleReview}>
+                        Revisar Test
+                    </a>
                 </section>
-                <dialog open={this.state.openConfirm}>
+                <dialog open={this.state.openConfirm && this.state.adminMode}>
                     <article>
                         <h3>Atención</h3>
                         <p>
@@ -191,6 +220,10 @@ class TestsTable extends Component {
                         </footer>
                     </article>
                 </dialog>
+                <ReviewTest open={this.state.reviewFormOpen && !this.state.adminMode}
+                        test={this.state.testSelected}
+                        toggleModalOpen={this.toggleReviewFormOpen}>
+                </ReviewTest>
             </div>
         )
     }

@@ -6,9 +6,6 @@ const headersList = {
     "Content-Type": "application/json"
 }
 
-const dateLocale = "es-ES";
-const dateOptions = { timeZone: "Europe/Madrid" };
-
 class doTest extends Component {
     constructor(props) {
         super(props);
@@ -193,10 +190,20 @@ class doTest extends Component {
                         <h2 aria-busy={this.state.componentBusy ? true : false}>Test</h2>
                         <h4>
                             {this.state.currentTest ?
-                                <p>{new Date(this.state.currentTest.createdAt).toLocaleString(dateLocale, dateOptions)}&nbsp;
+                                <p>{new Intl.DateTimeFormat('es-ES', {
+                                        dateStyle: 'long',
+                                        timeStyle: 'short'
+                                    }).format(new Date(this.state.currentTest.createdAt))}&nbsp;
                                     - {this.state.currentTest.questionList.length} preguntas</p>
                                 : null
                             }
+                            {this.state.currentTest && this.state.currentTest.scoringFormula === "H-(F/4)"?
+                                <ul>
+                                    <li>Cada acierto suma 1 punto.</li>
+                                    <li>Cada fallo penaliza 0,25 puntos.</li>
+                                    <li>Las preguntas no contestadas no se computan.</li>
+                                </ul>
+                            : null}
                         </h4>
                     </hgroup>
                     <form>
