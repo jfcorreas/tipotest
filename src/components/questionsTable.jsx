@@ -152,7 +152,13 @@ class QuestionsTable extends Component {
                                         />
                                     </th>
                                     <td>{question.text}</td>
-                                    <td>{question.answers.length}</td>
+                                    <td>
+                                        {question.answers.length} ({
+                                            question.answers.filter((answer) => answer.isCorrect).length > 0 ?
+                                                <ins> {question.answers.filter((answer) => answer.isCorrect).length} </ins> :
+                                                <span className='warning'>Ninguna Correcta</span>
+                                        })
+                                    </td>
                                 </tr>
                             )
                         })}
