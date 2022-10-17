@@ -1,10 +1,30 @@
 const questionService = require("../services/questionServices");
 
 const getAllQuestions = async (req, res) => {
-    const { topicId } = req.query;
-    const filterParams = topicId? { topic: topicId} : {};
+    let {
+        query: { text, topic, sortAsc, sortDesc }
+    } = req;
+
+    let filterParams = {};
+    if ( topic || text ) {
+
+        text = text? new RegExp( text, "i") : undefined;
+        
+        filterParams = Object.assign({},
+            text === undefined ? null : {text},    
+            topic === undefined ? null : {topic}
+        );
+    }     
+
+    let sortResults = undefined;
+    if ( sortAsc || sortDesc ){
+        sortResults = {};
+        if (sortAsc) sortResults[sortAsc] = 1;
+        if (sortDesc) sortResults[sortDesc] = -1;
+    }
+
     try {
-        const allQuestions = await questionService.getAllQuestions(filterParams);
+        const allQuestions = await questionService.getAllQuestions(filterParams, sortResults);
         res.send({ status: "OK", data: allQuestions});
     } catch (error) {
         res

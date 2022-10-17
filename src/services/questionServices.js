@@ -1,8 +1,8 @@
 const Question = require("../database/Question");
 
-const getAllQuestions = async (filterParams) => {
+const getAllQuestions = async (filterParams, sortResults) => {
     try {
-        const filteredQuestions = await Question.getAllQuestions(filterParams);
+        const filteredQuestions = await Question.getAllQuestions(filterParams, sortResults);
         return filteredQuestions;
     } catch (error) {
         throw error;

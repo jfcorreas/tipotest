@@ -45,8 +45,6 @@ class QuestionsTable extends Component {
     }
 
     // TODO: Filter questions by topic
-    // TODO: Sort questions by descending date
-    // TODO: Add # of correct answers in #Respuestas column
     async handleRefresh() {
         this.setErrorMessage(null);
         this.toggleComponentBusy();
