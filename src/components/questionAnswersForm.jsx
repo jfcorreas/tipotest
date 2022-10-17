@@ -288,6 +288,7 @@ class QuestionAnswersForm extends Component {
                                         role="button"
                                         className="contrast outline"
                                         disabled={this.state.invalidEdit}
+                                        aria-busy={this.state.busyEdit}
                                         onClick={this.handleEditAnswer}>
                                         Modificar
                                     </a>
@@ -304,6 +305,7 @@ class QuestionAnswersForm extends Component {
                             <button
                                 className="primary outline"
                                 disabled={this.state.invalidNew}
+                                aria-busy={this.state.busyNew}
                                 onClick={this.handleNewAnswer}>
                                 Añadir Nueva
                             </button>
@@ -313,7 +315,7 @@ class QuestionAnswersForm extends Component {
                                 <a href="#end"
                                     role="button"
                                     className="secondary"
-                                    >
+                                    onClick={this.handleClose}>
                                     Terminar
                                 </a>
                             </section>
