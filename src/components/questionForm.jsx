@@ -11,9 +11,9 @@ class QuestionForm extends Component {
         this.state = {
             apiUrl: props.apiUrl,
             question: props.question,
-            topics: null,
+            topics: props.topics,
             text: null,
-            topic: null,
+            topic: props.topicFilter,
             selectedAnswer: null,
             errorMessage: null,
             open: false,
@@ -47,13 +47,8 @@ class QuestionForm extends Component {
     async componentDidUpdate(prevProps) {
         if (this.props.open !== prevProps.open && this.props.open === true) {
 
-            this.setState({ busyTopics: true });
-            const fetchResult = await this.fetchAPI('topics');
-            const topics = fetchResult && fetchResult.data ? fetchResult.data : [];
-            this.setState({ busyTopics: false });
-
             this.setState({
-                topics: topics,
+                topics: this.props.topics,
                 selectedAnswer: null,
                 open: true,
                 errorMessage: false,
@@ -71,7 +66,7 @@ class QuestionForm extends Component {
             this.setState({
                 question: null,
                 text: null,
-                topic: null,
+                topic: this.props.topicFilter,
                 editing: false
             });
         }
@@ -96,7 +91,7 @@ class QuestionForm extends Component {
         if (!updatedQuestion) {
             updatedQuestion = {
                 text: '',
-                topic: ''
+                topic: this.state.topic
             }
         }
         updatedQuestion[inputName] = value;
@@ -204,7 +199,9 @@ class QuestionForm extends Component {
                                         placeholder="Tema al que Corresponde la Pregunta"
                                         aria-invalid={(this.state.topic === null) ? null : !this.state.topic}
                                         onChange={this.handleInputChange}
-                                        value={this.state.question ? this.state.question.topic._id : ""}>
+                                        value={
+                                            this.state.question && this.state.question.topic ? this.state.question.topic._id : 
+                                                this.state.topic ? this.state.topic : ""}>
                                         {this.state.question && this.state.question.topic ? null :
                                             <option value="">Seleccione un Tema...</option>
                                         }

@@ -10,21 +10,26 @@ class QuestionsTable extends Component {
             apiUrl: props.apiUrl,
             questions: [],
             questionSelected: null,
+            topics: null,
+            topicFilter: null,
             errorMessage: null,
             componentBusy: null,
             moreInfoBusy: null,
+            topicFilterBusy: null,
             formOpen: false,
             answersFormOpen: false
         };
 
         this.handleRefresh = this.handleRefresh.bind(this);
         this.handleRowClick = this.handleRowClick.bind(this);
+        this.handleFilterByTopic = this.handleFilterByTopic.bind(this);
         this.handleNewButton = this.handleNewButton.bind(this);
         this.handleEditButton = this.handleEditButton.bind(this);
         this.handleAnswersButton = this.handleAnswersButton.bind(this);
         this.handleKeyDown = this.handleKeyDown.bind(this);
         this.toggleComponentBusy = this.toggleComponentBusy.bind(this);
         this.toggleMoreInfoBusy = this.toggleMoreInfoBusy.bind(this);
+        this.toggleTopicFilterBusy = this.toggleTopicFilterBusy.bind(this);
         this.toggleFormOpen = this.toggleFormOpen.bind(this);
         this.toggleAnswersFormOpen = this.toggleAnswersFormOpen.bind(this);
     }
@@ -33,7 +38,10 @@ class QuestionsTable extends Component {
         let requestUrl = `${this.state.apiUrl}/${path}`;
         if (objectId) requestUrl = requestUrl + '/' + objectId;
         if (subpath) requestUrl = requestUrl + '/' + subpath;
-        if (filterParams) requestUrl = requestUrl + '?' + filterParams;
+        if (filterParams) {
+            requestUrl = requestUrl + '?' + 
+                new URLSearchParams(filterParams).toString()
+        }
 
         return fetch(requestUrl, options)
             .then(res => res.json())
@@ -44,17 +52,23 @@ class QuestionsTable extends Component {
         await this.handleRefresh();
     }
 
-    // TODO: Filter questions by topic
     async handleRefresh() {
         this.setErrorMessage(null);
         this.toggleComponentBusy();
 
-        const fetchResult = await this.fetchAPI('questions');
+        let fetchResult = await this.fetchAPI('questions');
 
         const questions = fetchResult && fetchResult.data ? fetchResult.data : [];
+
+        fetchResult = await this.fetchAPI('topics');
+
+        const topics = fetchResult && fetchResult.data ? fetchResult.data : [];
+
         this.setState({
             questions: questions,
-            questionSelected: null
+            topics: topics,
+            questionSelected: null,
+            topicFilter: null
         });
         this.toggleComponentBusy();
     }
@@ -62,15 +76,32 @@ class QuestionsTable extends Component {
     async handleRowClick(event) {
         this.setErrorMessage(null);
         this.toggleMoreInfoBusy();
-        this.setState({ moreInfoBusy: true });
 
         const fetchResult = await this.fetchAPI('questions', null, event.currentTarget.id);
         const question = fetchResult && fetchResult.data ? fetchResult.data : null;
-        this.setState({
-            questionSelected: question,
-            moreInfoBusy: false
-        });
+        
+        this.setState({ questionSelected: question });
         this.toggleMoreInfoBusy();
+    }
+
+    async handleFilterByTopic(event) {
+        const target = event.target;
+        const topicId = target.value;
+
+        this.setErrorMessage(null);
+        this.toggleTopicFilterBusy();
+
+        const fetchResult = await this.fetchAPI('questions', null, null, {topic: topicId}, null);
+
+        const questions = fetchResult && fetchResult.data ? fetchResult.data : [];
+
+        this.setState({
+            questions: questions,
+            questionSelected: null,
+            topicFilter: topicId
+        });
+
+        this.toggleTopicFilterBusy();
     }
 
     handleNewButton(event) {
@@ -91,22 +122,26 @@ class QuestionsTable extends Component {
 
         if (keyName === "Enter" && this.state.questionSelected) this.handleEditButton();
         if (keyName === "Escape" && !this.state.formOpen && !this.state.answersFormOpen) this.handleRefresh();
-    }    
+    }
 
     toggleComponentBusy() {
         this.setState({ componentBusy: this.state.componentBusy ? null : 'componentBusy' });
     }
 
     toggleMoreInfoBusy() {
-        this.setState({ moreInfoBusy: !this.state.moreInfoBusy });
+        this.setState(prevState => ({ moreInfoBusy: !prevState.moreInfoBusy }));
+    }
+
+    toggleTopicFilterBusy() {
+        this.setState(prevState => ({ topicFilterBusy: !prevState.topicFilterBusy }));
     }
 
     toggleFormOpen() {
-        this.setState( prevState => ({ formOpen: !prevState.formOpen }));
+        this.setState(prevState => ({ formOpen: !prevState.formOpen }));
     }
 
     toggleAnswersFormOpen() {
-        this.setState( prevState => ({ answersFormOpen: !prevState.answersFormOpen }));
+        this.setState(prevState => ({ answersFormOpen: !prevState.answersFormOpen }));
     }
 
     setErrorMessage(msg) {
@@ -116,66 +151,82 @@ class QuestionsTable extends Component {
     render() {
         return (
             <div tabIndex="0"
-                onKeyDown={this.state.formOpen || this.state.answersFormOpen? null : this.handleKeyDown}>
+                onKeyDown={this.state.formOpen || this.state.answersFormOpen ? null : this.handleKeyDown}>
                 <h4 aria-busy={this.state.componentBusy ? true : false}>
                     Preguntas ({this.state.questions.length})
                 </h4>
-            <section className={this.state.componentBusy}>
-                <div className='warning'>{this.state.errorMessage}</div>
-                <a href="#" onClick={this.handleRefresh}>🔁 Actualizar</a>
-                <table>
-                    <thead>
-                        <tr>
-                            <th scope="col"></th>
-                            <th scope="col">Texto</th>
-                            <th scope="col">#Respuestas</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {this.state.questions.map((question) => {
+                <label>
+                    Tema
+                    <select name="topic" type="text" 
+                        placeholder="Filtrar por Tema"
+                        onChange={this.handleFilterByTopic}
+                        value={this.state.topicFilter ? this.state.topicFilter : ""}>
+                        {this.state.topicFilter ? null :
+                            <option value="">Filtrar por Tema...</option>
+                        }
+                        {this.state.topics ? this.state.topics.map((topic) => {
                             return (
-                                <tr key={question._id}
-                                    id={question._id}
-                                    title="Haga click para seleccionar"
-                                    className={this.state.questionSelected &&
-                                        this.state.questionSelected._id === question._id ?
-                                        "selected" : null}
-                                    onClick={this.handleRowClick}>
-                                    <th scope="row">
-                                        <input type="checkbox"
-                                            readOnly
-                                            checked={this.state.questionSelected &&
-                                                this.state.questionSelected._id === question._id ?
-                                                true : false}
-                                        />
-                                    </th>
-                                    <td>{question.text}</td>
-                                    <td>
-                                        {question.answers.length} ({
-                                            question.answers.filter((answer) => answer.isCorrect).length > 0 ?
-                                                <ins> {question.answers.filter((answer) => answer.isCorrect).length} </ins> :
-                                                <span className='warning'>Ninguna Correcta</span>
-                                        })
-                                    </td>
-                                </tr>
+                                <option key={topic._id} value={topic._id}>{topic.title}</option>
                             )
-                        })}
-                    </tbody>
-                </table>
-                <a href="#editQuestion"
-                    role="button"
-                    className="secondary"
-                    disabled={this.state.questionSelected ? false : true}
-                    onClick={this.handleEditButton}>
-                    Editar Pregunta
-                </a>
-                <a href="#editAnswers"
-                    role="button"
-                    className="primary outline"
-                    disabled={this.state.questionSelected ? false : true}
-                    onClick={this.handleAnswersButton}>
-                    Editar Respuestas
-                </a>
+                        }) : null}
+                    </select>
+                </label>
+                <section className={this.state.componentBusy}>
+                    <div className='warning'>{this.state.errorMessage}</div>
+                    <a href="#" onClick={this.handleRefresh}>🔁 Actualizar / Limpiar filtro</a>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th scope="col"></th>
+                                <th scope="col">Texto</th>
+                                <th scope="col">#Respuestas</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {this.state.questions.map((question) => {
+                                return (
+                                    <tr key={question._id}
+                                        id={question._id}
+                                        title="Haga click para seleccionar"
+                                        className={this.state.questionSelected &&
+                                            this.state.questionSelected._id === question._id ?
+                                            "selected" : null}
+                                        onClick={this.handleRowClick}>
+                                        <th scope="row">
+                                            <input type="checkbox"
+                                                readOnly
+                                                checked={this.state.questionSelected &&
+                                                    this.state.questionSelected._id === question._id ?
+                                                    true : false}
+                                            />
+                                        </th>
+                                        <td>{question.text}</td>
+                                        <td>
+                                            {question.answers.length} ({
+                                                question.answers.filter((answer) => answer.isCorrect).length > 0 ?
+                                                    <ins> {question.answers.filter((answer) => answer.isCorrect).length} </ins> :
+                                                    <span className='warning'>Ninguna Correcta</span>
+                                            })
+                                        </td>
+                                    </tr>
+                                )
+                            })}
+                        </tbody>
+                    </table>
+                    <a href="#editQuestion"
+                        role="button"
+                        className="secondary"
+                        disabled={this.state.questionSelected ? false : true}
+                        onClick={this.handleEditButton}>
+                        Editar Pregunta
+                    </a>
+                    <a href="#editAnswers"
+                        role="button"
+                        className="primary outline"
+                        disabled={this.state.questionSelected ? false : true}
+                        onClick={this.handleAnswersButton}>
+                        Editar Respuestas
+                    </a>
                 </section>
                 <button
                     className="primary"
@@ -212,6 +263,8 @@ class QuestionsTable extends Component {
                 <QuestionForm apiUrl={this.state.apiUrl}
                     open={this.state.formOpen}
                     question={this.state.questionSelected}
+                    topics={this.state.topics}
+                    topicFilter={this.state.topicFilter}
                     toggleModalOpen={this.toggleFormOpen}
                     refreshParent={this.handleRefresh}>
                 </QuestionForm>
@@ -221,7 +274,7 @@ class QuestionsTable extends Component {
                     toggleModalOpen={this.toggleAnswersFormOpen}
                     refreshParent={this.handleRefresh}>
                 </QuestionAnswersForm>
-            
+
             </div>
         )
     }
