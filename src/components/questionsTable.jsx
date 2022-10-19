@@ -21,6 +21,7 @@ class QuestionsTable extends Component {
         };
 
         this.handleRefresh = this.handleRefresh.bind(this);
+        this.handleCleanFilter = this.handleCleanFilter.bind(this);
         this.handleRowClick = this.handleRowClick.bind(this);
         this.handleFilterByTopic = this.handleFilterByTopic.bind(this);
         this.handleNewButton = this.handleNewButton.bind(this);
@@ -56,7 +57,11 @@ class QuestionsTable extends Component {
         this.setErrorMessage(null);
         this.toggleComponentBusy();
 
-        let fetchResult = await this.fetchAPI('questions');
+        let fetchResult = await this.fetchAPI('questions',
+            null,
+            null,
+            this.state.topicFilter? {topic: this.state.topicFilter}: null,
+            null);
 
         const questions = fetchResult && fetchResult.data ? fetchResult.data : [];
 
@@ -67,10 +72,14 @@ class QuestionsTable extends Component {
         this.setState({
             questions: questions,
             topics: topics,
-            questionSelected: null,
-            topicFilter: null
+            questionSelected: null
         });
         this.toggleComponentBusy();
+    }
+
+    handleCleanFilter(event) {
+        this.setState({ topicFilter: null });
+        setTimeout(() => this.handleRefresh(), 100);
     }
 
     async handleRowClick(event) {
@@ -173,7 +182,8 @@ class QuestionsTable extends Component {
                 </label>
                 <section className={this.state.componentBusy}>
                     <div className='warning'>{this.state.errorMessage}</div>
-                    <a href="#" onClick={this.handleRefresh}>🔁 Actualizar / Limpiar filtro</a>
+                    <a href="#refresh" onClick={this.handleRefresh}>🔁 Actualizar</a>&nbsp;
+                    <a href="#cleanFilter" onClick={this.handleCleanFilter}>🆑 Limpiar filtro</a>
                     <table>
                         <thead>
                             <tr>
