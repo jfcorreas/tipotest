@@ -23,6 +23,7 @@ class QuestionsTable extends Component {
         this.handleRefresh = this.handleRefresh.bind(this);
         this.handleCleanFilter = this.handleCleanFilter.bind(this);
         this.handleRowClick = this.handleRowClick.bind(this);
+        this.handleRowDoubleClick = this.handleRowDoubleClick.bind(this);
         this.handleFilterByTopic = this.handleFilterByTopic.bind(this);
         this.handleNewButton = this.handleNewButton.bind(this);
         this.handleEditButton = this.handleEditButton.bind(this);
@@ -91,6 +92,11 @@ class QuestionsTable extends Component {
 
         this.setState({ questionSelected: question });
         this.toggleMoreInfoBusy();
+    }
+
+    async handleRowDoubleClick(event) {
+        await this.handleRowClick(event);
+        this.handleEditButton();
     }
 
     async handleFilterByTopic(event) {
@@ -197,11 +203,12 @@ class QuestionsTable extends Component {
                                 return (
                                     <tr key={question._id}
                                         id={question._id}
-                                        title="Haga click para seleccionar"
+                                        title="Click para seleccionar - Doble Click para editar"
                                         className={this.state.questionSelected &&
                                             this.state.questionSelected._id === question._id ?
                                             "selected" : null}
-                                        onClick={this.handleRowClick}>
+                                        onClick={this.handleRowClick}
+                                        onDoubleClick={this.handleRowDoubleClick}>
                                         <th scope="row">
                                             <input type="checkbox"
                                                 readOnly
