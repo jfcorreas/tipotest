@@ -175,7 +175,7 @@ class QuestionsTable extends Component {
                         }
                         {this.state.topics ? this.state.topics.map((topic) => {
                             return (
-                                <option key={topic._id} value={topic._id}>{topic.title}</option>
+                                <option key={topic._id} value={topic._id}>({topic.shorthand}) {topic.title}</option>
                             )
                         }) : null}
                     </select>
