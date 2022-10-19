@@ -154,8 +154,9 @@ class TopicForm extends Component {
 
     handleKeyDown(event) {
         const keyName = event.key;
-        
-        if (keyName === "Enter") {
+        const shiftKey = event.shiftKey;
+       
+        if (keyName === "Enter" && !shiftKey) {
             event.preventDefault();
             if (!this.state.openConfirm && !this.state.invalidForm ) this.handleSubmit();  
             if (this.state.openConfirm) this.handleDeletion();
