@@ -40,7 +40,7 @@ class QuestionsTable extends Component {
         if (objectId) requestUrl = requestUrl + '/' + objectId;
         if (subpath) requestUrl = requestUrl + '/' + subpath;
         if (filterParams) {
-            requestUrl = requestUrl + '?' + 
+            requestUrl = requestUrl + '?' +
                 new URLSearchParams(filterParams).toString()
         }
 
@@ -60,7 +60,7 @@ class QuestionsTable extends Component {
         let fetchResult = await this.fetchAPI('questions',
             null,
             null,
-            this.state.topicFilter? {topic: this.state.topicFilter}: null,
+            this.state.topicFilter ? { topic: this.state.topicFilter } : null,
             null);
 
         const questions = fetchResult && fetchResult.data ? fetchResult.data : [];
@@ -88,7 +88,7 @@ class QuestionsTable extends Component {
 
         const fetchResult = await this.fetchAPI('questions', null, event.currentTarget.id);
         const question = fetchResult && fetchResult.data ? fetchResult.data : null;
-        
+
         this.setState({ questionSelected: question });
         this.toggleMoreInfoBusy();
     }
@@ -100,7 +100,7 @@ class QuestionsTable extends Component {
         this.setErrorMessage(null);
         this.toggleTopicFilterBusy();
 
-        const fetchResult = await this.fetchAPI('questions', null, null, {topic: topicId}, null);
+        const fetchResult = await this.fetchAPI('questions', null, null, { topic: topicId }, null);
 
         const questions = fetchResult && fetchResult.data ? fetchResult.data : [];
 
@@ -166,7 +166,7 @@ class QuestionsTable extends Component {
                 </h4>
                 <label>
                     Tema
-                    <select name="topic" type="text" 
+                    <select name="topic" type="text"
                         placeholder="Filtrar por Tema"
                         onChange={this.handleFilterByTopic}
                         value={this.state.topicFilter ? this.state.topicFilter : ""}>
@@ -212,11 +212,13 @@ class QuestionsTable extends Component {
                                         </th>
                                         <td>{question.text}</td>
                                         <td>
-                                            {question.answers.length} ({
-                                                question.answers.filter((answer) => answer.isCorrect).length > 0 ?
-                                                    <ins> {question.answers.filter((answer) => answer.isCorrect).length} </ins> :
-                                                    <span className='warning'>Ninguna Correcta</span>
-                                            })
+                                            <a href='#answersSection'>
+                                                {question.answers.length} ({
+                                                    question.answers.filter((answer) => answer.isCorrect).length > 0 ?
+                                                        <ins> {question.answers.filter((answer) => answer.isCorrect).length} </ins> :
+                                                        <span className='warning'>Ninguna Correcta</span>
+                                                })
+                                            </a>
                                         </td>
                                     </tr>
                                 )
@@ -243,7 +245,7 @@ class QuestionsTable extends Component {
                     onClick={this.handleNewButton}>
                     Nueva Pregunta
                 </button>
-                <section className='grid'>
+                <section id="answersSection" className='grid'>
                     <div>
 
                         <h5 aria-busy={this.state.moreInfoBusy}>
