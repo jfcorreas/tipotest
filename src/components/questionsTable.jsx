@@ -162,7 +162,9 @@ class QuestionsTable extends Component {
     setErrorMessage(msg) {
         this.setState({ errorMessage: msg });
     }
-
+     // TODO: implement filter by text IN TABLE
+     // TODO: implement form to add questions and answers in batch
+     // FIXME: after create a new question, keep selected the new question
     render() {
         return (
             <div tabIndex="0"

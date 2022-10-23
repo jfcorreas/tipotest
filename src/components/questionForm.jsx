@@ -168,7 +168,7 @@ class QuestionForm extends Component {
         if (keyName === "Escape" && !this.state.openConfirm) this.handleClose();
 
     }
-
+    
     render() {
         return (
             <div tabIndex="0"

@@ -24,6 +24,7 @@ class QuestionAnswersForm extends Component {
 
         this.handleClose = this.handleClose.bind(this);
         this.handleRowClick = this.handleRowClick.bind(this);
+        this.handleRowDoubleClick = this.handleRowDoubleClick.bind(this);
         this.handleDeleteAnswer = this.handleDeleteAnswer.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleNewAnswer = this.handleNewAnswer.bind(this);
@@ -87,6 +88,20 @@ class QuestionAnswersForm extends Component {
             errorMessage: null
         });
     }
+
+    handleRowDoubleClick(event) {
+        const target = event.currentTarget;
+        const answerId = target.id;
+
+        const selectedAnswer = this.state.question.answers.find(answer => answer._id === answerId);
+        selectedAnswer.isCorrect = !selectedAnswer.isCorrect;
+
+        this.setState({
+            selectedAnswer: selectedAnswer,
+            answerToAdd: structuredClone(selectedAnswer),
+            errorMessage: null
+        });
+    }    
 
     async handleDeleteAnswer(event) {
         let options = {
@@ -237,7 +252,6 @@ class QuestionAnswersForm extends Component {
                         </a>
                         <h3>Respuestas de la pregunta:</h3>
                         <p>{this.state.question ? this.state.question.text : ""}:</p>
-                        <span className='warning'>{this.state.errorMessage}</span>
                         <div>
                             <table>
                                 <tbody>
@@ -250,7 +264,8 @@ class QuestionAnswersForm extends Component {
                                                     className={this.state.selectedAnswer &&
                                                         this.state.selectedAnswer._id === answer._id ?
                                                         "selected" : null}
-                                                    onClick={this.handleRowClick}>
+                                                    onClick={this.handleRowClick}
+                                                    onDoubleClick={this.handleRowDoubleClick}>
                                                     <td scope="row">
                                                         <input type="checkbox"
                                                             readOnly
@@ -302,6 +317,7 @@ class QuestionAnswersForm extends Component {
                                     </a>
                                     </label>
                             </section>
+                            <span className='warning'>{this.state.errorMessage}</span>
                             <button
                                 className="primary outline"
                                 disabled={this.state.invalidNew}

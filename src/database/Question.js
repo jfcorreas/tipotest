@@ -1,7 +1,7 @@
 const { Question } = require("../database/schemas/QuestionSchema");
 const Topic = require("../database/schemas/TopicSchema");
 
-const getAllQuestions = async (filterParams, sortResults = { updatedAt: -1 }) => {
+const getAllQuestions = async (filterParams, sortResults = { updatedAt: 1 }) => {
     try {
         const allQuestions = await Question.find(filterParams).sort( sortResults );
         return allQuestions;

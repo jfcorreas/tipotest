@@ -82,7 +82,7 @@ const createNewTest = async (newTest, topicList, numQuestions) => {
                 message: `No topics available for the Test`,
             };
         }
-
+        // FIXME: suffle questionsForTest and complete if there are topics with few questions
         let questionsForTest = [];
         for (const topic of topicsForTest) {
             const selectedQuestions = await getQuestionsForTest(topic, numQuestions / topicsForTest.length, newTest.numChoices);
