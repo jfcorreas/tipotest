@@ -101,6 +101,7 @@ class QuestionAnswersForm extends Component {
             answerToAdd: structuredClone(selectedAnswer),
             errorMessage: null
         });
+        setTimeout(() => this.handleEditAnswer(), 100);
     }    
 
     async handleDeleteAnswer(event) {
