@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import QuestionForm from './questionForm';
 import QuestionAnswersForm from './questionAnswersForm';
 
+import { fetchAPI } from '../services/apiClientServices'
+
 class QuestionsTable extends Component {
     constructor(props) {
         super(props);
@@ -36,20 +38,6 @@ class QuestionsTable extends Component {
         this.toggleAnswersFormOpen = this.toggleAnswersFormOpen.bind(this);
     }
 
-    async fetchAPI(path, subpath, objectId, filterParams, options) {
-        let requestUrl = `${this.state.apiUrl}/${path}`;
-        if (objectId) requestUrl = requestUrl + '/' + objectId;
-        if (subpath) requestUrl = requestUrl + '/' + subpath;
-        if (filterParams) {
-            requestUrl = requestUrl + '?' +
-                new URLSearchParams(filterParams).toString()
-        }
-
-        return fetch(requestUrl, options)
-            .then(res => res.json())
-            .catch(err => this.setErrorMessage(err.message));
-    }
-
     async componentDidMount() {
         await this.handleRefresh();
     }
@@ -58,23 +46,29 @@ class QuestionsTable extends Component {
         this.setErrorMessage(null);
         this.toggleComponentBusy();
 
-        let fetchResult = await this.fetchAPI('questions',
-            null,
-            null,
-            this.state.topicFilter ? { topic: this.state.topicFilter } : null,
-            null);
+        try {
+            let fetchResult = await fetchAPI({
+                apiUrl: this.state.apiUrl,
+                path: 'questions',
+                filterParams: this.state.topicFilter ? { topic: this.state.topicFilter } : null
+            })
+            const questions = fetchResult && fetchResult.data ? fetchResult.data : [];
+    
+            fetchResult = await fetchAPI({
+                apiUrl: this.state.apiUrl,
+                path: 'topics'
+            });
+            const topics = fetchResult && fetchResult.data ? fetchResult.data : [];
 
-        const questions = fetchResult && fetchResult.data ? fetchResult.data : [];
+            this.setState({
+                questions: questions,
+                topics: topics,
+                questionSelected: null
+            });
+        } catch (error) {
+            this.setErrorMessage(error)
+        }
 
-        fetchResult = await this.fetchAPI('topics');
-
-        const topics = fetchResult && fetchResult.data ? fetchResult.data : [];
-
-        this.setState({
-            questions: questions,
-            topics: topics,
-            questionSelected: null
-        });
         this.toggleComponentBusy();
     }
 
@@ -87,7 +81,11 @@ class QuestionsTable extends Component {
         this.setErrorMessage(null);
         this.toggleMoreInfoBusy();
 
-        const fetchResult = await this.fetchAPI('questions', null, event.currentTarget.id);
+        const fetchResult = await fetchAPI({
+            apiUrl: this.state.apiUrl,
+            path: 'questions',
+            objectId: event.currentTarget.id
+        });
         const question = fetchResult && fetchResult.data ? fetchResult.data : null;
 
         this.setState({ questionSelected: question });
@@ -106,7 +104,11 @@ class QuestionsTable extends Component {
         this.setErrorMessage(null);
         this.toggleTopicFilterBusy();
 
-        const fetchResult = await this.fetchAPI('questions', null, null, { topic: topicId }, null);
+        const fetchResult = await fetchAPI({
+            apiUrl: this.state.apiUrl,
+            path: 'questions',
+            filterParams: { topic: topicId }
+        });
 
         const questions = fetchResult && fetchResult.data ? fetchResult.data : [];
 

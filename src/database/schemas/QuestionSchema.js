@@ -10,7 +10,7 @@ const AnswerSchema = new Schema(
         updatedAt: { type: Date, required: true, default: new Date().toLocaleString("en-US", { timeZone: "UTC"})}
     }    
 );
-
+// TODO: add explanation to question's correct answer
 const QuestionSchema = new Schema(
     {
         text: { type: String, required: true },
