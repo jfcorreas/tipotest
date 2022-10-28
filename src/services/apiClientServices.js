@@ -5,15 +5,20 @@ const headersList = {
 
 export async function fetchAPI(fetchParams) {
     try {
-        const { apiUrl, path, subpath, objectId, filterParams, options } = fetchParams;
+        const {
+            apiUrl,
+            path, objectId,
+            subpath, subObjectId,
+            filterParams, options
+        } = fetchParams
 
         if (options && !options.headers) options.headers = headersList
 
-        let requestUrl = `${apiUrl}/${path}`;
+        let requestUrl = `${apiUrl}/${path}`
 
-        if (objectId) requestUrl = requestUrl + '/' + objectId;
-        if (subpath) requestUrl = requestUrl + '/' + subpath;
-
+        if (objectId) requestUrl += `/${objectId}`
+        if (subpath) requestUrl += `/${subpath}`
+        if (subObjectId) requestUrl += `/${subObjectId}`
         if (filterParams) {
             requestUrl = `${requestUrl}?${new URLSearchParams(filterParams).toString()}`
         }

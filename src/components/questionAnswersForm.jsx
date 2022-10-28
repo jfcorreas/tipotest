@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 
-const headersList = {
-    "Accept": "*/*",
-    "Content-Type": "application/json"
-}
+import { fetchAPI } from '../services/apiClientServices'
 
 class QuestionAnswersForm extends Component {
     constructor(props) {
@@ -30,18 +27,6 @@ class QuestionAnswersForm extends Component {
         this.handleNewAnswer = this.handleNewAnswer.bind(this);
         this.handleEditAnswer = this.handleEditAnswer.bind(this);
         this.handleKeyDown = this.handleKeyDown.bind(this);
-    }
-
-    async fetchAPI(path, subpath, objectId, subObjectId, filterParams, options) {
-        let requestUrl = `${this.state.apiUrl}/${path}`;
-        if (objectId) requestUrl = requestUrl + '/' + objectId;
-        if (subpath) requestUrl = requestUrl + '/' + subpath;
-        if (subObjectId) requestUrl = requestUrl + '/' + subObjectId;
-        if (filterParams) requestUrl = requestUrl + '?' + filterParams;
-
-        return fetch(requestUrl, options)
-            .then(res => res.json())
-            .catch(err => this.setState({ errorMessage: err.message }))
     }
 
     componentDidUpdate(prevProps) {
@@ -102,35 +87,38 @@ class QuestionAnswersForm extends Component {
             errorMessage: null
         });
         setTimeout(() => this.handleEditAnswer(), 100);
-    }    
+    }
 
-    async handleDeleteAnswer(event) {
-        let options = {
-            method: 'DELETE',
-            headers: headersList,
-            body: JSON.stringify(this.state.question)
-        };
+    async handleDeleteAnswer() {
 
-        let result;
         this.setState({ busyDelete: true });
-        result = await this.fetchAPI('questions', 'answers', this.state.question._id, this.state.selectedAnswer._id, null, options);
-        this.setState({ busyDelete: false });
+        try {
+            const result = await fetchAPI({
+                apiUrl: this.state.apiUrl,
+                path: 'questions',
+                objectId: this.state.question._id,
+                subpath: 'answers',
+                subObjectId: this.state.selectedAnswer._id,
+                options: { method: 'DELETE' }
+            })
+            if (result && result.status === "FAILED") {
+                this.setErrorMessage(result.data.error)
+            } else {
+                const questionModified = result.data;
 
-        if (result && result.status === "FAILED") {
-            this.setState({ errorMessage: result.data.error })
-            return;
+                this.setState({
+                    question: questionModified,
+                    selectedAnswer: null,
+                    answerToAdd: null,
+                    errorMessage: null,
+                    invalidNew: true,
+                    invalidEdit: true
+                });
+            }
+        } catch (error) {
+            this.setErrorMessage(error.message)
         }
-
-        const questionModified = result.data;
-
-        this.setState({
-            question: questionModified,
-            selectedAnswer: null,
-            answerToAdd: null,
-            errorMessage: null,
-            invalidNew: true,
-            invalidEdit: true
-        });
+        this.setState({ busyDelete: false });
     }
 
     handleInputChange(event) {
@@ -150,7 +138,7 @@ class QuestionAnswersForm extends Component {
             answerToAdd: updatedAnswer
         });
 
-        const validEdit = this.state.selectedAnswer && 
+        const validEdit = this.state.selectedAnswer &&
             (this.state.selectedAnswer.text !== updatedAnswer.text ||
                 this.state.selectedAnswer.isCorrect !== updatedAnswer.isCorrect);
 
@@ -158,73 +146,86 @@ class QuestionAnswersForm extends Component {
             const invalidForm = (
                 !this.state.answerToAdd.text
             );
-            this.setState((prevState) => 
-                ({
+            this.setState((prevState) =>
+            ({
                 invalidNew: invalidForm,
                 invalidEdit: !validEdit || invalidForm
-             }));
+            }));
         }, 100);
     }
 
-    async handleNewAnswer(event) {
-        let options = {
+    async handleNewAnswer() {
+        const options = {
             method: 'POST',
-            headers: headersList,
             body: JSON.stringify(this.state.answerToAdd)
-        };
-
-        let result;
-        this.setState({ busyNew: true });
-        result = await this.fetchAPI('questions', 'answers', this.state.question._id, null, null, options);
-        this.setState({ busyNew: false });
-
-        if (result && result.status === "FAILED") {
-            this.setState({ errorMessage: result.data.error })
-            return;
         }
+        this.setState({ busyNew: true })
+        try {
+            const result = await fetchAPI({
+                apiUrl: this.state.apiUrl,
+                path: 'questions',
+                objectId: this.state.question._id,
+                subpath: 'answers',
+                options: options
+            })
+            if (result && result.status === "FAILED") {
+                this.setErrorMessage(result.data.error)
+            } else {
+                const answerAdded = result.data
 
-        const answerAdded = result.data;
-        
-        this.state.question.answers.push(answerAdded);
-        
-        this.setState({
-            selectedAnswer: null,
-            answerToAdd: null,
-            errorMessage: null,
-            invalidNew: true,
-            invalidEdit: true
-        });
+                this.state.question.answers.push(answerAdded)
+
+                this.setState({
+                    selectedAnswer: null,
+                    answerToAdd: null,
+                    errorMessage: null,
+                    invalidNew: true,
+                    invalidEdit: true
+                })
+            }
+        } catch (error) {
+            this.setErrorMessage(error.message)
+        }
+        this.setState({ busyNew: false })
     }
 
-    async handleEditAnswer(event) {
-        let options = {
+    async handleEditAnswer() {
+        const options = {
             method: 'PATCH',
-            headers: headersList,
             body: JSON.stringify(this.state.answerToAdd)
-        };
-
-        let result;
-        this.setState({ busyEdit: true });
-        result = await this.fetchAPI('questions', 'answers', this.state.question._id, this.state.selectedAnswer._id, null, options);
-        this.setState({ busyEdit: false });
-
-        if (result && result.status === "FAILED") {
-            this.setState({ errorMessage: result.data.error })
-            return;
         }
+        this.setState({ busyEdit: true })
+        try {
+            const result = await fetchAPI({
+                apiUrl: this.state.apiUrl,
+                path: 'questions',
+                objectId: this.state.question._id,
+                subpath: 'answers',
+                subObjectId: this.state.selectedAnswer._id,
+                options: options
+            })
+            if (result && result.status === "FAILED") {
+                this.setErrorMessage(result.data.error)
+            } else {
+                const answerEdited = result.data
 
-        const answerEdited = result.data;
+                const answerIndex = this.state.question.answers.findIndex((answer) => (
+                    answer._id === answerEdited._id
+                ))
+                this.state.question.answers.splice(answerIndex, 1, answerEdited)
 
-        const answerIndex = this.state.question.answers.findIndex((answer) => answer._id === answerEdited._id);
-        this.state.question.answers.splice(answerIndex, 1, answerEdited);
-        
-        this.setState({
-            selectedAnswer: null,
-            answerToAdd: null,
-            errorMessage: null,
-            invalidNew: true,
-            invalidEdit: true
-        });
+                this.setState({
+                    selectedAnswer: null,
+                    answerToAdd: null,
+                    errorMessage: null,
+                    invalidNew: true,
+                    invalidEdit: true
+                })
+            }
+        } catch (error) {
+            this.setErrorMessage(error.message)
+        }
+        this.setState({ busyEdit: false })
     }
 
     handleKeyDown(event) {
@@ -234,15 +235,19 @@ class QuestionAnswersForm extends Component {
             event.preventDefault();
             if (!this.state.selectedAnswer && this.state.answerToAdd && !this.state.invalidNew) this.handleNewAnswer();
             if (this.state.selectedAnswer && !this.state.invalidEdit) this.handleEditAnswer();
-        } 
-        if (keyName === "Escape" ) this.handleClose();
+        }
+        if (keyName === "Escape") this.handleClose();
 
-    }    
+    }
+
+    setErrorMessage(msg) {
+        this.setState({ errorMessage: msg });
+    }
 
     render() {
         return (
             <div tabIndex="0"
-                onKeyDown={this.state.open?  this.handleKeyDown : null}>
+                onKeyDown={this.state.open ? this.handleKeyDown : null}>
                 <dialog open={this.state.open}>
 
                     <article>
@@ -316,7 +321,7 @@ class QuestionAnswersForm extends Component {
                                         onClick={this.handleDeleteAnswer}>
                                         Eliminar
                                     </a>
-                                    </label>
+                                </label>
                             </section>
                             <span className='warning'>{this.state.errorMessage}</span>
                             <button
