@@ -20,7 +20,7 @@ export async function fetchAPI(fetchParams) {
         if (subpath) requestUrl += `/${subpath}`
         if (subObjectId) requestUrl += `/${subObjectId}`
         if (filterParams) {
-            requestUrl = `${requestUrl}?${new URLSearchParams(filterParams).toString()}`
+            requestUrl += `?${new URLSearchParams(filterParams).toString()}`
         }
  
         const response = await fetch(requestUrl, options)

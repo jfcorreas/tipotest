@@ -45,34 +45,42 @@ class QuestionsTable extends Component {
     async handleRefresh() {
         this.setErrorMessage(null);
         this.toggleComponentBusy();
-
         try {
-            let fetchResult = await fetchAPI({
+            let result = await fetchAPI({
                 apiUrl: this.state.apiUrl,
                 path: 'questions',
                 filterParams: this.state.topicFilter ? { topic: this.state.topicFilter } : null
             })
-            const questions = fetchResult && fetchResult.data ? fetchResult.data : [];
 
-            fetchResult = await fetchAPI({
-                apiUrl: this.state.apiUrl,
-                path: 'topics'
-            });
-            const topics = fetchResult && fetchResult.data ? fetchResult.data : [];
+            if (result?.status === "FAILED") {
+                this.setErrorMessage(result.data.error)
+            } else {
+                const questions = result?.data ? result.data : [];
 
-            this.setState({
-                questions: questions,
-                topics: topics,
-                questionSelected: null
-            });
+                result = await fetchAPI({
+                    apiUrl: this.state.apiUrl,
+                    path: 'topics'
+                });
+
+                if (result?.status === "FAILED") {
+                    this.setErrorMessage(result.data.error)
+                } else {
+                    const topics = result?.data ? result.data : [];
+
+                    this.setState({
+                        questions: questions,
+                        topics: topics,
+                        questionSelected: null
+                    });
+                }
+            }
         } catch (error) {
-            this.setErrorMessage(error)
+            this.setErrorMessage(error.message)
         }
-
         this.toggleComponentBusy();
     }
 
-    handleCleanFilter(event) {
+    handleCleanFilter() {
         this.setState({ topicFilter: null });
         setTimeout(() => this.handleRefresh(), 100);
     }
@@ -81,16 +89,20 @@ class QuestionsTable extends Component {
         this.setErrorMessage(null);
         this.toggleMoreInfoBusy();
         try {
-            const fetchResult = await fetchAPI({
+            const result = await fetchAPI({
                 apiUrl: this.state.apiUrl,
                 path: 'questions',
                 objectId: event.currentTarget.id
-            });
-            const question = fetchResult && fetchResult.data ? fetchResult.data : null;
+            })
+            if (result?.status === "FAILED") {
+                this.setErrorMessage(result.data.error)
+            } else {
+                const question = result?.data ? result.data : null
 
-            this.setState({ questionSelected: question });
+                this.setState({ questionSelected: question });
+            }
         } catch (error) {
-            this.setErrorMessage(error)
+            this.setErrorMessage(error.message)
         }
         this.toggleMoreInfoBusy();
     }
@@ -108,21 +120,24 @@ class QuestionsTable extends Component {
         this.toggleTopicFilterBusy();
 
         try {
-            const fetchResult = await fetchAPI({
+            const result = await fetchAPI({
                 apiUrl: this.state.apiUrl,
                 path: 'questions',
                 filterParams: { topic: topicId }
             });
-
-            const questions = fetchResult && fetchResult.data ? fetchResult.data : [];
-
-            this.setState({
-                questions: questions,
-                questionSelected: null,
-                topicFilter: topicId
-            });
+            if (result?.status === "FAILED") {
+                this.setErrorMessage(result.data.error)
+            } else {
+                const questions = result?.data ? result.data : [];
+    
+                this.setState({
+                    questions: questions,
+                    questionSelected: null,
+                    topicFilter: topicId
+                });
+            }
         } catch (error) {
-            this.setErrorMessage(error)
+            this.setErrorMessage(error.message)
         }
         this.toggleTopicFilterBusy();
     }

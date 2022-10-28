@@ -101,7 +101,7 @@ class QuestionAnswersForm extends Component {
                 subObjectId: this.state.selectedAnswer._id,
                 options: { method: 'DELETE' }
             })
-            if (result && result.status === "FAILED") {
+            if (result?.status === "FAILED") {
                 this.setErrorMessage(result.data.error)
             } else {
                 const questionModified = result.data;
@@ -168,7 +168,7 @@ class QuestionAnswersForm extends Component {
                 subpath: 'answers',
                 options: options
             })
-            if (result && result.status === "FAILED") {
+            if (result?.status === "FAILED") {
                 this.setErrorMessage(result.data.error)
             } else {
                 const answerAdded = result.data
@@ -204,7 +204,7 @@ class QuestionAnswersForm extends Component {
                 subObjectId: this.state.selectedAnswer._id,
                 options: options
             })
-            if (result && result.status === "FAILED") {
+            if (result?.status === "FAILED") {
                 this.setErrorMessage(result.data.error)
             } else {
                 const answerEdited = result.data

@@ -99,7 +99,7 @@ class QuestionForm extends Component {
         let options = {
             body: JSON.stringify(this.state.question)
         };
-        this.setState({ busySubmit: true });
+        this.setState({ busySubmit: true })
         try {
             let result;
             if (this.state.editing) {
@@ -118,25 +118,26 @@ class QuestionForm extends Component {
                     options: options
                 })
             }
-            if (result && result.status === "FAILED") {
+            if (result?.status === "FAILED") {
                 this.setErrorMessage(result.data.error)
-                return;
+            } else {
+                this.handleClose(null, true);
             }
         } catch (error) {
             this.setErrorMessage(error)
         }
-        this.setState({ busySubmit: false });
-        this.handleClose(null, true);
+        this.setState({ busySubmit: false })
+        
     }
 
     async handleDeletion() {
 
         if (!this.state.deletionConfirmed) {
             this.setState({ openConfirm: true, deletionConfirmed: true })
-            return;
+            return
         }
 
-        this.setState({ busyDelete: true });
+        this.setState({ busyDelete: true })
         try {
             const result = await fetchAPI({
                 apiUrl: this.state.apiUrl,
@@ -144,19 +145,18 @@ class QuestionForm extends Component {
                 objectId: this.state.question._id,
                 options: { method: 'DELETE'}
             })
-            this.setState({ busyDelete: false });
-            this.handleCloseConfirm();
-            if (result && result.status === "FAILED") {
+            
+            if (result?.status === "FAILED") {
                 this.setErrorMessage(result.data.error)
-                return;
+            } else {
+                this.handleClose(null, true)
             }
         } catch (error) {
-            this.setState({ busyDelete: false });
-            this.handleCloseConfirm();
             this.setErrorMessage(error.message)
-            return
         }
-        this.handleClose(null, true);
+        this.handleCloseConfirm()
+        this.setState({ busyDelete: false })
+        
     }
 
     handleKeyDown(event) {
