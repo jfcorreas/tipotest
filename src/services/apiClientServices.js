@@ -1,6 +1,13 @@
+const headersList = {
+    "Accept": "*/*",
+    "Content-Type": "application/json"
+}
+
 export async function fetchAPI(fetchParams) {
     try {
         const { apiUrl, path, subpath, objectId, filterParams, options } = fetchParams;
+
+        if (options && !options.headers) options.headers = headersList
 
         let requestUrl = `${apiUrl}/${path}`;
 
@@ -8,16 +15,15 @@ export async function fetchAPI(fetchParams) {
         if (subpath) requestUrl = requestUrl + '/' + subpath;
 
         if (filterParams) {
-            requestUrl = requestUrl + '?' +
-                new URLSearchParams(filterParams).toString()
+            requestUrl = `${requestUrl}?${new URLSearchParams(filterParams).toString()}`
         }
-        
-        const result = await fetch(requestUrl, options)
-        const data = await result.json()
+ 
+        const response = await fetch(requestUrl, options)
+        const data = (response.status === 204)? null : await response.json()
 
         return data
 
     } catch (error) {
-        throw error;
+        throw error
     }
 }

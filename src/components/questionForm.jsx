@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 
-const headersList = {
-    "Accept": "*/*",
-    "Content-Type": "application/json"
-}
+import { fetchAPI } from '../services/apiClientServices';
 
 class QuestionForm extends Component {
     constructor(props) {
@@ -31,17 +28,6 @@ class QuestionForm extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleDeletion = this.handleDeletion.bind(this);
         this.handleKeyDown = this.handleKeyDown.bind(this);
-    }
-
-    async fetchAPI(path, subpath, objectId, filterParams, options) {
-        let requestUrl = `${this.state.apiUrl}/${path}`;
-        if (objectId) requestUrl = requestUrl + '/' + objectId;
-        if (subpath) requestUrl = requestUrl + '/' + subpath;
-        if (filterParams) requestUrl = requestUrl + '?' + filterParams;
-
-        return fetch(requestUrl, options)
-            .then(res => res.json())
-            .catch(err => this.setState({ errorMessage: err.message }))
     }
 
     async componentDidUpdate(prevProps) {
@@ -111,23 +97,35 @@ class QuestionForm extends Component {
 
     async handleSubmit() {
         let options = {
-            method: 'POST',
-            headers: headersList,
             body: JSON.stringify(this.state.question)
         };
-        let result;
         this.setState({ busySubmit: true });
-        if (this.state.editing) {
-            options.method = 'PATCH';
-            result = await this.fetchAPI('questions', null, this.state.question._id, null, options);
-        } else {
-            result = await this.fetchAPI('questions', null, null, null, options);
+        try {
+            let result;
+            if (this.state.editing) {
+                options.method = 'PATCH';
+                result = await fetchAPI({
+                    apiUrl: this.state.apiUrl,
+                    path: 'questions',
+                    objectId: this.state.question._id,
+                    options: options
+                })
+            } else {
+                options.method = 'POST'
+                result = await fetchAPI({
+                    apiUrl: this.state.apiUrl,
+                    path: 'questions',
+                    options: options
+                })
+            }
+            if (result && result.status === "FAILED") {
+                this.setErrorMessage(result.data.error)
+                return;
+            }
+        } catch (error) {
+            this.setErrorMessage(error)
         }
         this.setState({ busySubmit: false });
-        if (result && result.status === "FAILED") {
-            this.setState({ errorMessage: result.data.error })
-            return;
-        }
         this.handleClose(null, true);
     }
 
@@ -138,20 +136,25 @@ class QuestionForm extends Component {
             return;
         }
 
-        let options = {
-            method: 'DELETE',
-            headers: headersList
-        };
         this.setState({ busyDelete: true });
-
-        const result = await this.fetchAPI('questions', null, this.state.question._id, null, options);
-
-        this.setState({ busyDelete: false });
-
-        this.handleCloseConfirm();
-        if (result && result.status === "FAILED") {
-            this.setState({ errorMessage: result.data.error })
-            return;
+        try {
+            const result = await fetchAPI({
+                apiUrl: this.state.apiUrl,
+                path: 'questions',
+                objectId: this.state.question._id,
+                options: { method: 'DELETE'}
+            })
+            this.setState({ busyDelete: false });
+            this.handleCloseConfirm();
+            if (result && result.status === "FAILED") {
+                this.setErrorMessage(result.data.error)
+                return;
+            }
+        } catch (error) {
+            this.setState({ busyDelete: false });
+            this.handleCloseConfirm();
+            this.setErrorMessage(error.message)
+            return
         }
         this.handleClose(null, true);
     }
@@ -167,6 +170,10 @@ class QuestionForm extends Component {
         if (keyName === "Escape" && this.state.openConfirm ) this.handleCloseConfirm();
         if (keyName === "Escape" && !this.state.openConfirm) this.handleClose();
 
+    }
+
+    setErrorMessage(msg) {
+        this.setState({ errorMessage: msg });
     }
     
     render() {

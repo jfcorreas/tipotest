@@ -53,7 +53,7 @@ class QuestionsTable extends Component {
                 filterParams: this.state.topicFilter ? { topic: this.state.topicFilter } : null
             })
             const questions = fetchResult && fetchResult.data ? fetchResult.data : [];
-    
+
             fetchResult = await fetchAPI({
                 apiUrl: this.state.apiUrl,
                 path: 'topics'
@@ -80,15 +80,18 @@ class QuestionsTable extends Component {
     async handleRowClick(event) {
         this.setErrorMessage(null);
         this.toggleMoreInfoBusy();
+        try {
+            const fetchResult = await fetchAPI({
+                apiUrl: this.state.apiUrl,
+                path: 'questions',
+                objectId: event.currentTarget.id
+            });
+            const question = fetchResult && fetchResult.data ? fetchResult.data : null;
 
-        const fetchResult = await fetchAPI({
-            apiUrl: this.state.apiUrl,
-            path: 'questions',
-            objectId: event.currentTarget.id
-        });
-        const question = fetchResult && fetchResult.data ? fetchResult.data : null;
-
-        this.setState({ questionSelected: question });
+            this.setState({ questionSelected: question });
+        } catch (error) {
+            this.setErrorMessage(error)
+        }
         this.toggleMoreInfoBusy();
     }
 
@@ -104,20 +107,23 @@ class QuestionsTable extends Component {
         this.setErrorMessage(null);
         this.toggleTopicFilterBusy();
 
-        const fetchResult = await fetchAPI({
-            apiUrl: this.state.apiUrl,
-            path: 'questions',
-            filterParams: { topic: topicId }
-        });
+        try {
+            const fetchResult = await fetchAPI({
+                apiUrl: this.state.apiUrl,
+                path: 'questions',
+                filterParams: { topic: topicId }
+            });
 
-        const questions = fetchResult && fetchResult.data ? fetchResult.data : [];
+            const questions = fetchResult && fetchResult.data ? fetchResult.data : [];
 
-        this.setState({
-            questions: questions,
-            questionSelected: null,
-            topicFilter: topicId
-        });
-
+            this.setState({
+                questions: questions,
+                questionSelected: null,
+                topicFilter: topicId
+            });
+        } catch (error) {
+            this.setErrorMessage(error)
+        }
         this.toggleTopicFilterBusy();
     }
 
@@ -164,9 +170,9 @@ class QuestionsTable extends Component {
     setErrorMessage(msg) {
         this.setState({ errorMessage: msg });
     }
-     // TODO: implement filter by text IN TABLE
-     // TODO: implement form to add questions and answers in batch
-     // FIXME: after create a new question, keep selected the new question
+    // TODO: implement filter by text IN TABLE
+    // TODO: implement form to add questions and answers in batch
+    // FIXME: after create a new question, keep selected the new question
     render() {
         return (
             <div tabIndex="0"
