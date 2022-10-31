@@ -1,6 +1,6 @@
 {
   "name": "tipotest",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "REST API and WebApp to record and take multiple-choice tests",
   "main": "app.js",
   "scripts": {
@@ -9,8 +9,8 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "api-start": "node ./src/api.js",
-    "api-dev": "nodemon ./src/api.js --ignore './src/database/file_model/*.json'",
+    "api-start": "node ./api/api.js",
+    "api-dev": "nodemon ./api/api.js --ignore './api/database/file_model/*.json'",
     "api-test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -18,7 +18,8 @@
     "API",
     "REST",
     "MongoDB",
-    "AstroJS"
+    "AstroJS",
+    "React"
   ],
   "author": "@jfcorreas",
   "license": "MIT",
