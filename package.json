@@ -4,7 +4,7 @@
   "description": "REST API and WebApp to record and take multiple-choice tests",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "standard && echo \"Error: no test specified\" && exit 1",
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",
@@ -32,6 +32,7 @@
     "mongoose": "^6.5.3"
   },
   "devDependencies": {
-    "nodemon": "^2.0.19"
+    "nodemon": "^2.0.19",
+    "standard": "^17.0.0"
   }
 }
