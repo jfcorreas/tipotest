@@ -21,7 +21,7 @@ class QuestionsTable extends Component {
       answersFormOpen: false
     }
 
-    this.handleRefresh = this.handleRefresh.bind(this)
+    this.doRefresh = this.doRefresh.bind(this)
     this.handleCleanFilter = this.handleCleanFilter.bind(this)
     this.handleRowClick = this.handleRowClick.bind(this)
     this.handleRowDoubleClick = this.handleRowDoubleClick.bind(this)
@@ -38,10 +38,10 @@ class QuestionsTable extends Component {
   }
 
   async componentDidMount () {
-    await this.handleRefresh()
+    await this.doRefresh()
   }
 
-  async handleRefresh () {
+  async doRefresh () {
     this.setErrorMessage(null)
     this.toggleComponentBusy()
     try {
@@ -83,7 +83,7 @@ class QuestionsTable extends Component {
 
   handleCleanFilter () {
     this.setState({ topicFilter: null })
-    setTimeout(() => this.handleRefresh(), 100)
+    setTimeout(() => this.doRefresh(), 100)
   }
 
   async handleRowClick (event) {
@@ -164,7 +164,7 @@ class QuestionsTable extends Component {
       keyName === 'Escape' &&
       !this.state.formOpen &&
       !this.state.answersFormOpen
-    ) { this.handleRefresh() }
+    ) { this.doRefresh() }
   }
 
   toggleComponentBusy () {
@@ -240,7 +240,7 @@ class QuestionsTable extends Component {
         </label>
         <section className={this.state.componentBusy}>
           <div className='warning'>{this.state.errorMessage}</div>
-          <a href='#refresh' onClick={this.handleRefresh}>
+          <a href='#refresh' onClick={() => { this.doRefresh() }}>
             🔁 Actualizar
           </a>
           &nbsp;
@@ -369,14 +369,14 @@ class QuestionsTable extends Component {
           topics={this.state.topics}
           topicFilter={this.state.topicFilter}
           toggleModalOpen={this.toggleFormOpen}
-          onRefreshParent={this.handleRefresh}
+          refreshParent={this.doRefresh}
         />
         <QuestionAnswersForm
           apiUrl={this.state.apiUrl}
           open={this.state.answersFormOpen}
           question={this.state.questionSelected}
           toggleModalOpen={this.toggleAnswersFormOpen}
-          onRefreshParent={this.handleRefresh}
+          refreshParent={this.doRefresh}
         />
       </div>
     )
