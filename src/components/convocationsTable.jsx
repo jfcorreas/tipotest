@@ -2,6 +2,8 @@
 import React, { Component } from 'react'
 import ConvocationForm from './convocationForm'
 import ConvocationTopicsForm from './convocationTopicsForm'
+import { FullButton } from './FullButton'
+import { ShortButton } from './ShortButton'
 
 class ConvocationsTable extends Component {
   constructor (props) {
@@ -165,31 +167,26 @@ class ConvocationsTable extends Component {
               })}
             </tbody>
           </table>
-          <a
+          <ShortButton
             href='#edit'
-            role='button'
-            className='secondary'
+            buttonText='Editar Convocatoria'
+            appearance='secondary'
             disabled={!this.state.convocationSelected}
             onClick={this.handleEditButton}
-          >
-            Editar Convocatoria
-          </a>
-          <a
+          />
+          <ShortButton
             href='#topics'
-            role='button'
-            className='primary outline'
+            buttonText='Editar Temario'
+            appearance='primary outline'
             disabled={!this.state.convocationSelected}
             onClick={this.handleTopicsButton}
-          >
-            Editar Temario
-          </a>
+          />
         </section>
-        <button
+        <FullButton
+          buttonText='Nueva Convocatoria'
           className='primary'
           onClick={this.handleNewButton}
-        >
-          Nueva Convocatoria
-        </button>
+        />
         <section>
           <h5 aria-busy={this.state.topicsBusy}>
             Temario de la Convocatoria
