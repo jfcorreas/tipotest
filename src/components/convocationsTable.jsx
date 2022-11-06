@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import ConvocationForm from './convocationForm'
 import ConvocationTopicsForm from './convocationTopicsForm'
 import { FullButton } from './FullButton'
+import { SelectableTable } from './SelectableTable'
 import { ShortButton } from './ShortButton'
 
 class ConvocationsTable extends Component {
@@ -60,12 +61,12 @@ class ConvocationsTable extends Component {
     this.toggleComponentBusy()
   }
 
-  async handleRowClick (event) {
+  async handleRowClick (convocationId) {
     this.setErrorMessage(null)
     this.toggleTopicsBusy()
     this.setState({ topicsBusy: true })
 
-    const fetchResult = await this.fetchAPI('convocations', null, event.currentTarget.id)
+    const fetchResult = await this.fetchAPI('convocations', null, convocationId)
     const convocation = fetchResult && fetchResult.data ? fetchResult.data : null
     this.setState({
       convocationSelected: convocation,
@@ -121,52 +122,28 @@ class ConvocationsTable extends Component {
         tabIndex='0'
         onKeyDown={this.state.editFormOpen || this.state.topicsFormOpen ? null : this.handleKeyDown}
       >
+        <FullButton
+          buttonText='Nueva Convocatoria'
+          className='primary'
+          onClick={this.handleNewButton}
+        />
         <h4 aria-busy={!!this.state.componentBusy}>
           Convocatorias ({this.state.convocations.length})
         </h4>
         <section className={this.state.componentBusy}>
           <div className='warning'>{this.state.errorMessage}</div>
           <a href='#' onClick={() => { this.doRefresh() }}>🔁 Actualizar</a>
-          <table>
-            <thead>
-              <tr>
-                <th scope='col' />
-                <th scope='col'>Nombre</th>
-                <th scope='col'>Año</th>
-                <th scope='col'>Administración</th>
-                <th scope='col'>Categoría</th>
-              </tr>
-            </thead>
-            <tbody>
-              {this.state.convocations.map((convocation) => {
-                return (
-                  <tr
-                    key={convocation._id}
-                    id={convocation._id}
-                    title='Haga click para seleccionar'
-                    className={this.state.convocationSelected &&
-                                            this.state.convocationSelected._id === convocation._id
-                      ? 'selected'
-                      : null}
-                    onClick={this.handleRowClick}
-                  >
-                    <td scope='row'>
-                      <input
-                        type='checkbox'
-                        readOnly
-                        checked={!!(this.state.convocationSelected &&
-                                                    this.state.convocationSelected._id === convocation._id)}
-                      />
-                    </td>
-                    <td>{convocation.name}</td>
-                    <td>{convocation.year}</td>
-                    <td>{convocation.institution}</td>
-                    <td>{convocation.category}</td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
+          <SelectableTable
+            items={this.state.convocations}
+            itemProperties={{
+              name: 'Nombre',
+              year: 'Año',
+              institution: 'Administración',
+              category: 'Categoría'
+            }}
+            selectedId={this.state.convocationSelected?._id}
+            setSelectedId={(selectedId) => this.handleRowClick(selectedId)}
+          />
           <ShortButton
             href='#edit'
             buttonText='Editar Convocatoria'
@@ -182,11 +159,6 @@ class ConvocationsTable extends Component {
             onClick={this.handleTopicsButton}
           />
         </section>
-        <FullButton
-          buttonText='Nueva Convocatoria'
-          className='primary'
-          onClick={this.handleNewButton}
-        />
         <section>
           <h5 aria-busy={this.state.topicsBusy}>
             Temario de la Convocatoria
