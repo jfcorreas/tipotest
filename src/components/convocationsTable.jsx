@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import ConvocationForm from './convocationForm'
 import ConvocationTopicsForm from './convocationTopicsForm'
 import { FullButton } from './FullButton'
+import { ListOfTopics } from './ListOfTopics'
 import { SelectableTable } from './SelectableTable'
 import { ShortButton } from './ShortButton'
 
@@ -169,21 +170,10 @@ class ConvocationsTable extends Component {
           <h5 aria-busy={this.state.topicsBusy}>
             Temario de la Convocatoria
           </h5>
-          <ol>
-            {this.state.convocationSelected
-              ? this.state.convocationSelected.topicList.map((topic) => {
-                return (
-                  <li
-                    id={topic._id}
-                    key={topic._id}
-                    title={topic.fullTitle}
-                  >
-                    {topic.title}
-                  </li>
-                )
-              })
-              : 'Seleccione una Convocatoria ⬆️'}
-          </ol>
+          <ListOfTopics
+            topics={this.state.convocationSelected?.topicList}
+            noTopicsText='Seleccione una Convocatoria ⬆️'
+          />
           <ConvocationForm
             apiUrl={this.state.apiUrl}
             open={this.state.editFormOpen}

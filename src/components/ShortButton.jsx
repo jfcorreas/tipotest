@@ -5,7 +5,7 @@ export const ShortButton = ({
   href = '#',
   appearance = 'primary',
   disabled = false,
-  onClick: handleClick = null
+  onClick: handleClick
 }) => {
   return (
     <a
