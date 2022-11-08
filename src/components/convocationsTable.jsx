@@ -63,6 +63,12 @@ class ConvocationsTable extends Component {
 
   async handleRowClick (convocationId) {
     this.setErrorMessage(null)
+
+    if (!convocationId) {
+      this.setState({ convocationSelected: null })
+      return
+    }
+
     this.toggleTopicsBusy()
     this.setState({ topicsBusy: true })
 

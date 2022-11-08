@@ -1,4 +1,5 @@
 import React from 'react'
+import { SelectableRow } from './SelectableRow'
 
 export const SelectableTable = ({
   items = [],
@@ -18,28 +19,15 @@ export const SelectableTable = ({
           </tr>
         </thead>
         <tbody>
-          {items.map((item) => {
-            return (
-              <tr
-                key={item._id}
-                id={item._id}
-                title='Haga click para seleccionar'
-                className={selectedId === item._id ? 'selected' : null}
-                onClick={e => setSelectedId(e.currentTarget.id)}
-              >
-                <td scope='row'>
-                  <input
-                    type='checkbox'
-                    readOnly
-                    checked={selectedId === item._id}
-                  />
-                </td>
-                {Object.entries(itemProperties).map(([key]) => (
-                  <td key={`${key}_${item._id}`}>{item[key]}</td>
-                ))}
-              </tr>
-            )
-          })}
+          {items.map((item) =>
+            <SelectableRow
+              key={item._id}
+              item={item}
+              itemProperties={itemProperties}
+              selectedId={selectedId}
+              setSelectedId={setSelectedId}
+            />
+          )}
         </tbody>
       </table>
     </>
