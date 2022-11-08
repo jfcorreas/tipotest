@@ -1,5 +1,6 @@
 
 import React, { Component } from 'react'
+import { Section } from '../containers/Section'
 import ConvocationForm from './convocationForm'
 import ConvocationTopicsForm from './convocationTopicsForm'
 import { FullButton } from './FullButton'
@@ -166,10 +167,10 @@ class ConvocationsTable extends Component {
             onClick={this.handleTopicsButton}
           />
         </section>
-        <section>
-          <h5 aria-busy={this.state.topicsBusy}>
-            Temario de la Convocatoria
-          </h5>
+        <Section
+          title='Temario de la Convocatoria'
+          headingLevel={5}
+        >
           <ListOfTopics
             topics={this.state.convocationSelected?.topicList}
             noTopicsText='Seleccione una Convocatoria ⬆️'
@@ -189,7 +190,7 @@ class ConvocationsTable extends Component {
             toggleModalOpen={this.toggleTopicsFormOpen}
             refreshParent={this.doRefresh}
           />
-        </section>
+        </Section>
       </div>
     )
   }

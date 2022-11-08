@@ -1,27 +1,20 @@
 import React from 'react'
 
 export const ListOfTopics = ({ topics = [], noTopicsText = 'Empty List' }) => {
+  if (topics.length === 0) return <p>{noTopicsText}</p>
   return (
-    <>
-
-      {topics.length > 0
-        ? (
-          <ol>
-            {topics.map((topic) => {
-              return (
-                <li
-                  id={topic._id}
-                  key={topic._id}
-                  title={topic.fullTitle}
-                >
-                  {topic.title}
-                </li>
-              )
-            })}
-          </ol>
-          )
-        : noTopicsText}
-
-    </>
+    <ol>
+      {topics.map((topic) => {
+        return (
+          <li
+            id={topic._id}
+            key={topic._id}
+            title={topic.fullTitle}
+          >
+            {topic.title}
+          </li>
+        )
+      })}
+    </ol>
   )
 }
