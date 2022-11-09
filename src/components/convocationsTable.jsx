@@ -172,25 +172,26 @@ class ConvocationsTable extends Component {
           headingLevel={5}
         >
           <ListOfTopics
-            topics={this.state.convocationSelected?.topicList}
+            apiUrl={this.state.apiUrl}
+            convocationId={this.state.convocationSelected?._id}
             noTopicsText='Seleccione una Convocatoria ⬆️'
           />
-          <ConvocationForm
-            apiUrl={this.state.apiUrl}
-            open={this.state.editFormOpen}
-            convocation={this.state.convocationSelected}
-            toggleModalOpen={this.toggleEditFormOpen}
-            refreshParent={this.doRefresh}
-          />
-          <ConvocationTopicsForm
-            apiUrl={this.state.apiUrl}
-            open={this.state.topicsFormOpen}
-            convocation={this.state.convocationSelected}
-            toggleParentBusy={this.toggleComponentBusy}
-            toggleModalOpen={this.toggleTopicsFormOpen}
-            refreshParent={this.doRefresh}
-          />
         </Section>
+        <ConvocationForm
+          apiUrl={this.state.apiUrl}
+          open={this.state.editFormOpen}
+          convocation={this.state.convocationSelected}
+          toggleModalOpen={this.toggleEditFormOpen}
+          refreshParent={this.doRefresh}
+        />
+        <ConvocationTopicsForm
+          apiUrl={this.state.apiUrl}
+          open={this.state.topicsFormOpen}
+          convocation={this.state.convocationSelected}
+          toggleParentBusy={this.toggleComponentBusy}
+          toggleModalOpen={this.toggleTopicsFormOpen}
+          refreshParent={this.doRefresh}
+        />
       </div>
     )
   }

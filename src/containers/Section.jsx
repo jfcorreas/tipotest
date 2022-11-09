@@ -1,26 +1,28 @@
-import React, { useState } from 'react'
-
 export const Section = ({
   title = 'Empty',
   headingLevel,
   children
 }) => {
-  const [busy, setBusy] = useState(null)
-
   let header
   switch (headingLevel) {
+    case 1:
+      header = <h1>{title}</h1>
+      break
+    case 2:
+      header = <h2>{title}</h2>
+      break
     case 4:
-      header = <h4 aria-busy={busy}>{title}</h4>
+      header = <h4>{title}</h4>
       break
     case 5:
-      header = <h5 aria-busy={busy}>{title}</h5>
+      header = <h5>{title}</h5>
       break
     default:
-      header = <h3 aria-busy={busy}>{title}</h3>
+      header = <h3>{title}</h3>
       break
   }
   return (
-    <section className={busy}>
+    <section>
       {header}
       {children}
     </section>
