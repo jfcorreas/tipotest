@@ -7,10 +7,8 @@ export const ListOfTopics = ({ apiUrl, convocationId, noTopicsText = 'Empty List
   const [topics, setTopics] = useState([])
 
   useEffect(() => {
-    console.log('Entro a useEffect')
     if (convocationId) {
       setLoading(true)
-      console.log('Loading True')
       fetchAPI({
         apiUrl,
         path: 'convocations',

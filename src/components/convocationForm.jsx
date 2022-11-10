@@ -136,7 +136,6 @@ class ConvocationForm extends Component {
       this.setState({ errorMessage: result.data.error })
       return
     }
-    this.props.refreshParent()
     this.handleClose()
   }
 
@@ -161,7 +160,6 @@ class ConvocationForm extends Component {
       this.setState({ errorMessage: result.data.error })
       return
     }
-    this.props.refreshParent()
     this.handleClose()
   }
 

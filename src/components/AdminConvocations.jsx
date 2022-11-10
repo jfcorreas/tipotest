@@ -4,20 +4,24 @@ import { fetchAPI } from '../services/apiClientServices'
 import { SelectableTable } from './SelectableTable'
 import { Section } from '../containers/Section'
 import { FullButton } from './FullButton'
+import { ShortButton } from './ShortButton'
 import { ListOfTopics } from './ListOfTopics'
+import ConvocationForm from './convocationForm'
 
-export function AdminConvocations ({ apiUrl }) {
+export default function AdminConvocations ({ apiUrl }) {
   const [convocations, setConvocations] = useState([])
   const [selectedConvocationId, setSelectedConvocationId] = useState(null)
+  const [isEditFormOpen, setIsEditFormOpen] = useState(false)
   const [errorMessage, setErrorMessage] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    doRefresh()
-  }, [])
+    if (!isEditFormOpen) doRefresh()
+  }, [isEditFormOpen])
 
   const doRefresh = async () => {
     setErrorMessage(null)
+    setSelectedConvocationId(null)
     setIsLoading(true)
     try {
       const result = await fetchAPI({
@@ -43,7 +47,10 @@ export function AdminConvocations ({ apiUrl }) {
       <FullButton
         buttonText='Nueva Convocatoria'
         className='primary'
-        onClick={() => window.alert('abrir Form New')}
+        onClick={() => {
+          setSelectedConvocationId(null)
+          setIsEditFormOpen(true)
+        }}
       />
 
       <Section
@@ -64,6 +71,13 @@ export function AdminConvocations ({ apiUrl }) {
           selectedId={selectedConvocationId}
           setSelectedId={setSelectedConvocationId}
         />
+        <ShortButton
+          href='#edit'
+          buttonText='Editar Convocatoria'
+          appearance='secondary'
+          disabled={!selectedConvocationId}
+          onClick={() => setIsEditFormOpen(true)}
+        />
       </Section>
       <Section
         title='Temario de la Convocatoria'
@@ -75,6 +89,12 @@ export function AdminConvocations ({ apiUrl }) {
           noTopicsText='Seleccione una Convocatoria ⬆️'
         />
       </Section>
+      <ConvocationForm
+        apiUrl={apiUrl}
+        open={isEditFormOpen}
+        convocation={convocations.find(convocation => convocation._id === selectedConvocationId)}
+        toggleModalOpen={() => setIsEditFormOpen(!isEditFormOpen)}
+      />
     </div>
   )
 }

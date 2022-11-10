@@ -1,8 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import NavBar from "../../layouts/NavBar.astro";
-import ConvocationsTable from "../../components/convocationsTable";
-import { AdminConvocations } from "../../components/AdminConvocations";
+import AdminConvocations from "../../components/AdminConvocations";
 
 const config = {
     apiUrl: import.meta.env.API_URL,
@@ -13,5 +12,5 @@ const config = {
 
 <Layout title={config.appTitle}>
         <NavBar title={config.appTitle}></NavBar>    
-        <AdminConvocations apiUrl={config.apiUrl} client:load />
+        <AdminConvocations apiUrl={config.apiUrl} client:load/>
 </Layout>
