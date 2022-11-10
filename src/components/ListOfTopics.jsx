@@ -7,9 +7,10 @@ export const ListOfTopics = ({ apiUrl, convocationId, noTopicsText = 'Empty List
   const [topics, setTopics] = useState([])
 
   useEffect(() => {
-    setErrorMessage(null)
+    console.log('Entro a useEffect')
     if (convocationId) {
       setLoading(true)
+      console.log('Loading True')
       fetchAPI({
         apiUrl,
         path: 'convocations',
@@ -26,10 +27,14 @@ export const ListOfTopics = ({ apiUrl, convocationId, noTopicsText = 'Empty List
         .catch(error => {
           setErrorMessage(error.message)
         })
-        .finally(setLoading(false))
+        .finally(() => setLoading(false))
+    }
+    return () => {
+      setErrorMessage(null)
+      setLoading(false)
     }
   }, [convocationId])
-  // TODO: test if errorMessage and loading works
+
   if (errorMessage) return <div className='warning'>{errorMessage}</div>
   if (loading) return <p aria-busy />
   if (!convocationId) return <p>{noTopicsText}</p>
