@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { fetchAPI } from '../services/apiClientServices'
 import { SelectableTable } from './SelectableTable'
 import { Section } from '../containers/Section'
+import { Modal } from '../containers/Modal'
 import { FullButton } from './FullButton'
 import { ShortButton } from './ShortButton'
 import { ListOfTopics } from './ListOfTopics'
@@ -89,12 +90,17 @@ export default function AdminConvocations ({ apiUrl }) {
           noTopicsText='Seleccione una Convocatoria ⬆️'
         />
       </Section>
-      <ConvocationForm
-        apiUrl={apiUrl}
+      <Modal
         open={isEditFormOpen}
-        convocation={convocations.find(convocation => convocation._id === selectedConvocationId)}
         handleClose={() => setIsEditFormOpen(!isEditFormOpen)}
-      />
+        title={selectedConvocationId ? 'Editando Convocatoria' : 'Nueva Convocatoria'}
+      >
+        <ConvocationForm
+          apiUrl={apiUrl}
+          convocation={convocations.find(convocation => convocation._id === selectedConvocationId)}
+          postSubmitActions={() => setIsEditFormOpen(!isEditFormOpen)}
+        />
+      </Modal>
     </div>
   )
 }
