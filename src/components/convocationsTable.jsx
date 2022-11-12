@@ -1,7 +1,7 @@
 
 import React, { Component } from 'react'
 import { Section } from '../containers/Section'
-import ConvocationForm from './convocationForm'
+import { ConvocationForm } from './ConvocationForm'
 import ConvocationTopicsForm from './convocationTopicsForm'
 import { FullButton } from './FullButton'
 import { ListOfTopics } from './ListOfTopics'

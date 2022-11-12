@@ -6,7 +6,7 @@ import { Section } from '../containers/Section'
 import { FullButton } from './FullButton'
 import { ShortButton } from './ShortButton'
 import { ListOfTopics } from './ListOfTopics'
-import ConvocationForm from './convocationForm'
+import { ConvocationForm } from './ConvocationForm'
 
 export default function AdminConvocations ({ apiUrl }) {
   const [convocations, setConvocations] = useState([])
@@ -93,7 +93,7 @@ export default function AdminConvocations ({ apiUrl }) {
         apiUrl={apiUrl}
         open={isEditFormOpen}
         convocation={convocations.find(convocation => convocation._id === selectedConvocationId)}
-        toggleModalOpen={() => setIsEditFormOpen(!isEditFormOpen)}
+        handleClose={() => setIsEditFormOpen(!isEditFormOpen)}
       />
     </div>
   )
