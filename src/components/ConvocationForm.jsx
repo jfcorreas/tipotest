@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { ShortButton } from '../components/ShortButton'
+import { Input } from './Input'
 
 export const ConvocationForm = ({
   apiUrl,
@@ -11,6 +12,7 @@ export const ConvocationForm = ({
   const [isValidForm, setIsValidForm] = useState(false)
   const [newConvocation, setNewConvocation] = useState(
     {
+      id: convocation ? convocation._id : null,
       name: convocation ? convocation.name : null,
       year: convocation ? convocation.year : new Date().getFullYear(),
       institution: convocation ? convocation.institution : null,
@@ -18,9 +20,37 @@ export const ConvocationForm = ({
     }
   )
 
+  const convocationProperties = {
+    name: {
+      required: true,
+      type: 'text',
+      label: 'Nombre',
+      placeholder: 'Nombre de la Convocatoria'
+    },
+    year: {
+      required: true,
+      type: 'number',
+      label: 'Año',
+      placeholder: 'Año de la Convocatoria'
+    },
+    institution: {
+      required: true,
+      type: 'text',
+      label: 'Administración',
+      placeholder: 'Administración Convocante'
+    },
+    category: {
+      required: true,
+      type: 'text',
+      label: 'Categoría',
+      placeholder: 'Categoría Profesional'
+    }
+  }
+
   useEffect(() => {
     setNewConvocation(
       {
+        id: convocation ? convocation._id : null,
         name: convocation ? convocation.name : null,
         year: convocation ? convocation.year : new Date().getFullYear(),
         institution: convocation ? convocation.institution : null,
@@ -41,10 +71,8 @@ export const ConvocationForm = ({
     updatedConvocation[inputName] = value
 
     const invalidForm = (
-      !updatedConvocation.name ||
-      !updatedConvocation.year ||
-      !updatedConvocation.institution ||
-      !updatedConvocation.category
+      !updatedConvocation.name || !updatedConvocation.year ||
+      !updatedConvocation.institution || !updatedConvocation.category
     )
     setIsValidForm(!invalidForm)
     setNewConvocation(updatedConvocation)
@@ -54,46 +82,23 @@ export const ConvocationForm = ({
     <>
       <span className='warning'>{errorMessage}</span>
       <form>
-        <label>
-          Nombre
-          <input
-            name='name' type='text' required
-            placeholder='Nombre de la Convocatoria'
-            aria-invalid={(newConvocation.name === null) ? null : !newConvocation.name}
-            onChange={handleInputChange}
-            value={newConvocation.name || ''}
-          />
-        </label>
-        <label>
-          Año
-          <input
-            name='year' type='number' required
-            placeholder='Año de la Convocatoria'
-            aria-invalid={(newConvocation.year === null) ? null : !newConvocation.year}
-            onChange={handleInputChange}
-            value={newConvocation.year}
-          />
-        </label>
-        <label>
-          Administración
-          <input
-            name='institution' type='text' required
-            placeholder='Administración convocante'
-            aria-invalid={(newConvocation.institution === null) ? null : !newConvocation.institution}
-            onChange={handleInputChange}
-            value={newConvocation.institution || ''}
-          />
-        </label>
-        <label>
-          Categoría
-          <input
-            name='category' type='text' required
-            placeholder='Categoría profesional'
-            aria-invalid={(newConvocation.category === null) ? null : !newConvocation.category}
-            onChange={handleInputChange}
-            value={newConvocation.category || ''}
-          />
-        </label>
+        {
+        Object.entries(convocationProperties).map(([key, value]) => {
+          return (
+            <Input
+              key={key}
+              type={value.type}
+              inputName={key} label={value.label}
+              placeholder={value.placeholder}
+              isRequired={value.required}
+              isValid={(newConvocation[key] === null) ? null : newConvocation[key]}
+              onChange={handleInputChange}
+              value={newConvocation[key] || ''}
+            />
+          )
+        })
+
+        }
       </form>
       <footer>
         <ShortButton
@@ -106,7 +111,7 @@ export const ConvocationForm = ({
           buttonText='Eliminar'
           href='#delete'
           appearance='primary outline'
-          disabled={convocation === null}
+          disabled={newConvocation.id === null}
           onClick={postSubmitActions}
         />
         <ShortButton
