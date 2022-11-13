@@ -8,11 +8,13 @@ import { FullButton } from './FullButton'
 import { ShortButton } from './ShortButton'
 import { ListOfTopics } from './ListOfTopics'
 import { ConvocationForm } from './ConvocationForm'
+import { ConvocationTopicsForm } from './ConvocationTopicsForm'
 
 export default function AdminConvocations ({ apiUrl }) {
   const [convocations, setConvocations] = useState([])
   const [selectedConvocationId, setSelectedConvocationId] = useState(null)
   const [isEditFormOpen, setIsEditFormOpen] = useState(false)
+  const [isTopicsFormOpen, setIsTopicsFormOpen] = useState(false)
   const [errorMessage, setErrorMessage] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -71,7 +73,7 @@ export default function AdminConvocations ({ apiUrl }) {
         headingLevel={4}
         isLoading={isLoading}
       >
-        <a href='#' onClick={() => { doRefresh() }}>🔁 Actualizar</a>
+        <a onClick={() => { doRefresh() }}>🔁 Actualizar</a>
         {errorMessage && <div className='warning'>{errorMessage}</div>}
         <SelectableTable
           items={convocations}
@@ -85,11 +87,16 @@ export default function AdminConvocations ({ apiUrl }) {
           setSelectedId={setSelectedConvocationId}
         />
         <ShortButton
-          href='#edit'
           buttonText='Editar Convocatoria'
           appearance='secondary'
           disabled={!selectedConvocationId}
           onClick={() => setIsEditFormOpen(true)}
+        />
+        <ShortButton
+          buttonText='Editar Temario'
+          appearance='primary outline'
+          disabled={!selectedConvocationId}
+          onClick={() => setIsTopicsFormOpen(true)}
         />
       </Section>
       <Section
@@ -112,6 +119,18 @@ export default function AdminConvocations ({ apiUrl }) {
           convocation={convocations.find(convocation => convocation._id === selectedConvocationId)}
           isActive={isEditFormOpen}
           postSubmitActions={() => setIsEditFormOpen(!isEditFormOpen)}
+        />
+      </Modal>
+      <Modal
+        open={isTopicsFormOpen}
+        handleClose={() => setIsTopicsFormOpen(!isTopicsFormOpen)}
+        title='Temario de la Convocatoria'
+      >
+        <ConvocationTopicsForm
+          apiUrl={apiUrl}
+          convocationId={selectedConvocationId}
+          isActive={isTopicsFormOpen}
+          postSubmitActions={() => setIsTopicsFormOpen(!isTopicsFormOpen)}
         />
       </Modal>
     </div>
