@@ -1,16 +1,16 @@
-import React from 'react'
+import React, { forwardRef } from 'react'
 
-export const Modal = ({
+export const Modal = forwardRef(({
   open = false,
   handleClose,
+  handleKeyDown,
   title = '',
   children
-}) => {
+}, ref) => {
   return (
     <dialog open={open}>
-      <article>
+      <article ref={ref} onKeyDown={handleKeyDown} tabIndex='0'>
         <a
-          href='#close'
           aria-label='Close'
           className='close'
           onClick={handleClose}
@@ -21,4 +21,4 @@ export const Modal = ({
       </article>
     </dialog>
   )
-}
+})

@@ -98,6 +98,7 @@ export default function AdminConvocations ({ apiUrl }) {
         <ConvocationForm
           apiUrl={apiUrl}
           convocation={convocations.find(convocation => convocation._id === selectedConvocationId)}
+          isActive={isEditFormOpen}
           postSubmitActions={() => setIsEditFormOpen(!isEditFormOpen)}
         />
       </Modal>

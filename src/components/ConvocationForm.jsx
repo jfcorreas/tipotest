@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
 import { fetchAPI } from '../services/apiClientServices'
 import { ShortButton } from '../components/ShortButton'
@@ -16,6 +16,7 @@ const emptyConvocation = {
 export const ConvocationForm = ({
   apiUrl,
   convocation,
+  isActive,
   postSubmitActions
 }) => {
   const [newConvocation, setNewConvocation] = useState(emptyConvocation)
@@ -24,32 +25,8 @@ export const ConvocationForm = ({
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState(null)
 
-  const convocationProperties = {
-    name: {
-      required: true,
-      type: 'text',
-      label: 'Nombre',
-      placeholder: 'Nombre de la Convocatoria'
-    },
-    year: {
-      required: true,
-      type: 'number',
-      label: 'Año',
-      placeholder: 'Año de la Convocatoria'
-    },
-    institution: {
-      required: true,
-      type: 'text',
-      label: 'Administración',
-      placeholder: 'Administración Convocante'
-    },
-    category: {
-      required: true,
-      type: 'text',
-      label: 'Categoría',
-      placeholder: 'Categoría Profesional'
-    }
-  }
+  const inputRef = useRef(null)
+  const confirmDeletionRef = useRef(null)
 
   useEffect(() => {
     setNewConvocation(
@@ -63,7 +40,16 @@ export const ConvocationForm = ({
     )
     setErrorMessage(null)
     setIsLoading(false)
+    inputRef.current.focus()
   }, [convocation])
+
+  useEffect(() => {
+    confirmDeletion ? confirmDeletionRef.current.focus() : inputRef.current.focus()
+  }, [confirmDeletion])
+
+  useEffect(() => {
+    inputRef.current.focus()
+  }, [isActive])
 
   const handleInputChange = (e) => {
     const updatedConvocation = { ...newConvocation }
@@ -136,14 +122,42 @@ export const ConvocationForm = ({
     }
   }
 
+  const handleKeyDown = (e) => {
+    const keyName = e.key
+
+    if (keyName === 'Enter') {
+      e.preventDefault()
+      confirmDeletion ? handleDeletion() : handleSubmit()
+    }
+    if (keyName === 'Escape') {
+      confirmDeletion ? setConfirmDeletion(false) : postSubmitActions()
+    }
+  }
+
+  const convocationInputProperties = {
+    name: {
+      required: true, type: 'text', label: 'Nombre', placeholder: 'Nombre de la Convocatoria', ref: inputRef
+    },
+    year: {
+      required: true, type: 'number', label: 'Año', placeholder: 'Año de la Convocatoria'
+    },
+    institution: {
+      required: true, type: 'text', label: 'Administración', placeholder: 'Administración Convocante'
+    },
+    category: {
+      required: true, type: 'text', label: 'Categoría', placeholder: 'Categoría Profesional'
+    }
+  }
+
   return (
     <>
-      <form>
+      <form onKeyDown={handleKeyDown}>
         {
-        Object.entries(convocationProperties).map(([key, value]) => {
+        Object.entries(convocationInputProperties).map(([key, value]) => {
           return (
             <Input
               key={key}
+              ref={value.ref}
               type={value.type}
               inputName={key} label={value.label}
               placeholder={value.placeholder}
@@ -157,7 +171,10 @@ export const ConvocationForm = ({
 
         }
       </form>
-      <p aria-busy={isLoading}>{isLoading && 'Aplicando cambios...'}</p>
+      {
+        !confirmDeletion &&
+          <p aria-busy={isLoading}>{isLoading && 'Aplicando cambios...'}</p>
+      }
       <p className='warning'>{errorMessage}</p>
       <footer>
         <ShortButton
@@ -181,6 +198,8 @@ export const ConvocationForm = ({
         open={confirmDeletion}
         title='Atención'
         handleClose={() => setConfirmDeletion(false)}
+        ref={confirmDeletionRef}
+        handleKeyDown={handleKeyDown}
       >
         <p>
           ¿Seguro que quieres borrar la convocatoria "{convocation?.fullName}"?
