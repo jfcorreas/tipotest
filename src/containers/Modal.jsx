@@ -5,6 +5,7 @@ export const Modal = forwardRef(({
   handleClose,
   handleKeyDown,
   title = '',
+  subtitle = '',
   children
 }, ref) => {
   return (
@@ -15,7 +16,10 @@ export const Modal = forwardRef(({
           className='close'
           onClick={handleClose}
         />
-        <h3>{title}</h3>
+        <hgroup>
+          <h3>{title}</h3>
+          <h6>{subtitle}</h6>
+        </hgroup>
         {children}
 
       </article>

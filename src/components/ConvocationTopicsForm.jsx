@@ -24,10 +24,14 @@ export const ConvocationTopicsForm = ({
   useEffect(() => {
     if (isActive) {
       populateConvocationTopics()
-      refreshTable()
       formRef.current.focus()
     }
   }, [isActive])
+
+  useEffect(() => {
+    setSelectedTopicId(null)
+    setIsValidForm(true)
+  }, [convocationTopics, selectableTopics])
 
   const populateConvocationTopics = async () => {
     setErrorMessage(null)
@@ -55,7 +59,8 @@ export const ConvocationTopicsForm = ({
         } else {
           const allTopics = result?.data ? result.data : []
           const selectableTopics = allTopics.filter((topic) =>
-            !convocationTopics.find(topicFind => topicFind._id === topic._id))
+            !convocation.topicList.find(topicFind => topicFind._id === topic._id))
+
           setSelectableTopics(selectableTopics)
         }
       }
@@ -66,16 +71,30 @@ export const ConvocationTopicsForm = ({
     }
   }
 
-  const refreshTable = () => {
-    setSelectedTopicId(null)
+  const handleDeleteTopic = () => {
+    const newConvocationTopics = [...convocationTopics]
+    const newSelectableTopics = [...selectableTopics]
+
+    const topicIndex = convocationTopics.findIndex((topic) => topic._id === selectedTopicId)
+    const deletedTopic = newConvocationTopics.splice(topicIndex, 1)[0]
+    newSelectableTopics.push(deletedTopic)
+
+    setConvocationTopics(newConvocationTopics)
+    setSelectableTopics(newSelectableTopics)
   }
 
-  const handleDeleteTopic = () => {
-    const topicIndex = convocationTopics.findIndex(topic => topic._id === selectedTopicId)
-    const deletedTopic = convocationTopics.splice(topicIndex, 1)[0]
-    selectableTopics.push(deletedTopic)
-    setIsValidForm(true)
-    refreshTable()
+  const handleNewTopicChange = (e) => {
+    const target = e.target
+    const newTopicId = target.value
+    const newConvocationTopics = [...convocationTopics]
+    const newSelectableTopics = [...selectableTopics]
+
+    const topicIndex = selectableTopics.findIndex((topic) => topic._id === newTopicId)
+    const topicToAdd = newSelectableTopics.splice(topicIndex, 1)[0]
+    newConvocationTopics.push(topicToAdd)
+
+    setConvocationTopics(newConvocationTopics)
+    setSelectableTopics(newSelectableTopics)
   }
   /*   const handleSubmit = async () => {
     const options = {
@@ -135,6 +154,26 @@ export const ConvocationTopicsForm = ({
         disabled={!selectedTopicId}
         onClick={handleDeleteTopic}
       />
+      <label htmlFor='availableTopics'>
+        Temas disponibles
+        <select
+          name='availableTopics' type='text'
+          placeholder='Todos los Temas disponibles'
+          aria-disabled={selectableTopics.length === 0}
+          onChange={handleNewTopicChange}
+        >
+          {selectableTopics.length > 0
+            ? <option value=''>Seleccione un Tema para añadir...</option>
+            : <option value=''>No quedan Temas para añadir</option>}
+          {selectableTopics
+            ? selectableTopics.map((topic) => {
+              return (
+                <option key={topic._id} value={topic._id}>{topic.title}</option>
+              )
+            })
+            : null}
+        </select>
+      </label>
     </div>
   )
 }

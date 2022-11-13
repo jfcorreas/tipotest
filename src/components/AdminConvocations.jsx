@@ -113,6 +113,10 @@ export default function AdminConvocations ({ apiUrl }) {
         open={isEditFormOpen}
         handleClose={() => setIsEditFormOpen(!isEditFormOpen)}
         title={selectedConvocationId ? 'Editando Convocatoria' : 'Nueva Convocatoria'}
+        subtitle={
+          selectedConvocationId &&
+          convocations.find(convocation => convocation._id === selectedConvocationId).fullName
+        }
       >
         <ConvocationForm
           apiUrl={apiUrl}
@@ -125,6 +129,10 @@ export default function AdminConvocations ({ apiUrl }) {
         open={isTopicsFormOpen}
         handleClose={() => setIsTopicsFormOpen(!isTopicsFormOpen)}
         title='Temario de la Convocatoria'
+        subtitle={
+          selectedConvocationId &&
+          convocations.find(convocation => convocation._id === selectedConvocationId).fullName
+        }
       >
         <ConvocationTopicsForm
           apiUrl={apiUrl}
