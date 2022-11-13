@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
 import { fetchAPI } from '../services/apiClientServices'
 import { SelectableTable } from './SelectableTable'
@@ -16,8 +16,13 @@ export default function AdminConvocations ({ apiUrl }) {
   const [errorMessage, setErrorMessage] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
 
+  const pageRef = useRef(null)
+
   useEffect(() => {
-    if (!isEditFormOpen) doRefresh()
+    if (!isEditFormOpen) {
+      doRefresh()
+      pageRef.current.focus()
+    }
   }, [isEditFormOpen])
 
   const doRefresh = async () => {
@@ -43,8 +48,15 @@ export default function AdminConvocations ({ apiUrl }) {
     }
   }
 
+  const handleKeyDown = (e) => {
+    const keyName = e.key
+
+    if (keyName === 'Enter') setIsEditFormOpen(true)
+    if (keyName === 'Escape' && !isEditFormOpen) doRefresh()
+  }
+
   return (
-    <div>
+    <div ref={pageRef} onKeyDown={handleKeyDown} tabIndex='0'>
       <FullButton
         buttonText='Nueva Convocatoria'
         className='primary'
