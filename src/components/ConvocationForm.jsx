@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { fetchAPI } from '../services/apiClientServices'
 import { ShortButton } from '../components/ShortButton'
 import { Input } from './Input'
+import { Modal } from '../containers/Modal'
 
 const emptyConvocation = {
   id: null,
@@ -17,10 +18,11 @@ export const ConvocationForm = ({
   convocation,
   postSubmitActions
 }) => {
-  const [errorMessage, setErrorMessage] = useState(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [isValidForm, setIsValidForm] = useState(false)
   const [newConvocation, setNewConvocation] = useState(emptyConvocation)
+  const [isValidForm, setIsValidForm] = useState(false)
+  const [confirmDeletion, setConfirmDeletion] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState(null)
 
   const convocationProperties = {
     name: {
@@ -79,20 +81,21 @@ export const ConvocationForm = ({
       !updatedConvocation.institution || !updatedConvocation.category
     )
     setIsValidForm(!invalidForm)
+    setConfirmDeletion(false)
     setNewConvocation(updatedConvocation)
   }
 
   const handleSubmit = async () => {
     const options = {
       body: JSON.stringify(newConvocation),
-      method: newConvocation._id ? 'PATCH' : 'POST'
+      method: newConvocation.id ? 'PATCH' : 'POST'
     }
     setIsLoading(true)
     try {
       const result = await fetchAPI({
         apiUrl,
         path: 'convocations',
-        objectId: newConvocation._id,
+        objectId: newConvocation.id,
         options
       })
 
@@ -109,8 +112,28 @@ export const ConvocationForm = ({
     }
   }
 
-  const handleDeletion = () => {
-    postSubmitActions()
+  const handleDeletion = async () => {
+    setIsLoading(true)
+    try {
+      const result = await fetchAPI({
+        apiUrl,
+        path: 'convocations',
+        objectId: newConvocation.id,
+        options: { method: 'DELETE' }
+      })
+
+      if (result?.status === 'FAILED') {
+        setErrorMessage(result.data.error)
+      } else {
+        setNewConvocation(emptyConvocation)
+        postSubmitActions()
+      }
+    } catch (error) {
+      setErrorMessage(error.message)
+    } finally {
+      setIsLoading(false)
+      setConfirmDeletion(false)
+    }
   }
 
   return (
@@ -139,24 +162,42 @@ export const ConvocationForm = ({
       <footer>
         <ShortButton
           buttonText='Cancelar'
-          href='#cancel'
           appearance='secondary'
           onClick={postSubmitActions}
         />
         <ShortButton
           buttonText='Eliminar'
-          href='#delete'
           appearance='primary outline'
           disabled={newConvocation.id === null}
-          onClick={postSubmitActions}
+          onClick={() => setConfirmDeletion(true)}
         />
         <ShortButton
           buttonText={convocation ? 'Guardar Cambios' : 'Crear Convocatoria'}
-          href='#confirm'
           disabled={!isValidForm}
           onClick={handleSubmit}
         />
       </footer>
+      <Modal
+        open={confirmDeletion}
+        title='Atención'
+        handleClose={() => setConfirmDeletion(false)}
+      >
+        <p>
+          ¿Seguro que quieres borrar la convocatoria "{convocation?.fullName}"?
+        </p>
+        <footer>
+          <ShortButton
+            buttonText='Cancelar'
+            appearance='secondary'
+            onClick={() => setConfirmDeletion(false)}
+          />
+          <ShortButton
+            buttonText='Eliminar Convocatoria'
+            isLoading={isLoading}
+            onClick={handleDeletion}
+          />
+        </footer>
+      </Modal>
     </>
   )
 }

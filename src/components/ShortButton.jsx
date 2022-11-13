@@ -5,6 +5,7 @@ export const ShortButton = ({
   href = '#',
   appearance = 'primary',
   disabled = false,
+  isLoading = false,
   onClick: handleClick = () => {}
 }) => {
   return (
@@ -13,6 +14,7 @@ export const ShortButton = ({
       href={href}
       className={appearance}
       disabled={disabled}
+      aria-busy={isLoading}
       onClick={handleClick}
     >
       {buttonText}
