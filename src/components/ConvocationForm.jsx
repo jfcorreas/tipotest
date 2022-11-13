@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react'
+
+import { fetchAPI } from '../services/apiClientServices'
 import { ShortButton } from '../components/ShortButton'
 import { Input } from './Input'
+
+const emptyConvocation = {
+  id: null,
+  name: null,
+  year: new Date().getFullYear(),
+  institution: null,
+  category: null
+}
 
 export const ConvocationForm = ({
   apiUrl,
@@ -10,15 +20,7 @@ export const ConvocationForm = ({
   const [errorMessage, setErrorMessage] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isValidForm, setIsValidForm] = useState(false)
-  const [newConvocation, setNewConvocation] = useState(
-    {
-      id: convocation ? convocation._id : null,
-      name: convocation ? convocation.name : null,
-      year: convocation ? convocation.year : new Date().getFullYear(),
-      institution: convocation ? convocation.institution : null,
-      category: convocation ? convocation.category : null
-    }
-  )
+  const [newConvocation, setNewConvocation] = useState(emptyConvocation)
 
   const convocationProperties = {
     name: {
@@ -57,6 +59,8 @@ export const ConvocationForm = ({
         category: convocation ? convocation.category : null
       }
     )
+    setErrorMessage(null)
+    setIsLoading(false)
   }, [convocation])
 
   const handleInputChange = (e) => {
@@ -78,9 +82,39 @@ export const ConvocationForm = ({
     setNewConvocation(updatedConvocation)
   }
 
+  const handleSubmit = async () => {
+    const options = {
+      body: JSON.stringify(newConvocation),
+      method: newConvocation._id ? 'PATCH' : 'POST'
+    }
+    setIsLoading(true)
+    try {
+      const result = await fetchAPI({
+        apiUrl,
+        path: 'convocations',
+        objectId: newConvocation._id,
+        options
+      })
+
+      if (result?.status === 'FAILED') {
+        setErrorMessage(result.data.error)
+      } else {
+        setNewConvocation(emptyConvocation)
+        postSubmitActions()
+      }
+    } catch (error) {
+      setErrorMessage(error.message)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleDeletion = () => {
+    postSubmitActions()
+  }
+
   return (
     <>
-      <span className='warning'>{errorMessage}</span>
       <form>
         {
         Object.entries(convocationProperties).map(([key, value]) => {
@@ -100,6 +134,8 @@ export const ConvocationForm = ({
 
         }
       </form>
+      <p aria-busy={isLoading}>{isLoading && 'Aplicando cambios...'}</p>
+      <p className='warning'>{errorMessage}</p>
       <footer>
         <ShortButton
           buttonText='Cancelar'
@@ -118,9 +154,8 @@ export const ConvocationForm = ({
           buttonText={convocation ? 'Guardar Cambios' : 'Crear Convocatoria'}
           href='#confirm'
           disabled={!isValidForm}
-          onClick={postSubmitActions}
+          onClick={handleSubmit}
         />
-
       </footer>
     </>
   )
