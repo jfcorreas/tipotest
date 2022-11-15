@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react'
 
-import { fetchAPI } from '../services/apiClientServices'
 import { ShortButton } from './ShortButton'
 import { Input } from './Input'
 import { SelectableTable } from './SelectableTable'
 import { FullButton } from './FullButton'
+import { useFetch } from '../hooks/useFetch'
 
 export const ConvocationTopicsForm = ({
   apiUrl,
@@ -16,60 +16,42 @@ export const ConvocationTopicsForm = ({
   const [selectedTopicId, setSelectedTopicId] = useState(null)
   const [selectableTopics, setSelectableTopics] = useState([])
   const [isValidForm, setIsValidForm] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [errorMessage, setErrorMessage] = useState(null)
+
+  const [convocationFetch, setConvocationFetch] = useFetch()
+  const [allTopicsFetch, setAllTopicsFetch] = useFetch()
 
   const formRef = useRef(null)
 
   useEffect(() => {
     if (isActive) {
-      populateConvocationTopics()
       formRef.current.focus()
-    }
-  }, [isActive])
 
-  useEffect(() => {
-    setSelectedTopicId(null)
-    setIsValidForm(true)
-  }, [convocationTopics, selectableTopics])
-
-  const populateConvocationTopics = async () => {
-    setErrorMessage(null)
-    setIsLoading(true)
-    try {
-      let result = await fetchAPI({
+      setConvocationTopics([])
+      setSelectableTopics([])
+      setConvocationFetch({
         apiUrl,
         path: 'convocations',
         objectId: convocationId
       })
-
-      if (result?.status === 'FAILED') {
-        setErrorMessage(result.data.error)
-      } else {
-        const convocation = result?.data ? result.data : null
-        setConvocationTopics(convocation.topicList)
-
-        result = await fetchAPI({
-          apiUrl,
-          path: 'topics'
-        })
-
-        if (result?.status === 'FAILED') {
-          setErrorMessage(result.data.error)
-        } else {
-          const allTopics = result?.data ? result.data : []
-          const selectableTopics = allTopics.filter((topic) =>
-            !convocation.topicList.find(topicFind => topicFind._id === topic._id))
-
-          setSelectableTopics(selectableTopics)
-        }
-      }
-    } catch (error) {
-      setErrorMessage(error.message)
-    } finally {
-      setIsLoading(false)
+      setAllTopicsFetch({
+        apiUrl,
+        path: 'topics'
+      })
     }
-  }
+  }, [isActive])
+
+  useEffect(() => {
+    if (convocationFetch.data.topicList) {
+      setConvocationTopics(convocationFetch.data.topicList)
+      const selectableTopics = allTopicsFetch.data.filter((topic) =>
+        !convocationFetch.data.topicList.find(topicFind => topicFind._id === topic._id))
+      setSelectableTopics(selectableTopics)
+    }
+  }, [convocationFetch.data, allTopicsFetch.data])
+
+  useEffect(() => {
+    setSelectedTopicId(null)
+  }, [convocationTopics, selectableTopics])
 
   const handleDeleteTopic = () => {
     const newConvocationTopics = [...convocationTopics]
@@ -81,6 +63,7 @@ export const ConvocationTopicsForm = ({
 
     setConvocationTopics(newConvocationTopics)
     setSelectableTopics(newSelectableTopics)
+    setIsValidForm(true)
   }
 
   const handleNewTopicChange = (e) => {
@@ -95,6 +78,7 @@ export const ConvocationTopicsForm = ({
 
     setConvocationTopics(newConvocationTopics)
     setSelectableTopics(newSelectableTopics)
+    setIsValidForm(true)
   }
   /*   const handleSubmit = async () => {
     const options = {
@@ -146,19 +130,21 @@ export const ConvocationTopicsForm = ({
         selectedId={selectedTopicId}
         setSelectedId={setSelectedTopicId}
       />
-      <p aria-busy={isLoading}>{isLoading && 'Cargando temas...'}</p>
-      <p className='warning'>{errorMessage}</p>
+      <p aria-busy={convocationFetch.loading || allTopicsFetch.loading}>
+        {(convocationFetch.loading || allTopicsFetch.loading) && 'Cargando temas...'}
+      </p>
+      <p className='warning'>{convocationFetch.error}</p>
+      <p className='warning'>{!convocationFetch.error ? allTopicsFetch.error : null}</p>
       <FullButton
         buttonText='Eliminar Tema'
         className='contrast'
         disabled={!selectedTopicId}
         onClick={handleDeleteTopic}
       />
-      <label htmlFor='availableTopics'>
+      <label>
         Temas disponibles
         <select
-          name='availableTopics' type='text'
-          placeholder='Todos los Temas disponibles'
+          name='availableTopics'
           aria-disabled={selectableTopics.length === 0}
           onChange={handleNewTopicChange}
         >
@@ -168,7 +154,7 @@ export const ConvocationTopicsForm = ({
           {selectableTopics
             ? selectableTopics.map((topic) => {
               return (
-                <option key={topic._id} value={topic._id}>{topic.title}</option>
+                <option key={topic._id} value={topic._id}>{`(${topic.shorthand}) ${topic.title}`}</option>
               )
             })
             : null}

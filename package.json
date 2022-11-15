@@ -10,7 +10,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "api-start": "node ./api/api.js",
-    "api-dev": "nodemon ./api/api.js --ignore './api/database/file_model/*.json'",
+    "api-dev": "nodemon ./api/api.js --watch './api' --ignore './api/database/file_model/*.json'",
     "api-test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
