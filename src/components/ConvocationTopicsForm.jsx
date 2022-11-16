@@ -5,9 +5,9 @@ import { Input } from './Input'
 import { SelectableTable } from './SelectableTable'
 import { FullButton } from './FullButton'
 import { useFetch } from '../hooks/useFetch'
+import { useApi } from '../hooks/useApi'
 
 export const ConvocationTopicsForm = ({
-  apiUrl,
   convocationId,
   isActive,
   postSubmitActions
@@ -16,6 +16,8 @@ export const ConvocationTopicsForm = ({
   const [selectedTopicId, setSelectedTopicId] = useState(null)
   const [selectableTopics, setSelectableTopics] = useState([])
   const [isValidForm, setIsValidForm] = useState(false)
+
+  const [apiUrl] = useApi()
 
   const [convocationFetch, setConvocationFetch] = useFetch()
   const [allTopicsFetch, setAllTopicsFetch] = useFetch()

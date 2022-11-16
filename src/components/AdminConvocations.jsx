@@ -9,6 +9,7 @@ import { ShortButton } from './ShortButton'
 import { ListOfTopics } from './ListOfTopics'
 import { ConvocationForm } from './ConvocationForm'
 import { ConvocationTopicsForm } from './ConvocationTopicsForm'
+import { ApiProvider } from '../providers/ApiProvider'
 
 export default function AdminConvocations ({ apiUrl }) {
   const [convocations, setConvocations] = useState([])
@@ -109,38 +110,38 @@ export default function AdminConvocations ({ apiUrl }) {
           noTopicsText='Seleccione una Convocatoria ⬆️'
         />
       </Section>
-      <Modal
-        open={isEditFormOpen}
-        handleClose={() => setIsEditFormOpen(!isEditFormOpen)}
-        title={selectedConvocationId ? 'Editando Convocatoria' : 'Nueva Convocatoria'}
-        subtitle={
+      <ApiProvider apiUrlDefault={apiUrl}>
+        <Modal
+          open={isEditFormOpen}
+          handleClose={() => setIsEditFormOpen(!isEditFormOpen)}
+          title={selectedConvocationId ? 'Editando Convocatoria' : 'Nueva Convocatoria'}
+          subtitle={
           selectedConvocationId &&
           convocations.find(convocation => convocation._id === selectedConvocationId).fullName
         }
-      >
-        <ConvocationForm
-          apiUrl={apiUrl}
-          convocation={convocations.find(convocation => convocation._id === selectedConvocationId)}
-          isActive={isEditFormOpen}
-          postSubmitActions={() => setIsEditFormOpen(!isEditFormOpen)}
-        />
-      </Modal>
-      <Modal
-        open={isTopicsFormOpen}
-        handleClose={() => setIsTopicsFormOpen(!isTopicsFormOpen)}
-        title='Temario de la Convocatoria'
-        subtitle={
+        >
+          <ConvocationForm
+            convocation={convocations.find(convocation => convocation._id === selectedConvocationId)}
+            isActive={isEditFormOpen}
+            postSubmitActions={() => setIsEditFormOpen(!isEditFormOpen)}
+          />
+        </Modal>
+        <Modal
+          open={isTopicsFormOpen}
+          handleClose={() => setIsTopicsFormOpen(!isTopicsFormOpen)}
+          title='Temario de la Convocatoria'
+          subtitle={
           selectedConvocationId &&
           convocations.find(convocation => convocation._id === selectedConvocationId).fullName
         }
-      >
-        <ConvocationTopicsForm
-          apiUrl={apiUrl}
-          convocationId={selectedConvocationId}
-          isActive={isTopicsFormOpen}
-          postSubmitActions={() => setIsTopicsFormOpen(!isTopicsFormOpen)}
-        />
-      </Modal>
+        >
+          <ConvocationTopicsForm
+            convocationId={selectedConvocationId}
+            isActive={isTopicsFormOpen}
+            postSubmitActions={() => setIsTopicsFormOpen(!isTopicsFormOpen)}
+          />
+        </Modal>
+      </ApiProvider>
     </div>
   )
 }

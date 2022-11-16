@@ -4,6 +4,7 @@ import { fetchAPI } from '../services/apiClientServices'
 import { ShortButton } from '../components/ShortButton'
 import { Input } from './Input'
 import { Modal } from '../containers/Modal'
+import { useApi } from '../hooks/useApi'
 
 const emptyConvocation = {
   id: null,
@@ -14,7 +15,6 @@ const emptyConvocation = {
 }
 
 export const ConvocationForm = ({
-  apiUrl,
   convocation,
   isActive,
   postSubmitActions
@@ -24,6 +24,8 @@ export const ConvocationForm = ({
   const [confirmDeletion, setConfirmDeletion] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState(null)
+
+  const [apiUrl] = useApi()
 
   const inputRef = useRef(null)
   const confirmDeletionRef = useRef(null)
