@@ -8,7 +8,8 @@ export const Input = forwardRef(({
   isRequired = null,
   isValid = null,
   onChange,
-  value
+  value,
+  ...rest
 }, ref) => {
   return (
     <label>
@@ -18,6 +19,7 @@ export const Input = forwardRef(({
         ref={ref} placeholder={placeholder}
         aria-invalid={(isValid === null) ? null : !isValid}
         onChange={onChange} value={value}
+        {...rest}
       />
     </label>
   )

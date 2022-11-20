@@ -15,6 +15,7 @@ export const ConvocationTopicsForm = ({
   const [convocationTopics, setConvocationTopics] = useState([])
   const [selectedTopicId, setSelectedTopicId] = useState(null)
   const [selectableTopics, setSelectableTopics] = useState([])
+  const [newTopicPosition, setNewTopicPosition] = useState(-1)
   const [isValidForm, setIsValidForm] = useState(false)
 
   const [apiUrl] = useApi()
@@ -31,6 +32,7 @@ export const ConvocationTopicsForm = ({
       setIsValidForm(false)
       setConvocationTopics([])
       setSelectableTopics([])
+      setNewTopicPosition(-1)
       setConvocationFetch({
         apiUrl,
         path: 'convocations',
@@ -54,6 +56,7 @@ export const ConvocationTopicsForm = ({
 
   useEffect(() => {
     setSelectedTopicId(null)
+    setNewTopicPosition(-1)
     formRef.current.focus()
   }, [convocationTopics, selectableTopics])
 
@@ -62,6 +65,10 @@ export const ConvocationTopicsForm = ({
       postSubmitActions()
     }
   }, [convocationPatch.data])
+
+  useEffect(() => {
+    setNewTopicPosition(convocationTopics.findIndex((topic) => topic._id === selectedTopicId))
+  }, [selectedTopicId])
 
   const handleDeleteTopic = () => {
     const newConvocationTopics = [...convocationTopics]
@@ -90,6 +97,29 @@ export const ConvocationTopicsForm = ({
     setSelectableTopics(newSelectableTopics)
     setIsValidForm(true)
   }
+
+  const handleNewPositionChange = (e) => {
+    const target = e.target
+    const newPosition = target.value
+
+    if (newPosition > 0) setNewTopicPosition(Number(newPosition - 1))
+  }
+
+  const handleNewPositionSubmit = () => {
+    const newConvocationTopics = [...convocationTopics]
+
+    const selectedTopicIndex = convocationTopics.findIndex((topic) =>
+      topic._id === selectedTopicId
+    )
+    const topicToMove = newConvocationTopics.splice(selectedTopicIndex, 1)[0]
+    newConvocationTopics.splice(newTopicPosition, 0, topicToMove)
+
+    setConvocationTopics(newConvocationTopics)
+    setSelectedTopicId(null)
+    setNewTopicPosition(-1)
+    setIsValidForm(true)
+  }
+
   const handleSubmit = () => {
     const options = {
       body: JSON.stringify({ topicList: convocationTopics }),
@@ -128,20 +158,36 @@ export const ConvocationTopicsForm = ({
           selectedId={selectedTopicId}
           setSelectedId={setSelectedTopicId}
         />
-        <p aria-busy={convocationFetch.loading || allTopicsFetch.loading}>
-          {(convocationFetch.loading || allTopicsFetch.loading) && 'Cargando temas...'}
-        </p>
-        <p aria-busy={convocationPatch.loading}>
-          {convocationPatch.loading && 'Guardando cambios...'}
-        </p>
-        <p className='warning'>{convocationFetch.error}</p>
-        <p className='warning'>{!convocationFetch.error ? allTopicsFetch.error : null}</p>
-        <p className='warning'>{convocationPatch.error}</p>
         <FullButton
           buttonText='Eliminar Tema'
           className='contrast'
           disabled={!selectedTopicId}
           onClick={handleDeleteTopic}
+        />
+        <p aria-busy={convocationFetch.loading || allTopicsFetch.loading}>
+          {(convocationFetch.loading || allTopicsFetch.loading) && 'Cargando temas...'}
+        </p>
+        <p className='warning'>{convocationFetch.error}</p>
+        <p className='warning'>{!convocationFetch.error ? allTopicsFetch.error : null}</p>
+        <Input
+          type='number'
+          min='1' max={convocationTopics.length}
+          inputName='topicOrder' label='Cambiar posición del Tema seleccionado'
+          placeholder='Ningún tema seleccionado'
+          aria-disabled={!selectedTopicId}
+          readOnly={!selectedTopicId}
+          onChange={handleNewPositionChange}
+          value={newTopicPosition > -1 ? newTopicPosition + 1 : ''}
+        />
+        <FullButton
+          buttonText='Confirmar nueva posición'
+          className='contrast outline'
+          disabled={
+            newTopicPosition === convocationTopics.findIndex((topic) =>
+              topic._id === selectedTopicId
+            )
+          }
+          onClick={handleNewPositionSubmit}
         />
         <label>
           Temas disponibles
@@ -162,7 +208,10 @@ export const ConvocationTopicsForm = ({
               : null}
           </select>
         </label>
-
+        <p aria-busy={convocationPatch.loading}>
+          {convocationPatch.loading && 'Guardando cambios...'}
+        </p>
+        <p className='warning'>{convocationPatch.error}</p>
       </div>
       <footer>
         <ShortButton
