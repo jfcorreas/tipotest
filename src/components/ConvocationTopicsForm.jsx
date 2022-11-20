@@ -21,13 +21,14 @@ export const ConvocationTopicsForm = ({
 
   const [convocationFetch, setConvocationFetch] = useFetch()
   const [allTopicsFetch, setAllTopicsFetch] = useFetch()
+  const [convocationPatch, setConvocationPatch] = useFetch()
 
   const formRef = useRef(null)
 
   useEffect(() => {
     if (isActive) {
       formRef.current.focus()
-
+      setIsValidForm(false)
       setConvocationTopics([])
       setSelectableTopics([])
       setConvocationFetch({
@@ -53,7 +54,14 @@ export const ConvocationTopicsForm = ({
 
   useEffect(() => {
     setSelectedTopicId(null)
+    formRef.current.focus()
   }, [convocationTopics, selectableTopics])
+
+  useEffect(() => {
+    if (isActive) {
+      postSubmitActions()
+    }
+  }, [convocationPatch.data])
 
   const handleDeleteTopic = () => {
     const newConvocationTopics = [...convocationTopics]
@@ -82,86 +90,92 @@ export const ConvocationTopicsForm = ({
     setSelectableTopics(newSelectableTopics)
     setIsValidForm(true)
   }
-  /*   const handleSubmit = async () => {
+  const handleSubmit = () => {
     const options = {
-      body: JSON.stringify(newConvocation),
-      method: newConvocation.id ? 'PATCH' : 'POST'
+      body: JSON.stringify({ topicList: convocationTopics }),
+      method: 'PATCH'
     }
-    setIsLoading(true)
-    try {
-      const result = await fetchAPI({
-        apiUrl,
-        path: 'convocations',
-        objectId: newConvocation.id,
-        options
-      })
+    setConvocationPatch({
+      apiUrl,
+      path: 'convocations',
+      subpath: 'topics',
+      objectId: convocationId,
+      options
+    })
+  }
 
-      if (result?.status === 'FAILED') {
-        setErrorMessage(result.data.error)
-      } else {
-        setNewConvocation(emptyConvocation)
-        postSubmitActions()
-      }
-    } catch (error) {
-      setErrorMessage(error.message)
-    } finally {
-      setIsLoading(false)
-    }
-  } */
-
-  /*   const handleKeyDown = (e) => {
+  const handleKeyDown = (e) => {
     const keyName = e.key
-
+    e.stopPropagation()
     if (keyName === 'Enter') {
       e.preventDefault()
-      confirmDeletion ? handleDeletion() : handleSubmit()
+      if (isValidForm) handleSubmit()
     }
     if (keyName === 'Escape') {
-      confirmDeletion ? setConfirmDeletion(false) : postSubmitActions()
+      postSubmitActions()
     }
-  } */
+  }
 
   return (
-    <div ref={formRef} tabIndex='0'>
-      <SelectableTable
-        items={convocationTopics}
-        itemProperties={{
-          position: '#',
-          title: 'Título'
-        }}
-        selectedId={selectedTopicId}
-        setSelectedId={setSelectedTopicId}
-      />
-      <p aria-busy={convocationFetch.loading || allTopicsFetch.loading}>
-        {(convocationFetch.loading || allTopicsFetch.loading) && 'Cargando temas...'}
-      </p>
-      <p className='warning'>{convocationFetch.error}</p>
-      <p className='warning'>{!convocationFetch.error ? allTopicsFetch.error : null}</p>
-      <FullButton
-        buttonText='Eliminar Tema'
-        className='contrast'
-        disabled={!selectedTopicId}
-        onClick={handleDeleteTopic}
-      />
-      <label>
-        Temas disponibles
-        <select
-          name='availableTopics'
-          aria-disabled={selectableTopics.length === 0}
-          onChange={handleNewTopicChange}
-        >
-          {selectableTopics.length > 0
-            ? <option value=''>Seleccione un Tema para añadir...</option>
-            : <option value=''>No quedan Temas para añadir</option>}
-          {selectableTopics
-            ? selectableTopics.map((topic) => {
-              return (
-                <option key={topic._id} value={topic._id}>{`(${topic.shorthand}) ${topic.title}`}</option>
-              )
-            })
-            : null}
-        </select>
-      </label>
-    </div>
+    <>
+      <div tabIndex='0' ref={formRef} onKeyDown={handleKeyDown}>
+        <SelectableTable
+          items={convocationTopics}
+          itemProperties={{
+            position: '#',
+            title: 'Título'
+          }}
+          selectedId={selectedTopicId}
+          setSelectedId={setSelectedTopicId}
+        />
+        <p aria-busy={convocationFetch.loading || allTopicsFetch.loading}>
+          {(convocationFetch.loading || allTopicsFetch.loading) && 'Cargando temas...'}
+        </p>
+        <p aria-busy={convocationPatch.loading}>
+          {convocationPatch.loading && 'Guardando cambios...'}
+        </p>
+        <p className='warning'>{convocationFetch.error}</p>
+        <p className='warning'>{!convocationFetch.error ? allTopicsFetch.error : null}</p>
+        <p className='warning'>{convocationPatch.error}</p>
+        <FullButton
+          buttonText='Eliminar Tema'
+          className='contrast'
+          disabled={!selectedTopicId}
+          onClick={handleDeleteTopic}
+        />
+        <label>
+          Temas disponibles
+          <select
+            name='availableTopics'
+            aria-disabled={selectableTopics.length === 0}
+            onChange={handleNewTopicChange}
+          >
+            {selectableTopics.length > 0
+              ? <option value=''>Seleccione un Tema para añadir...</option>
+              : <option value=''>No quedan Temas para añadir</option>}
+            {selectableTopics
+              ? selectableTopics.map((topic) => {
+                return (
+                  <option key={topic._id} value={topic._id}>{`(${topic.shorthand}) ${topic.title}`}</option>
+                )
+              })
+              : null}
+          </select>
+        </label>
+
+      </div>
+      <footer>
+        <ShortButton
+          buttonText='Cancelar'
+          appearance='secondary'
+          onClick={postSubmitActions}
+        />
+        <ShortButton
+          buttonText='Guardar Cambios'
+          disabled={!isValidForm}
+          onClick={handleSubmit}
+        />
+      </footer>
+    </>
   )
 }

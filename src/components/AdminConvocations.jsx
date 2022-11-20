@@ -22,11 +22,11 @@ export default function AdminConvocations ({ apiUrl }) {
   const pageRef = useRef(null)
 
   useEffect(() => {
-    if (!isEditFormOpen) {
+    if (!isEditFormOpen && !isTopicsFormOpen) {
       doRefresh()
       pageRef.current.focus()
     }
-  }, [isEditFormOpen])
+  }, [isEditFormOpen, isTopicsFormOpen])
 
   const doRefresh = async () => {
     setErrorMessage(null)

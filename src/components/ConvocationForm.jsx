@@ -126,7 +126,7 @@ export const ConvocationForm = ({
 
   const handleKeyDown = (e) => {
     const keyName = e.key
-
+    e.stopPropagation()
     if (keyName === 'Enter') {
       e.preventDefault()
       confirmDeletion ? handleDeletion() : handleSubmit()

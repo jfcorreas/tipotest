@@ -4,7 +4,7 @@ import { fetchAPI } from '../services/apiClientServices'
 
 export const useFetch = () => {
   const [data, setData] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
   const queryAPI = (fetchParams) => {
