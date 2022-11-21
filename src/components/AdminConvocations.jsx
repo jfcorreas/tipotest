@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
 
-import { fetchAPI } from '../services/apiClientServices'
 import { SelectableTable } from './SelectableTable'
 import { Section } from '../containers/Section'
 import { Modal } from '../containers/Modal'
@@ -10,45 +9,35 @@ import { ListOfTopics } from './ListOfTopics'
 import { ConvocationForm } from './ConvocationForm'
 import { ConvocationTopicsForm } from './ConvocationTopicsForm'
 import { ApiProvider } from '../providers/ApiProvider'
+import { useFetch } from '../hooks/useFetch'
 
 export default function AdminConvocations ({ apiUrl }) {
   const [convocations, setConvocations] = useState([])
   const [selectedConvocationId, setSelectedConvocationId] = useState(null)
   const [isEditFormOpen, setIsEditFormOpen] = useState(false)
   const [isTopicsFormOpen, setIsTopicsFormOpen] = useState(false)
-  const [errorMessage, setErrorMessage] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
+
+  const [convocationsFetch, setConvocationsFetch] = useFetch()
 
   const pageRef = useRef(null)
 
   useEffect(() => {
     if (!isEditFormOpen && !isTopicsFormOpen) {
-      doRefresh()
       pageRef.current.focus()
+      doRefresh()
     }
   }, [isEditFormOpen, isTopicsFormOpen])
 
-  const doRefresh = async () => {
-    setErrorMessage(null)
-    setSelectedConvocationId(null)
-    setIsLoading(true)
-    try {
-      const result = await fetchAPI({
-        apiUrl,
-        path: 'convocations'
-      })
+  useEffect(() => {
+    setConvocations(convocationsFetch.data)
+  }, [convocationsFetch.data])
 
-      if (result?.status === 'FAILED') {
-        setErrorMessage(result.data.error)
-      } else {
-        const convocations = result?.data ? result.data : []
-        setConvocations(convocations)
-      }
-    } catch (error) {
-      setErrorMessage(error.message)
-    } finally {
-      setIsLoading(false)
-    }
+  const doRefresh = async () => {
+    setSelectedConvocationId(null)
+    setConvocationsFetch({
+      apiUrl,
+      path: 'convocations'
+    })
   }
 
   const handleKeyDown = (e) => {
@@ -72,10 +61,10 @@ export default function AdminConvocations ({ apiUrl }) {
       <Section
         title={`Convocatorias (${convocations.length})`}
         headingLevel={4}
-        isLoading={isLoading}
+        isLoading={convocationsFetch.loading}
       >
         <a onClick={() => { doRefresh() }}>🔁 Actualizar</a>
-        {errorMessage && <div className='warning'>{errorMessage}</div>}
+        {convocationsFetch.error && <div className='warning'>{convocationsFetch.error}</div>}
         <SelectableTable
           items={convocations}
           itemProperties={{
