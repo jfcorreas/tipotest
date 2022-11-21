@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react'
 
-import { Section } from '../containers/Section'
 import { useFetch } from '../hooks/useFetch'
+import { Section } from '../containers/Section'
 import { SelectableTable } from './SelectableTable'
+import { FullButton } from './FullButton'
+import { ShortButton } from './ShortButton'
 
 export default function AdminTopics ({ apiUrl }) {
   const [topics, setTopics] = useState([])
@@ -29,6 +31,14 @@ export default function AdminTopics ({ apiUrl }) {
   return (
     <div>
       {/* <div ref={pageRef} onKeyDown={handleKeyDown} tabIndex='0'> */}
+      <FullButton
+        buttonText='Nuevo Tema'
+        className='primary'
+        onClick={() => {
+          setSelectedTopicId(null)
+          // setIsEditFormOpen(true)
+        }}
+      />
       <Section
         title={`Temas (${topics.length})`}
         headingLevel={4}
@@ -45,6 +55,22 @@ export default function AdminTopics ({ apiUrl }) {
           selectedId={selectedTopicId}
           setSelectedId={setSelectedTopicId}
         />
+        <ShortButton
+          buttonText='Editar Tema'
+          appearance='primary outline'
+          disabled={!selectedTopicId}
+          onClick={() => console.log(`Editando ${selectedTopicId}`)}
+        />
+      </Section>
+      <Section
+        title='Título Completo'
+        headingLevel={5}
+      >
+        <p className='texto'>
+          {selectedTopicId
+            ? topics.find(topic => topic._id === selectedTopicId).fullTitle
+            : 'Seleccione un Tema ⬆️'}
+        </p>
       </Section>
     </div>
   )
