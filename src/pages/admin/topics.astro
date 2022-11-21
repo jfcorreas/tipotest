@@ -1,7 +1,8 @@
 ---
+import React from 'react'
 import Layout from "../../layouts/Layout.astro";
 import NavBar from "../../layouts/NavBar.astro";
-import TopicsTable from "../../components/topicsTable";
+import AdminTopics from '../../components/AdminTopics';
 
 const config = {
     apiUrl: import.meta.env.API_URL,
@@ -11,6 +12,8 @@ const config = {
 ---
 
 <Layout title={config.appTitle}>
-        <NavBar title={config.appTitle}></NavBar>     
-        <TopicsTable apiUrl={config.apiUrl} client:load></TopicsTable>
+        <NavBar title={config.appTitle}></NavBar>
+        <React.StrictMode>
+            <AdminTopics apiUrl={config.apiUrl} client:load />
+        </React.StrictMode>     
 </Layout>
