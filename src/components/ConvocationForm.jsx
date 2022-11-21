@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react'
 
-import { fetchAPI } from '../services/apiClientServices'
 import { ShortButton } from '../components/ShortButton'
 import { Input } from './Input'
 import { Modal } from '../containers/Modal'
 import { useApi } from '../hooks/useApi'
+import { useFetch } from '../hooks/useFetch'
 
 const emptyConvocation = {
   id: null,
@@ -22,10 +22,10 @@ export const ConvocationForm = ({
   const [newConvocation, setNewConvocation] = useState(emptyConvocation)
   const [isValidForm, setIsValidForm] = useState(false)
   const [confirmDeletion, setConfirmDeletion] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [errorMessage, setErrorMessage] = useState(null)
 
   const [apiUrl] = useApi()
+
+  const [convocationFetch, setConvocationFetch] = useFetch()
 
   const inputRef = useRef(null)
   const confirmDeletionRef = useRef(null)
@@ -40,18 +40,21 @@ export const ConvocationForm = ({
         category: convocation ? convocation.category : null
       }
     )
-    setErrorMessage(null)
-    setIsLoading(false)
-    inputRef.current.focus()
-  }, [convocation])
-
-  useEffect(() => {
-    confirmDeletion ? confirmDeletionRef.current.focus() : inputRef.current.focus()
-  }, [confirmDeletion])
-
-  useEffect(() => {
     inputRef.current.focus()
   }, [isActive])
+
+  useEffect(() => {
+    if (isActive) {
+      setNewConvocation(emptyConvocation)
+      postSubmitActions()
+    }
+  }, [convocationFetch.data])
+
+  useEffect(() => {
+    if (isActive) {
+      confirmDeletion ? confirmDeletionRef.current.focus() : inputRef.current.focus()
+    }
+  }, [confirmDeletion])
 
   const handleInputChange = (e) => {
     const updatedConvocation = { ...newConvocation }
@@ -78,50 +81,21 @@ export const ConvocationForm = ({
       body: JSON.stringify(newConvocation),
       method: newConvocation.id ? 'PATCH' : 'POST'
     }
-    setIsLoading(true)
-    try {
-      const result = await fetchAPI({
-        apiUrl,
-        path: 'convocations',
-        objectId: newConvocation.id,
-        options
-      })
-
-      if (result?.status === 'FAILED') {
-        setErrorMessage(result.data.error)
-      } else {
-        setNewConvocation(emptyConvocation)
-        postSubmitActions()
-      }
-    } catch (error) {
-      setErrorMessage(error.message)
-    } finally {
-      setIsLoading(false)
-    }
+    setConvocationFetch({
+      apiUrl,
+      path: 'convocations',
+      objectId: newConvocation.id,
+      options
+    })
   }
 
   const handleDeletion = async () => {
-    setIsLoading(true)
-    try {
-      const result = await fetchAPI({
-        apiUrl,
-        path: 'convocations',
-        objectId: newConvocation.id,
-        options: { method: 'DELETE' }
-      })
-
-      if (result?.status === 'FAILED') {
-        setErrorMessage(result.data.error)
-      } else {
-        setNewConvocation(emptyConvocation)
-        postSubmitActions()
-      }
-    } catch (error) {
-      setErrorMessage(error.message)
-    } finally {
-      setIsLoading(false)
-      setConfirmDeletion(false)
-    }
+    setConvocationFetch({
+      apiUrl,
+      path: 'convocations',
+      objectId: newConvocation.id,
+      options: { method: 'DELETE' }
+    })
   }
 
   const handleKeyDown = (e) => {
@@ -175,9 +149,11 @@ export const ConvocationForm = ({
       </form>
       {
         !confirmDeletion &&
-          <p aria-busy={isLoading}>{isLoading && 'Aplicando cambios...'}</p>
+          <p aria-busy={convocationFetch.loading}>
+            {convocationFetch.loading && 'Aplicando cambios...'}
+          </p>
       }
-      <p className='warning'>{errorMessage}</p>
+      <p className='warning'>{convocationFetch.error}</p>
       <footer>
         <ShortButton
           buttonText='Cancelar'
@@ -214,7 +190,7 @@ export const ConvocationForm = ({
           />
           <ShortButton
             buttonText='Eliminar Convocatoria'
-            isLoading={isLoading}
+            isLoading={convocationFetch.loading}
             onClick={handleDeletion}
           />
         </footer>

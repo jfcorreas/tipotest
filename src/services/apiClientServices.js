@@ -21,7 +21,7 @@ export async function fetchAPI (fetchParams) {
   if (filterParams) {
     requestUrl += `?${new URLSearchParams(filterParams).toString()}`
   }
-  console.log(requestUrl)
+  console.log(`${options ? options.method : 'GET'}: ${requestUrl}`)
   const response = await fetch(requestUrl, options)
   const data = (response.status === 204) ? null : await response.json()
 

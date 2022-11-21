@@ -46,7 +46,7 @@ export const ConvocationTopicsForm = ({
   }, [isActive])
 
   useEffect(() => {
-    if (convocationFetch.data.topicList) {
+    if (isActive && convocationFetch.data.topicList) {
       setConvocationTopics(convocationFetch.data.topicList)
       const selectableTopics = allTopicsFetch.data.filter((topic) =>
         !convocationFetch.data.topicList.find(topicFind => topicFind._id === topic._id))
@@ -55,9 +55,11 @@ export const ConvocationTopicsForm = ({
   }, [convocationFetch.data, allTopicsFetch.data])
 
   useEffect(() => {
-    setSelectedTopicId(null)
-    setNewTopicPosition(-1)
-    formRef.current.focus()
+    if (isActive) {
+      setSelectedTopicId(null)
+      setNewTopicPosition(-1)
+      formRef.current.focus()
+    }
   }, [convocationTopics, selectableTopics])
 
   useEffect(() => {
@@ -67,7 +69,9 @@ export const ConvocationTopicsForm = ({
   }, [convocationPatch.data])
 
   useEffect(() => {
-    setNewTopicPosition(convocationTopics.findIndex((topic) => topic._id === selectedTopicId))
+    if (isActive) {
+      setNewTopicPosition(convocationTopics.findIndex((topic) => topic._id === selectedTopicId))
+    }
   }, [selectedTopicId])
 
   const handleDeleteTopic = () => {
