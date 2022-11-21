@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
 
-import { ShortButton } from './ShortButton'
-import { Input } from './Input'
-import { SelectableTable } from './SelectableTable'
-import { FullButton } from './FullButton'
-import { useFetch } from '../hooks/useFetch'
-import { useApi } from '../hooks/useApi'
+import { ShortButton } from '../ShortButton'
+import { Input } from '../Input'
+import { SelectableTable } from '../SelectableTable'
+import { FullButton } from '../FullButton'
+import { useFetch } from '../../hooks/useFetch'
+import { useApi } from '../../hooks/useApi'
 
 export const ConvocationTopicsForm = ({
   convocationId,
