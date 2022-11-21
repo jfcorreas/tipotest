@@ -32,7 +32,7 @@ export default function AdminConvocations ({ apiUrl }) {
     setConvocations(convocationsFetch.data)
   }, [convocationsFetch.data])
 
-  const doRefresh = async () => {
+  const doRefresh = () => {
     setSelectedConvocationId(null)
     setConvocationsFetch({
       apiUrl,
