@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
 import { useFetch } from '../hooks/useFetch'
 import { ApiProvider } from '../providers/ApiProvider'
@@ -16,9 +16,14 @@ export default function AdminTopics ({ apiUrl }) {
 
   const [topicsFetch, setTopicsFetch] = useFetch()
 
+  const pageRef = useRef(null)
+
   useEffect(() => {
-    doRefresh()
-  }, [])
+    if (!isEditFormOpen) {
+      pageRef.current.focus()
+      doRefresh()
+    }
+  }, [isEditFormOpen])
 
   useEffect(() => {
     setTopics(topicsFetch.data)
@@ -32,9 +37,15 @@ export default function AdminTopics ({ apiUrl }) {
     })
   }
 
+  const handleKeyDown = (e) => {
+    const keyName = e.key
+
+    if (keyName === 'Enter') setIsEditFormOpen(true)
+    if (keyName === 'Escape' && !isEditFormOpen) doRefresh()
+  }
+
   return (
-    <div>
-      {/* <div ref={pageRef} onKeyDown={handleKeyDown} tabIndex='0'> */}
+    <div ref={pageRef} onKeyDown={handleKeyDown} tabIndex='0'>
       <FullButton
         buttonText='Nuevo Tema'
         className='primary'
