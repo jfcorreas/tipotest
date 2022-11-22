@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react'
 
-import { useFetch } from '../hooks/useFetch'
-import { ApiProvider } from '../providers/ApiProvider'
-import { Section } from '../containers/Section'
-import { Modal } from '../containers/Modal'
-import { SelectableTable } from './SelectableTable'
-import { FullButton } from './FullButton'
-import { ShortButton } from './ShortButton'
+import { useFetch } from '../../hooks/useFetch'
+import { ApiProvider } from '../../providers/ApiProvider'
+import { Section } from '../../containers/Section'
+import { Modal } from '../../containers/Modal'
+import { SelectableTable } from '../SelectableTable'
+import { FullButton } from '../FullButton'
+import { ShortButton } from '../ShortButton'
 import { TopicForm } from './TopicForm'
 
 export default function AdminTopics ({ apiUrl }) {

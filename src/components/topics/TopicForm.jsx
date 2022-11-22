@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react'
 
-import { ShortButton } from './ShortButton'
-import { Input } from './Input'
-import { Modal } from '../containers/Modal'
-import { useApi } from '../hooks/useApi'
-import { useFetch } from '../hooks/useFetch'
+import { ShortButton } from '../ShortButton'
+import { Input } from '../Input'
+import { Modal } from '../../containers/Modal'
+import { useApi } from '../../hooks/useApi'
+import { useFetch } from '../../hooks/useFetch'
 
 const emptyTopic = {
   id: null,
