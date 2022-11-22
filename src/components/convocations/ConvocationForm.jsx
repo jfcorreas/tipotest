@@ -46,6 +46,7 @@ export const ConvocationForm = ({
   useEffect(() => {
     if (isActive) {
       setNewConvocation(emptyConvocation)
+      setConfirmDeletion(false)
       postSubmitActions()
     }
   }, [convocationFetch.data])

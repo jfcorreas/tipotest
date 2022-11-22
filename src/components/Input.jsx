@@ -14,13 +14,27 @@ export const Input = forwardRef(({
   return (
     <label>
       {label}
-      <input
-        name={inputName} type={type} required={isRequired}
-        ref={ref} placeholder={placeholder}
-        aria-invalid={(isValid === null) ? null : !isValid}
-        onChange={onChange} value={value}
-        {...rest}
-      />
+      {
+        type === 'textarea'
+          ? (
+            <textarea
+              name={inputName} required={isRequired}
+              ref={ref} placeholder={placeholder}
+              aria-invalid={(isValid === null) ? null : !isValid}
+              onChange={onChange} value={value}
+              {...rest}
+            />
+            )
+          : (
+            <input
+              name={inputName} type={type} required={isRequired}
+              ref={ref} placeholder={placeholder}
+              aria-invalid={(isValid === null) ? null : !isValid}
+              onChange={onChange} value={value}
+              {...rest}
+            />
+            )
+      }
     </label>
   )
 })

@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react'
-import TopicForm from './topicForm'
+import TopicForm from './BADtopicForm'
 
 class TopicsTable extends Component {
   constructor (props) {
