@@ -1,6 +1,6 @@
 import React from 'react'
 
-export const TopicForm = () => ({
+export const TopicForm = ({
   topic,
   isActive,
   postSubmitActions

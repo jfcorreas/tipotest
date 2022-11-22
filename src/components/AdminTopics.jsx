@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react'
 
 import { useFetch } from '../hooks/useFetch'
+import { ApiProvider } from '../providers/ApiProvider'
 import { Section } from '../containers/Section'
+import { Modal } from '../containers/Modal'
 import { SelectableTable } from './SelectableTable'
 import { FullButton } from './FullButton'
 import { ShortButton } from './ShortButton'
+import { TopicForm } from './TopicForm'
 
 export default function AdminTopics ({ apiUrl }) {
   const [topics, setTopics] = useState([])
   const [selectedTopicId, setSelectedTopicId] = useState(null)
+  const [isEditFormOpen, setIsEditFormOpen] = useState(false)
 
   const [topicsFetch, setTopicsFetch] = useFetch()
 
@@ -36,7 +40,7 @@ export default function AdminTopics ({ apiUrl }) {
         className='primary'
         onClick={() => {
           setSelectedTopicId(null)
-          // setIsEditFormOpen(true)
+          setIsEditFormOpen(true)
         }}
       />
       <Section
@@ -59,7 +63,7 @@ export default function AdminTopics ({ apiUrl }) {
           buttonText='Editar Tema'
           appearance='primary outline'
           disabled={!selectedTopicId}
-          onClick={() => console.log(`Editando ${selectedTopicId}`)}
+          onClick={() => setIsEditFormOpen(true)}
         />
       </Section>
       <Section
@@ -72,6 +76,23 @@ export default function AdminTopics ({ apiUrl }) {
             : 'Seleccione un Tema ⬆️'}
         </p>
       </Section>
+      <ApiProvider apiUrlDefault={apiUrl}>
+        <Modal
+          open={isEditFormOpen}
+          handleClose={() => setIsEditFormOpen(!isEditFormOpen)}
+          title={selectedTopicId ? 'Editando Tema' : 'Nuevo Tema'}
+          subtitle={
+          selectedTopicId &&
+          topics.find(topic => topic._id === selectedTopicId).title
+        }
+        >
+          <TopicForm
+            topic={topics.find(topic => topic._id === selectedTopicId)}
+            isActive={isEditFormOpen}
+            postSubmitActions={() => setIsEditFormOpen(!isEditFormOpen)}
+          />
+        </Modal>
+      </ApiProvider>
     </div>
   )
 }
