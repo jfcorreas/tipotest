@@ -1,7 +1,8 @@
 ---
+import React from 'react'
 import Layout from "../../layouts/Layout.astro";
 import NavBar from "../../layouts/NavBar.astro";
-import QuestionsTable from "../../components/questionsTable";
+import AdminQuestions from "../../components/questions/AdminQuestions";
 
 const config = {
     apiUrl: import.meta.env.API_URL,
@@ -12,5 +13,7 @@ const config = {
 
 <Layout title={config.appTitle}>
         <NavBar title={config.appTitle}></NavBar>     
-        <QuestionsTable apiUrl={config.apiUrl} client:load></QuestionsTable>
+        <React.StrictMode>
+            <AdminQuestions apiUrl={config.apiUrl} client:load />
+        </React.StrictMode>
 </Layout>
