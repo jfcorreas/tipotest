@@ -145,7 +145,11 @@ export const TopicForm = ({
               placeholder={value.placeholder}
               maxLength={value.maxLength}
               isRequired={value.required}
-              isValid={(newTopic[key] === null) ? null : newTopic[key]}
+              isValid={
+                ((newTopic[key] === null) || (topic && newTopic[key] === topic[key]))
+                  ? null
+                  : newTopic[key]
+              }
               onChange={handleInputChange}
               value={newTopic[key] || ''}
             />

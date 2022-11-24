@@ -139,7 +139,11 @@ export const ConvocationForm = ({
               inputName={key} label={value.label}
               placeholder={value.placeholder}
               isRequired={value.required}
-              isValid={(newConvocation[key] === null) ? null : newConvocation[key]}
+              isValid={
+                ((newConvocation[key] === null) || (convocation && newConvocation[key] === convocation[key]))
+                  ? null
+                  : newConvocation[key]
+              }
               onChange={handleInputChange}
               value={newConvocation[key] || ''}
             />
