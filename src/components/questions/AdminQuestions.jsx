@@ -40,8 +40,11 @@ export default function AdminQuestions ({ apiUrl }) {
 
   const [questionsFetch, setQuestionsFetch] = useFetch()
 
+  const pageRef = useRef(null)
+
   useEffect(() => {
     if (!isEditFormOpen) {
+      pageRef.current.focus()
       doRefresh()
     }
   }, [isEditFormOpen])
@@ -58,8 +61,15 @@ export default function AdminQuestions ({ apiUrl }) {
     })
   }
 
+  const handleKeyDown = (e) => {
+    const keyName = e.key
+    e.stopPropagation()
+    if (keyName === 'Enter') setIsEditFormOpen(true)
+    if (keyName === 'Escape' && !isEditFormOpen) doRefresh()
+  }
+
   return (
-    <div>
+    <div ref={pageRef} onKeyDown={handleKeyDown} tabIndex='0'>
       <FullButton
         buttonText='Nueva Pregunta'
         className='primary'
@@ -105,7 +115,7 @@ export default function AdminQuestions ({ apiUrl }) {
           title={selectedQuestionId ? 'Editando Pregunta' : 'Nueva Pregunta'}
           subtitle={
           selectedQuestionId &&
-          questions.find(question => question._id === selectedQuestionId).title
+          questions.find(question => question._id === selectedQuestionId).text
         }
         >
           <QuestionForm

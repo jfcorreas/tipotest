@@ -31,19 +31,22 @@ export const QuestionForm = ({
   const confirmDeletionRef = useRef(null)
 
   useEffect(() => {
-    setNewQuestion(
-      {
-        id: question ? question._id : null,
-        text: question ? question.text : null,
-        topic: question ? question.topic : topicFilter
-      }
-    )
-    setTopicsFetch({
-      apiUrl,
-      path: 'topics'
-    })
-    setIsValidForm(false)
-    inputRef.current.focus()
+    if (isActive) {
+      inputRef.current.focus()
+      setNewQuestion(
+        {
+          id: question ? question._id : null,
+          text: question ? question.text : null,
+          topic: question ? question.topic : topicFilter
+        }
+      )
+      setTopicsFetch({
+        apiUrl,
+        path: 'topics'
+      })
+    } else {
+      setNewQuestion(emptyQuestion)
+    }
   }, [isActive])
 
   useEffect(() => {
@@ -100,11 +103,10 @@ export const QuestionForm = ({
 
   const handleKeyDown = (e) => {
     const keyName = e.key
-    const shiftKey = e.shiftKey
     e.stopPropagation()
-    if (keyName === 'Enter' && !shiftKey) {
+    if (keyName === 'Enter') {
       e.preventDefault()
-      confirmDeletion ? handleDeletion() : handleSubmit()
+      confirmDeletion ? handleDeletion() : (isValidForm && handleSubmit())
     }
     if (keyName === 'Escape') {
       confirmDeletion ? setConfirmDeletion(false) : postSubmitActions()

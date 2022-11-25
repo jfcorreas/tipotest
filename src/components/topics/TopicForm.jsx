@@ -29,15 +29,19 @@ export const TopicForm = ({
   const confirmDeletionRef = useRef(null)
 
   useEffect(() => {
-    setNewTopic(
-      {
-        id: topic ? topic._id : null,
-        shorthand: topic ? topic.shorthand : null,
-        title: topic ? topic.title : null,
-        fullTitle: topic ? topic.fullTitle : null
-      }
-    )
-    inputRef.current.focus()
+    if (isActive) {
+      setNewTopic(
+        {
+          id: topic ? topic._id : null,
+          shorthand: topic ? topic.shorthand : null,
+          title: topic ? topic.title : null,
+          fullTitle: topic ? topic.fullTitle : null
+        }
+      )
+      inputRef.current.focus()
+    } else {
+      setNewTopic(emptyTopic)
+    }
   }, [isActive])
 
   useEffect(() => {
@@ -98,7 +102,7 @@ export const TopicForm = ({
     e.stopPropagation()
     if (keyName === 'Enter' && !shiftKey) {
       e.preventDefault()
-      confirmDeletion ? handleDeletion() : handleSubmit()
+      confirmDeletion ? handleDeletion() : (isValidForm && handleSubmit())
     }
     if (keyName === 'Escape') {
       confirmDeletion ? setConfirmDeletion(false) : postSubmitActions()

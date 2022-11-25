@@ -31,16 +31,20 @@ export const ConvocationForm = ({
   const confirmDeletionRef = useRef(null)
 
   useEffect(() => {
-    setNewConvocation(
-      {
-        id: convocation ? convocation._id : null,
-        name: convocation ? convocation.name : null,
-        year: convocation ? convocation.year : new Date().getFullYear(),
-        institution: convocation ? convocation.institution : null,
-        category: convocation ? convocation.category : null
-      }
-    )
-    inputRef.current.focus()
+    if (isActive) {
+      setNewConvocation(
+        {
+          id: convocation ? convocation._id : null,
+          name: convocation ? convocation.name : null,
+          year: convocation ? convocation.year : new Date().getFullYear(),
+          institution: convocation ? convocation.institution : null,
+          category: convocation ? convocation.category : null
+        }
+      )
+      inputRef.current.focus()
+    } else {
+      setNewConvocation(emptyConvocation)
+    }
   }, [isActive])
 
   useEffect(() => {
@@ -104,7 +108,7 @@ export const ConvocationForm = ({
     e.stopPropagation()
     if (keyName === 'Enter') {
       e.preventDefault()
-      confirmDeletion ? handleDeletion() : handleSubmit()
+      confirmDeletion ? handleDeletion() : (isValidForm && handleSubmit())
     }
     if (keyName === 'Escape') {
       confirmDeletion ? setConfirmDeletion(false) : postSubmitActions()
