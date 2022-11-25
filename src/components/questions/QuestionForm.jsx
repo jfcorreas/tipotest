@@ -5,48 +5,54 @@ import { Input } from '../Input'
 import { Modal } from '../../containers/Modal'
 import { useApi } from '../../hooks/useApi'
 import { useFetch } from '../../hooks/useFetch'
+import { Select } from '../Select'
 
-const emptyTopic = {
+const emptyQuestion = {
   id: null,
-  shorthand: null,
-  title: null,
-  fullTitle: null
+  text: null,
+  topic: null
 }
-export const TopicForm = ({
-  topic,
+export const QuestionForm = ({
+  question,
+  topicFilter = null,
   isActive,
   postSubmitActions
 }) => {
-  const [newTopic, setNewTopic] = useState(emptyTopic)
+  const [newQuestion, setNewQuestion] = useState(emptyQuestion)
   const [isValidForm, setIsValidForm] = useState(false)
   const [confirmDeletion, setConfirmDeletion] = useState(false)
 
   const [apiUrl] = useApi()
 
-  const [topicFetch, setTopicFetch] = useFetch()
+  const [questionFetch, setQuestionFetch] = useFetch()
+  const [topicsFetch, setTopicsFetch] = useFetch()
 
   const inputRef = useRef(null)
   const confirmDeletionRef = useRef(null)
 
   useEffect(() => {
-    setNewTopic(
+    setNewQuestion(
       {
-        id: topic ? topic._id : null,
-        shorthand: topic ? topic.shorthand : null,
-        title: topic ? topic.title : null,
-        fullTitle: topic ? topic.fullTitle : null
+        id: question ? question._id : null,
+        text: question ? question.text : null,
+        topic: question ? question.topic : topicFilter
       }
     )
+    setTopicsFetch({
+      apiUrl,
+      path: 'topics'
+    })
+    setIsValidForm(false)
     inputRef.current.focus()
   }, [isActive])
 
   useEffect(() => {
     if (isActive) {
-      setNewTopic(emptyTopic)
+      setNewQuestion(emptyQuestion)
       setConfirmDeletion(false)
       postSubmitActions()
     }
-  }, [topicFetch.data])
+  }, [questionFetch.data])
 
   useEffect(() => {
     if (isActive) {
@@ -55,39 +61,39 @@ export const TopicForm = ({
   }, [confirmDeletion])
 
   const handleInputChange = (e) => {
-    const updatedTopic = { ...newTopic }
+    const updatedQuestion = { ...newQuestion }
     const target = e.target
     const value = target.type === 'checkbox' ? target.checked : target.value
     const inputName = target.name
 
-    updatedTopic[inputName] = value
+    updatedQuestion[inputName] = value
 
     const invalidForm = (
-      !updatedTopic.shorthand || !updatedTopic.title
+      !updatedQuestion.text || !updatedQuestion.topic
     )
     setIsValidForm(!invalidForm)
     setConfirmDeletion(false)
-    setNewTopic(updatedTopic)
+    setNewQuestion(updatedQuestion)
   }
 
   const handleSubmit = async () => {
     const options = {
-      body: JSON.stringify(newTopic),
-      method: newTopic.id ? 'PATCH' : 'POST'
+      body: JSON.stringify(newQuestion),
+      method: newQuestion.id ? 'PATCH' : 'POST'
     }
-    setTopicFetch({
+    setQuestionFetch({
       apiUrl,
-      path: 'topics',
-      objectId: newTopic.id,
+      path: 'questions',
+      objectId: newQuestion.id,
       options
     })
   }
 
   const handleDeletion = async () => {
-    setTopicFetch({
+    setQuestionFetch({
       apiUrl,
-      path: 'topics',
-      objectId: newTopic.id,
+      path: 'questions',
+      objectId: newQuestion.id,
       options: { method: 'DELETE' }
     })
   }
@@ -104,64 +110,52 @@ export const TopicForm = ({
       confirmDeletion ? setConfirmDeletion(false) : postSubmitActions()
     }
   }
-
-  const topicInputProperties = {
-    shorthand: {
-      required: true,
-      type: 'text',
-      label: 'Abreviatura',
-      placeholder: 'Abreviatura del Título del tema',
-      maxLength: '20',
-      ref: inputRef
-    },
-    title: {
-      required: true,
-      type: 'text',
-      label: 'Título',
-      placeholder: 'Título del Tema'
-    },
-    fullTitle: {
-      required: false,
-      type: 'textarea',
-      label: 'Título Completo',
-      placeholder: 'Detalle de Todos los Conceptos del Tema'
-    }
-  }
-
   return (
     <>
       <form onKeyDown={handleKeyDown}>
-        {
-        Object.entries(topicInputProperties).map(([key, value]) => {
-          return (
-            <Input
-              key={key}
-              ref={value.ref}
-              type={value.type}
-              inputName={key} label={value.label}
-              placeholder={value.placeholder}
-              maxLength={value.maxLength}
-              isRequired={value.required}
-              isValid={
-                ((newTopic[key] === null) || (topic && newTopic[key] === topic[key]))
-                  ? null
-                  : newTopic[key]
-              }
-              onChange={handleInputChange}
-              value={newTopic[key] || ''}
-            />
-          )
-        })
+        <Input
+          ref={inputRef}
+          type='text'
+          inputName='text' label='Texto'
+          placeholder='Enunciado de la Pregunta'
+          isRequired
+          isValid={
+            ((newQuestion.text === null) || (question && newQuestion.text === question.text))
+              ? null
+              : newQuestion.text
+          }
+          onChange={handleInputChange}
+          value={newQuestion.text || ''}
+        />
+        <Select
+          selectName='topic' type='text' isRequired
+          placeholder='Tema al que Corresponde la Pregunta'
+          isValid={
+            ((newQuestion.topic === null) || (question && newQuestion.topic === question.topic))
+              ? null
+              : newQuestion.topic
+          }
+          isLoading={topicsFetch.loading}
+          onChange={handleInputChange}
+          value={newQuestion.topic || ''}
+        >
+          <option value=''>Seleccione un Tema...</option>
+          {topicsFetch.data?.map((topic) => {
+            return (
+              <option key={topic._id} value={topic._id}>{topic.title}</option>
+            )
+          })}
+        </Select>
+        <p className='warning'>{topicsFetch.error}</p>
 
-        }
       </form>
       {
         !confirmDeletion &&
-          <p aria-busy={topicFetch.loading}>
-            {topicFetch.loading && 'Aplicando cambios...'}
+          <p aria-busy={questionFetch.loading}>
+            {questionFetch.loading && 'Aplicando cambios...'}
           </p>
       }
-      <p className='warning'>{topicFetch.error}</p>
+      <p className='warning'>{questionFetch.error}</p>
       <footer>
         <ShortButton
           buttonText='Cancelar'
@@ -171,11 +165,11 @@ export const TopicForm = ({
         <ShortButton
           buttonText='Eliminar'
           appearance='primary outline'
-          disabled={newTopic.id === null}
+          disabled={newQuestion.id === null}
           onClick={() => setConfirmDeletion(true)}
         />
         <ShortButton
-          buttonText={topic ? 'Guardar Cambios' : 'Crear Tema'}
+          buttonText={question ? 'Guardar Cambios' : 'Crear Pregunta'}
           disabled={!isValidForm}
           onClick={handleSubmit}
         />
@@ -188,7 +182,7 @@ export const TopicForm = ({
         handleKeyDown={handleKeyDown}
       >
         <p>
-          ¿Seguro que quieres borrar el tema "{topic?.title}"?
+          ¿Seguro que quieres borrar la pregunta "{question?.text}"?
         </p>
         <footer>
           <ShortButton
@@ -197,8 +191,8 @@ export const TopicForm = ({
             onClick={() => setConfirmDeletion(false)}
           />
           <ShortButton
-            buttonText='Eliminar Tema'
-            isLoading={topicFetch.loading}
+            buttonText='Eliminar Pregunta'
+            isLoading={questionFetch.loading}
             onClick={handleDeletion}
           />
         </footer>

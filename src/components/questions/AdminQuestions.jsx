@@ -4,6 +4,10 @@ import { useFetch } from '../../hooks/useFetch'
 import { Section } from '../../containers/Section'
 import { ShortButton } from '../ShortButton'
 import { SelectableTable } from '../SelectableTable'
+import { QuestionForm } from './QuestionForm'
+import { ApiProvider } from '../../providers/ApiProvider'
+import { Modal } from '../../containers/Modal'
+import { FullButton } from '../FullButton'
 
 const AnswersNum = (question) => {
   return (
@@ -32,12 +36,15 @@ const AnswersNum = (question) => {
 export default function AdminQuestions ({ apiUrl }) {
   const [questions, setQuestions] = useState([])
   const [selectedQuestionId, setSelectedQuestionId] = useState(null)
+  const [isEditFormOpen, setIsEditFormOpen] = useState(false)
 
   const [questionsFetch, setQuestionsFetch] = useFetch()
 
   useEffect(() => {
-    doRefresh()
-  }, [])
+    if (!isEditFormOpen) {
+      doRefresh()
+    }
+  }, [isEditFormOpen])
 
   useEffect(() => {
     setQuestions(questionsFetch.data)
@@ -50,8 +57,17 @@ export default function AdminQuestions ({ apiUrl }) {
       path: 'questions'
     })
   }
+
   return (
     <div>
+      <FullButton
+        buttonText='Nueva Pregunta'
+        className='primary'
+        onClick={() => {
+          setSelectedQuestionId(null)
+          setIsEditFormOpen(true)
+        }}
+      />
       <Section
         title={`Preguntas (${questions.length})`}
         headingLevel={4}
@@ -78,9 +94,27 @@ export default function AdminQuestions ({ apiUrl }) {
           buttonText='Editar Pregunta'
           appearance='primary outline'
           disabled={!selectedQuestionId}
-          onClick={() => console.log('EDITARRR')}// setIsEditFormOpen(true)}
+          onClick={() => setIsEditFormOpen(true)}
         />
       </Section>
+
+      <ApiProvider apiUrlDefault={apiUrl}>
+        <Modal
+          open={isEditFormOpen}
+          handleClose={() => setIsEditFormOpen(!isEditFormOpen)}
+          title={selectedQuestionId ? 'Editando Pregunta' : 'Nueva Pregunta'}
+          subtitle={
+          selectedQuestionId &&
+          questions.find(question => question._id === selectedQuestionId).title
+        }
+        >
+          <QuestionForm
+            question={questions.find(question => question._id === selectedQuestionId)}
+            isActive={isEditFormOpen}
+            postSubmitActions={() => setIsEditFormOpen(!isEditFormOpen)}
+          />
+        </Modal>
+      </ApiProvider>
     </div>
   )
 }
