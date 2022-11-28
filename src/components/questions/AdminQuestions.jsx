@@ -8,6 +8,7 @@ import { QuestionForm } from './QuestionForm'
 import { ApiProvider } from '../../providers/ApiProvider'
 import { Modal } from '../../containers/Modal'
 import { FullButton } from '../FullButton'
+import { ListOfAnswers } from '../ListOfAnswers'
 
 const AnswersNum = (question) => {
   return (
@@ -39,6 +40,7 @@ export default function AdminQuestions ({ apiUrl }) {
   const [isEditFormOpen, setIsEditFormOpen] = useState(false)
 
   const [questionsFetch, setQuestionsFetch] = useFetch()
+  const [selectedQuestionFetch, setSelectedQuestionFetch] = useFetch()
 
   const pageRef = useRef(null)
 
@@ -48,6 +50,16 @@ export default function AdminQuestions ({ apiUrl }) {
       doRefresh()
     }
   }, [isEditFormOpen])
+
+  useEffect(() => {
+    if (selectedQuestionId) {
+      setSelectedQuestionFetch({
+        apiUrl,
+        path: 'questions',
+        objectId: selectedQuestionId
+      })
+    }
+  }, [selectedQuestionId])
 
   useEffect(() => {
     setQuestions(questionsFetch.data)
@@ -68,6 +80,9 @@ export default function AdminQuestions ({ apiUrl }) {
     if (keyName === 'Escape' && !isEditFormOpen) doRefresh()
   }
 
+  // TODO: implement filter by text IN TABLE
+  // TODO: implement form to add questions and answers in batch
+  // FIXME: after create a new question, keep selected the new question
   return (
     <div ref={pageRef} onKeyDown={handleKeyDown} tabIndex='0'>
       <FullButton
@@ -107,19 +122,36 @@ export default function AdminQuestions ({ apiUrl }) {
           onClick={() => setIsEditFormOpen(true)}
         />
       </Section>
+      <div id='answersSection' className='grid'>
+        <Section
+          title='Tema'
+          headingLevel={5}
+          isLoading={selectedQuestionFetch.loading}
+        >
+          {selectedQuestionId && selectedQuestionFetch.data
+            ? <p>{selectedQuestionFetch.data?.topic?.title}</p>
+            : 'Seleccione una Pregunta ⬆️'}
+        </Section>
+        <Section
+          title='Respuestas'
+          headingLevel={5}
+          isLoading={selectedQuestionFetch.loading}
+        >
+          <ListOfAnswers
+            question={selectedQuestionId ? selectedQuestionFetch.data : null}
+          />
+        </Section>
+      </div>
 
       <ApiProvider apiUrlDefault={apiUrl}>
         <Modal
           open={isEditFormOpen}
           handleClose={() => setIsEditFormOpen(!isEditFormOpen)}
-          title={selectedQuestionId ? 'Editando Pregunta' : 'Nueva Pregunta'}
-          subtitle={
-          selectedQuestionId &&
-          questions.find(question => question._id === selectedQuestionId).text
-        }
+          title={selectedQuestionFetch.data ? 'Editando Pregunta' : 'Nueva Pregunta'}
+          subtitle={selectedQuestionFetch.data?.text}
         >
           <QuestionForm
-            question={questions.find(question => question._id === selectedQuestionId)}
+            question={selectedQuestionFetch.data}
             isActive={isEditFormOpen}
             postSubmitActions={() => setIsEditFormOpen(!isEditFormOpen)}
           />

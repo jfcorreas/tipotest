@@ -37,7 +37,7 @@ export const QuestionForm = ({
         {
           id: question ? question._id : null,
           text: question ? question.text : null,
-          topic: question ? question.topic : topicFilter
+          topic: question ? question.topic._id : topicFilter
         }
       )
       setTopicsFetch({
@@ -133,7 +133,7 @@ export const QuestionForm = ({
           selectName='topic' type='text' isRequired
           placeholder='Tema al que Corresponde la Pregunta'
           isValid={
-            ((newQuestion.topic === null) || (question && newQuestion.topic === question.topic))
+            ((newQuestion.topic === null) || (question && newQuestion.topic === question.topic._id))
               ? null
               : newQuestion.topic
           }
