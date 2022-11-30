@@ -9,6 +9,7 @@ import { ApiProvider } from '../../providers/ApiProvider'
 import { Modal } from '../../containers/Modal'
 import { FullButton } from '../FullButton'
 import { ListOfAnswers } from '../ListOfAnswers'
+import { QuestionAnswersForm } from './QuestionAnswersForm'
 
 const AnswersNum = (question) => {
   return (
@@ -38,6 +39,7 @@ export default function AdminQuestions ({ apiUrl }) {
   const [questions, setQuestions] = useState([])
   const [selectedQuestionId, setSelectedQuestionId] = useState(null)
   const [isEditFormOpen, setIsEditFormOpen] = useState(false)
+  const [isAnswersFormOpen, setIsAnswersFormOpen] = useState(false)
 
   const [questionsFetch, setQuestionsFetch] = useFetch()
   const [selectedQuestionFetch, setSelectedQuestionFetch] = useFetch()
@@ -45,11 +47,11 @@ export default function AdminQuestions ({ apiUrl }) {
   const pageRef = useRef(null)
 
   useEffect(() => {
-    if (!isEditFormOpen) {
+    if (!isEditFormOpen && !isAnswersFormOpen) {
       pageRef.current.focus()
       doRefresh()
     }
-  }, [isEditFormOpen])
+  }, [isEditFormOpen, isAnswersFormOpen])
 
   useEffect(() => {
     if (selectedQuestionId) {
@@ -77,7 +79,7 @@ export default function AdminQuestions ({ apiUrl }) {
     const keyName = e.key
     e.stopPropagation()
     if (keyName === 'Enter') setIsEditFormOpen(true)
-    if (keyName === 'Escape' && !isEditFormOpen) doRefresh()
+    if (keyName === 'Escape' && !isEditFormOpen && !isAnswersFormOpen) doRefresh()
   }
 
   // TODO: implement filter by text IN TABLE
@@ -117,9 +119,15 @@ export default function AdminQuestions ({ apiUrl }) {
         />
         <ShortButton
           buttonText='Editar Pregunta'
-          appearance='primary outline'
+          appearance='secondary'
           disabled={!selectedQuestionId}
           onClick={() => setIsEditFormOpen(true)}
+        />
+        <ShortButton
+          buttonText='Editar Respuestas'
+          appearance='primary outline'
+          disabled={!selectedQuestionId}
+          onClick={() => setIsAnswersFormOpen(true)}
         />
       </Section>
       <div id='answersSection' className='grid'>
@@ -154,6 +162,17 @@ export default function AdminQuestions ({ apiUrl }) {
             question={selectedQuestionFetch.data}
             isActive={isEditFormOpen}
             postSubmitActions={() => setIsEditFormOpen(!isEditFormOpen)}
+          />
+        </Modal>
+        <Modal
+          open={isAnswersFormOpen}
+          handleClose={() => setIsAnswersFormOpen(!isAnswersFormOpen)}
+          title={`${selectedQuestionFetch.data?.text}:`}
+        >
+          <QuestionAnswersForm
+            question={selectedQuestionFetch.data}
+            isActive={isAnswersFormOpen}
+            postSubmitActions={() => setIsAnswersFormOpen(!isAnswersFormOpen)}
           />
         </Modal>
       </ApiProvider>

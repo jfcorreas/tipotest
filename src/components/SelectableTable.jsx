@@ -4,20 +4,24 @@ import { SelectableRow } from './SelectableRow'
 export const SelectableTable = ({
   items = [],
   itemProperties = {},
+  noHeader = false,
   selectedId,
   setSelectedId
 }) => {
   return (
     <>
       <table>
-        <thead>
-          <tr>
-            <th scope='col' />
-            {Object.entries(itemProperties).map(([key, value]) => (
-              <th scope='col' key={key}>{value}</th>
-            ))}
-          </tr>
-        </thead>
+        {
+          !noHeader &&
+            <thead>
+              <tr>
+                <th scope='col' />
+                {Object.entries(itemProperties).map(([key, value]) => (
+                  <th scope='col' key={key}>{value}</th>
+                ))}
+              </tr>
+            </thead>
+        }
         <tbody>
           {items.map((item) =>
             <SelectableRow
