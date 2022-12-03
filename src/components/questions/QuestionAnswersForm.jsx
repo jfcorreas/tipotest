@@ -134,32 +134,35 @@ export const QuestionAnswersForm = ({
     e.stopPropagation()
     if (keyName === 'Enter') {
       e.preventDefault()
-      console.log('Enter')
+      if (userHasEdited && currentAnswer.text) {
+        selectedAnswerId ? handleEditAnswer(e) : handleNewAnswer(e)
+      }
     }
     if (keyName === 'Escape') {
-      console.log('Escape')
+      postSubmitActions()
     }
   }
 
   return (
     <>
-
-      <SelectableTable
-        items={answers.map((answer) => {
-          return {
-            ...answer,
-            isCorrect: answer.isCorrect ? '✅' : ''
-          }
-        })}
-        itemProperties={{
-          text: 'Texto de la respuesta',
-          isCorrect: '¿Es correcta?'
-        }}
-        noHeader
-        selectedId={selectedAnswerId}
-        setSelectedId={setSelectedAnswerId}
-      />
       <form onKeyDown={handleKeyDown}>
+        <SelectableTable
+          items={answers.map((answer) => {
+            return {
+              ...answer,
+              isCorrect: answer.isCorrect ? '✅' : ''
+            }
+          })}
+          itemProperties={{
+            text: 'Texto de la respuesta',
+            isCorrect: '¿Es correcta?'
+          }}
+          noHeader
+          selectedId={selectedAnswerId}
+          setSelectedId={setSelectedAnswerId}
+          tabIndex='0'
+        />
+
         <Section
           title='Edición de Repuestas:'
           headingLevel={4}

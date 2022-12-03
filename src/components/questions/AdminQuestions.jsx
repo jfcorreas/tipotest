@@ -77,9 +77,14 @@ export default function AdminQuestions ({ apiUrl }) {
 
   const handleKeyDown = (e) => {
     const keyName = e.key
+    const ctrlKey = e.ctrlKey
     e.stopPropagation()
-    if (keyName === 'Enter') setIsEditFormOpen(true)
+    if (keyName === 'Enter' && !isEditFormOpen && !isAnswersFormOpen) {
+      ctrlKey ? setIsAnswersFormOpen(true) : setIsEditFormOpen(true)
+    }
     if (keyName === 'Escape' && !isEditFormOpen && !isAnswersFormOpen) doRefresh()
+    if (keyName === 'Escape' && isEditFormOpen) setIsEditFormOpen(false)
+    if (keyName === 'Escape' && isAnswersFormOpen) setIsAnswersFormOpen(false)
   }
 
   // TODO: implement filter by text IN TABLE
@@ -155,11 +160,11 @@ export default function AdminQuestions ({ apiUrl }) {
         <Modal
           open={isEditFormOpen}
           handleClose={() => setIsEditFormOpen(!isEditFormOpen)}
-          title={selectedQuestionFetch.data ? 'Editando Pregunta' : 'Nueva Pregunta'}
-          subtitle={selectedQuestionFetch.data?.text}
+          title={selectedQuestionId ? 'Editando Pregunta' : 'Nueva Pregunta'}
+          subtitle={selectedQuestionId ? selectedQuestionFetch.data?.text : ''}
         >
           <QuestionForm
-            question={selectedQuestionFetch.data}
+            question={selectedQuestionId ? selectedQuestionFetch.data : null}
             isActive={isEditFormOpen}
             postSubmitActions={() => setIsEditFormOpen(!isEditFormOpen)}
           />
@@ -170,7 +175,7 @@ export default function AdminQuestions ({ apiUrl }) {
           title={`${selectedQuestionFetch.data?.text}:`}
         >
           <QuestionAnswersForm
-            question={selectedQuestionFetch.data}
+            question={selectedQuestionId ? selectedQuestionFetch.data : null}
             isActive={isAnswersFormOpen}
             postSubmitActions={() => setIsAnswersFormOpen(!isAnswersFormOpen)}
           />

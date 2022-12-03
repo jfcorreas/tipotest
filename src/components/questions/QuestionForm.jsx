@@ -37,7 +37,7 @@ export const QuestionForm = ({
         {
           id: question ? question._id : null,
           text: question ? question.text : null,
-          topic: question ? question.topic._id : topicFilter
+          topic: question?.topic ? question.topic._id : topicFilter
         }
       )
       setTopicsFetch({
