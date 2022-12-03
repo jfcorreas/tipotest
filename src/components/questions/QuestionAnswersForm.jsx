@@ -21,7 +21,7 @@ export const QuestionAnswersForm = ({
   const [answers, setAnswers] = useState([])
   const [currentAnswer, setCurrentAnswer] = useState(emptyAnswer)
   const [selectedAnswerId, setSelectedAnswerId] = useState(null)
-  const [isValidForm, setIsValidForm] = useState(false)
+  const [userHasEdited, setUserHasEdited] = useState(false)
 
   const [apiUrl] = useApi()
 
@@ -30,18 +30,17 @@ export const QuestionAnswersForm = ({
   const inputRef = useRef(null)
 
   useEffect(() => {
+    setUserHasEdited(false)
+    setCurrentAnswer(emptyAnswer)
+    setSelectedAnswerId(null)
     if (isActive && question) {
       inputRef.current.focus()
       setAnswers(question.answers)
-    } else {
-      setIsValidForm(false)
-      setCurrentAnswer(emptyAnswer)
-      setSelectedAnswerId(null)
     }
   }, [isActive])
 
   useEffect(() => {
-    setIsValidForm(false)
+    setUserHasEdited(false)
     if (selectedAnswerId) {
       const selectedAnswer = answers.find((answer) => (
         answer._id === selectedAnswerId
@@ -54,16 +53,24 @@ export const QuestionAnswersForm = ({
 
   useEffect(() => {
     if (isActive) {
-      const newAnswers = [...answers]
-      if (answerFetch.method === 'POST') newAnswers.push(answerFetch.data)
+      let newAnswers = [...answers]
+      if (answerFetch.method === 'POST') {
+        const newAnswer = answerFetch.data
+        newAnswers.push(newAnswer)
+      }
       if (answerFetch.method === 'PATCH') {
+        const modifiedAnswer = answerFetch.data
         const answerIndex = newAnswers.findIndex(answer => (
-          answer._id === answerFetch.data._id
+          answer._id === modifiedAnswer._id
         ))
         newAnswers.splice(answerIndex, 1, answerFetch.data)
       }
+      if (answerFetch.method === 'DELETE') {
+        const modifiedQuestion = answerFetch.data
+        newAnswers = [...modifiedQuestion.answers]
+      }
       setAnswers(newAnswers)
-      setIsValidForm(false)
+      setUserHasEdited(false)
       setCurrentAnswer(emptyAnswer)
       setSelectedAnswerId(null)
     }
@@ -77,9 +84,7 @@ export const QuestionAnswersForm = ({
 
     updatedAnswer[inputName] = value
 
-    const invalidForm = !updatedAnswer.text
-
-    setIsValidForm(!invalidForm)
+    setUserHasEdited(true)
     setCurrentAnswer(updatedAnswer)
   }
 
@@ -112,6 +117,18 @@ export const QuestionAnswersForm = ({
     })
   }
 
+  const handleDeleteAnswer = (e) => {
+    e.preventDefault()
+    setAnswerFetch({
+      apiUrl,
+      path: 'questions',
+      objectId: question._id,
+      subpath: 'answers',
+      subObjectId: currentAnswer._id,
+      options: { method: 'DELETE' }
+    })
+  }
+
   const handleKeyDown = (e) => {
     const keyName = e.key
     e.stopPropagation()
@@ -123,6 +140,7 @@ export const QuestionAnswersForm = ({
       console.log('Escape')
     }
   }
+
   return (
     <>
 
@@ -166,19 +184,25 @@ export const QuestionAnswersForm = ({
           <ShortButton
             buttonText='Modificar'
             appearance='contrast outline'
-            disabled={!(isValidForm && selectedAnswerId)}
+            disabled={!(userHasEdited && selectedAnswerId && currentAnswer.text)}
             onClick={handleEditAnswer}
           />
+          <ShortButton
+            buttonText='Eliminar'
+            appearance='contrast'
+            disabled={!selectedAnswerId}
+            onClick={handleDeleteAnswer}
+          />
         </Section>
+        <p className='warning'>{answerFetch.error}</p>
         <FullButton
           buttonText='Añadir Nueva Respuesta'
           appearance='primary outline'
-          disabled={!isValidForm}
+          disabled={!(userHasEdited && currentAnswer.text)}
           onClick={handleNewAnswer}
         />
       </form>
 
-      <p className='warning'>{answerFetch.error}</p>
       <footer>
         <ShortButton
           buttonText='Terminar'
