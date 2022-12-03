@@ -2,13 +2,13 @@ import React from 'react'
 
 export const FullButton = ({
   buttonText = 'Empty',
-  className = 'primary',
+  appearance = 'primary',
   disabled = false,
   onClick: handleClick
 }) => {
   return (
     <button
-      className={className}
+      className={appearance}
       disabled={disabled}
       onClick={handleClick}
     >

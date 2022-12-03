@@ -41,6 +41,7 @@ export const QuestionAnswersForm = ({
   }, [isActive])
 
   useEffect(() => {
+    setIsValidForm(false)
     if (selectedAnswerId) {
       const selectedAnswer = answers.find((answer) => (
         answer._id === selectedAnswerId
@@ -54,7 +55,13 @@ export const QuestionAnswersForm = ({
   useEffect(() => {
     if (isActive) {
       const newAnswers = [...answers]
-      newAnswers.push(answerFetch.data)
+      if (answerFetch.method === 'POST') newAnswers.push(answerFetch.data)
+      if (answerFetch.method === 'PATCH') {
+        const answerIndex = newAnswers.findIndex(answer => (
+          answer._id === answerFetch.data._id
+        ))
+        newAnswers.splice(answerIndex, 1, answerFetch.data)
+      }
       setAnswers(newAnswers)
       setIsValidForm(false)
       setCurrentAnswer(emptyAnswer)
@@ -85,6 +92,21 @@ export const QuestionAnswersForm = ({
       subpath: 'answers',
       options: {
         method: 'POST',
+        body: JSON.stringify(currentAnswer)
+      }
+    })
+  }
+
+  const handleEditAnswer = (e) => {
+    e.preventDefault()
+    setAnswerFetch({
+      apiUrl,
+      path: 'questions',
+      objectId: question._id,
+      subpath: 'answers',
+      subObjectId: currentAnswer._id,
+      options: {
+        method: 'PATCH',
         body: JSON.stringify(currentAnswer)
       }
     })
@@ -141,11 +163,17 @@ export const QuestionAnswersForm = ({
             onChange={handleInputChange}
             checked={currentAnswer.isCorrect}
           />
+          <ShortButton
+            buttonText='Modificar'
+            appearance='contrast outline'
+            disabled={!(isValidForm && selectedAnswerId)}
+            onClick={handleEditAnswer}
+          />
         </Section>
         <FullButton
           buttonText='Añadir Nueva Respuesta'
-          className='primary outline'
-          disabled={!currentAnswer.text}
+          appearance='primary outline'
+          disabled={!isValidForm}
           onClick={handleNewAnswer}
         />
       </form>
