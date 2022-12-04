@@ -10,6 +10,7 @@ import { Modal } from '../../containers/Modal'
 import { FullButton } from '../FullButton'
 import { ListOfAnswers } from '../ListOfAnswers'
 import { QuestionAnswersForm } from './QuestionAnswersForm'
+import { Select } from '../Select'
 
 const AnswersNum = (question) => {
   return (
@@ -38,11 +39,13 @@ const AnswersNum = (question) => {
 export default function AdminQuestions ({ apiUrl }) {
   const [questions, setQuestions] = useState([])
   const [selectedQuestionId, setSelectedQuestionId] = useState(null)
+  const [topicFilter, setTopicFilter] = useState('')
   const [isEditFormOpen, setIsEditFormOpen] = useState(false)
   const [isAnswersFormOpen, setIsAnswersFormOpen] = useState(false)
 
   const [questionsFetch, setQuestionsFetch] = useFetch()
   const [selectedQuestionFetch, setSelectedQuestionFetch] = useFetch()
+  const [topicsFetch, setTopicsFetch] = useFetch()
 
   const pageRef = useRef(null)
 
@@ -64,14 +67,37 @@ export default function AdminQuestions ({ apiUrl }) {
   }, [selectedQuestionId])
 
   useEffect(() => {
-    setQuestions(questionsFetch.data)
-  }, [questionsFetch.data])
+    if (topicFilter) {
+      setQuestionsFetch({
+        apiUrl,
+        path: 'questions',
+        filterParams: { topic: topicFilter }
+      })
+    }
+  }, [topicFilter])
+
+  useEffect(() => {
+    if (questionsFetch.data.length > 0) {
+      setQuestions(questionsFetch.data)
+    }
+  }, [questionsFetch.data, topicsFetch.data])
+
+  useEffect(() => {
+    if (topicsFetch.data.length > 0) {
+      setTopicsFetch(topicsFetch.data)
+    }
+  }, [])
 
   const doRefresh = () => {
     setSelectedQuestionId(null)
+    setTopicFilter('')
     setQuestionsFetch({
       apiUrl,
       path: 'questions'
+    })
+    setTopicsFetch({
+      apiUrl,
+      path: 'topics'
     })
   }
 
@@ -105,7 +131,25 @@ export default function AdminQuestions ({ apiUrl }) {
         headingLevel={4}
         isLoading={questionsFetch.loading}
       >
-        <a onClick={() => { doRefresh() }}>🔁 Actualizar</a>
+        <Select
+          label='Tema'
+          name='topic'
+          type='text'
+          placeholder='Filtrar por Tema'
+          onChange={(e) => setTopicFilter(e.target.value)}
+          isLoading={topicsFetch.loading}
+          value={topicFilter}
+        >
+          {!topicFilter && <option value=''>Filtrar por Tema...</option>}
+          {topicsFetch.data?.map((topic) => {
+            return (
+              <option key={topic._id} value={topic._id}>
+                ({topic.shorthand}) {topic.title}
+              </option>
+            )
+          })}
+        </Select>
+        <a onClick={() => { doRefresh() }}>🔁 Actualizar / Limpiar Filtro</a>
         {questionsFetch.error && <div className='warning'>{questionsFetch.error}</div>}
         <SelectableTable
           items={questions.map(question => (
