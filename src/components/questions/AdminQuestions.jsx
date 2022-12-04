@@ -68,6 +68,7 @@ export default function AdminQuestions ({ apiUrl }) {
 
   useEffect(() => {
     if (topicFilter) {
+      setSelectedQuestionId(null)
       setQuestionsFetch({
         apiUrl,
         path: 'questions',
@@ -118,6 +119,24 @@ export default function AdminQuestions ({ apiUrl }) {
   // FIXME: after create a new question, keep selected the new question
   return (
     <div ref={pageRef} onKeyDown={handleKeyDown} tabIndex='0'>
+      <Select
+        label='Tema'
+        name='topic'
+        type='text'
+        placeholder='Filtrar por Tema'
+        onChange={(e) => setTopicFilter(e.target.value)}
+        isLoading={topicsFetch.loading}
+        value={topicFilter}
+      >
+        {!topicFilter && <option value=''>Filtrar por Tema...</option>}
+        {topicsFetch.data?.map((topic) => {
+          return (
+            <option key={topic._id} value={topic._id}>
+              ({topic.shorthand}) {topic.title}
+            </option>
+          )
+        })}
+      </Select>
       <FullButton
         buttonText='Nueva Pregunta'
         className='primary'
@@ -131,24 +150,7 @@ export default function AdminQuestions ({ apiUrl }) {
         headingLevel={4}
         isLoading={questionsFetch.loading}
       >
-        <Select
-          label='Tema'
-          name='topic'
-          type='text'
-          placeholder='Filtrar por Tema'
-          onChange={(e) => setTopicFilter(e.target.value)}
-          isLoading={topicsFetch.loading}
-          value={topicFilter}
-        >
-          {!topicFilter && <option value=''>Filtrar por Tema...</option>}
-          {topicsFetch.data?.map((topic) => {
-            return (
-              <option key={topic._id} value={topic._id}>
-                ({topic.shorthand}) {topic.title}
-              </option>
-            )
-          })}
-        </Select>
+
         <a onClick={() => { doRefresh() }}>🔁 Actualizar / Limpiar Filtro</a>
         {questionsFetch.error && <div className='warning'>{questionsFetch.error}</div>}
         <SelectableTable
@@ -209,6 +211,7 @@ export default function AdminQuestions ({ apiUrl }) {
         >
           <QuestionForm
             question={selectedQuestionId ? selectedQuestionFetch.data : null}
+            topicFilter={topicFilter}
             isActive={isEditFormOpen}
             postSubmitActions={() => setIsEditFormOpen(!isEditFormOpen)}
           />
