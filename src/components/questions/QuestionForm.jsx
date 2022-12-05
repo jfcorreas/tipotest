@@ -16,6 +16,7 @@ export const QuestionForm = ({
   question,
   topicFilter = null,
   isActive,
+  closeActions,
   postSubmitActions
 }) => {
   const [newQuestion, setNewQuestion] = useState(emptyQuestion)
@@ -53,7 +54,7 @@ export const QuestionForm = ({
     if (isActive) {
       setNewQuestion(emptyQuestion)
       setConfirmDeletion(false)
-      postSubmitActions()
+      postSubmitActions(questionFetch.data._id || null, questionFetch.data.topic || '')
     }
   }, [questionFetch.data])
 
@@ -109,7 +110,7 @@ export const QuestionForm = ({
       confirmDeletion ? handleDeletion() : (isValidForm && handleSubmit())
     }
     if (keyName === 'Escape') {
-      confirmDeletion ? setConfirmDeletion(false) : postSubmitActions()
+      confirmDeletion ? setConfirmDeletion(false) : closeActions()
     }
   }
   return (
@@ -162,7 +163,7 @@ export const QuestionForm = ({
         <ShortButton
           buttonText='Cancelar'
           appearance='secondary'
-          onClick={postSubmitActions}
+          onClick={closeActions}
         />
         <ShortButton
           buttonText='Eliminar'

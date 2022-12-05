@@ -74,27 +74,22 @@ export default function AdminQuestions ({ apiUrl }) {
         path: 'questions',
         filterParams: { topic: topicFilter }
       })
+    } else {
+      doRefresh()
     }
   }, [topicFilter])
 
   useEffect(() => {
-    if (questionsFetch.data.length > 0) {
+    if (questionsFetch.data) {
       setQuestions(questionsFetch.data)
     }
-  }, [questionsFetch.data, topicsFetch.data])
-
-  useEffect(() => {
-    if (topicsFetch.data.length > 0) {
-      setTopicsFetch(topicsFetch.data)
-    }
-  }, [])
+  }, [questionsFetch.data])
 
   const doRefresh = () => {
-    setSelectedQuestionId(null)
-    setTopicFilter('')
     setQuestionsFetch({
       apiUrl,
-      path: 'questions'
+      path: 'questions',
+      filterParams: topicFilter ? { topic: topicFilter } : null
     })
     setTopicsFetch({
       apiUrl,
@@ -107,9 +102,13 @@ export default function AdminQuestions ({ apiUrl }) {
     const ctrlKey = e.ctrlKey
     e.stopPropagation()
     if (keyName === 'Enter' && !isEditFormOpen && !isAnswersFormOpen) {
+      e.preventDefault()
       ctrlKey ? setIsAnswersFormOpen(true) : setIsEditFormOpen(true)
     }
-    if (keyName === 'Escape' && !isEditFormOpen && !isAnswersFormOpen) doRefresh()
+    if (keyName === 'Escape' && !isEditFormOpen && !isAnswersFormOpen) {
+      setSelectedQuestionId(null)
+      doRefresh()
+    }
     if (keyName === 'Escape' && isEditFormOpen) setIsEditFormOpen(false)
     if (keyName === 'Escape' && isAnswersFormOpen) setIsAnswersFormOpen(false)
   }
@@ -151,7 +150,8 @@ export default function AdminQuestions ({ apiUrl }) {
         isLoading={questionsFetch.loading}
       >
 
-        <a onClick={() => { doRefresh() }}>🔁 Actualizar / Limpiar Filtro</a>
+        <a onClick={() => { doRefresh() }}>🔁 Actualizar </a>
+        <a onClick={() => { setTopicFilter('') }}>🆑 Limpiar Filtro</a>
         {questionsFetch.error && <div className='warning'>{questionsFetch.error}</div>}
         <SelectableTable
           items={questions.map(question => (
@@ -213,7 +213,12 @@ export default function AdminQuestions ({ apiUrl }) {
             question={selectedQuestionId ? selectedQuestionFetch.data : null}
             topicFilter={topicFilter}
             isActive={isEditFormOpen}
-            postSubmitActions={() => setIsEditFormOpen(!isEditFormOpen)}
+            closeActions={() => setIsEditFormOpen(!isEditFormOpen)}
+            postSubmitActions={(questionId, topicId) => {
+              setIsEditFormOpen(!isEditFormOpen)
+              setSelectedQuestionId(questionId)
+              setTopicFilter(topicId)
+            }}
           />
         </Modal>
         <Modal
