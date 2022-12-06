@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react'
 
-import { useFetch } from '../../hooks/useFetch'
-import { Section } from '../../containers/Section'
-import { ShortButton } from '../ShortButton'
-import { SelectableTable } from '../SelectableTable'
-import { QuestionForm } from './QuestionForm'
-import { ApiProvider } from '../../providers/ApiProvider'
 import { Modal } from '../../containers/Modal'
+import { Section } from '../../containers/Section'
+import { TableWithSearch } from '../../containers/TableWithSearch'
+import { useFetch } from '../../hooks/useFetch'
+import { ApiProvider } from '../../providers/ApiProvider'
+import { Select } from '../Select'
 import { FullButton } from '../FullButton'
+import { ShortButton } from '../ShortButton'
+import { QuestionForm } from './QuestionForm'
 import { ListOfAnswers } from '../ListOfAnswers'
 import { QuestionAnswersForm } from './QuestionAnswersForm'
-import { Select } from '../Select'
 
 const AnswersNum = (question) => {
   return (
@@ -113,9 +113,7 @@ export default function AdminQuestions ({ apiUrl }) {
     if (keyName === 'Escape' && isAnswersFormOpen) setIsAnswersFormOpen(false)
   }
 
-  // TODO: implement filter by text IN TABLE
   // TODO: implement form to add questions and answers in batch
-  // FIXME: after create a new question, keep selected the new question
   return (
     <div ref={pageRef} onKeyDown={handleKeyDown} tabIndex='0'>
       <Select
@@ -149,11 +147,10 @@ export default function AdminQuestions ({ apiUrl }) {
         headingLevel={4}
         isLoading={questionsFetch.loading}
       >
-
         <a onClick={() => { doRefresh() }}>🔁 Actualizar </a>
         <a onClick={() => { setTopicFilter('') }}>🆑 Limpiar Filtro</a>
         {questionsFetch.error && <div className='warning'>{questionsFetch.error}</div>}
-        <SelectableTable
+        <TableWithSearch
           items={questions.map(question => (
             {
               _id: question._id,
@@ -161,6 +158,7 @@ export default function AdminQuestions ({ apiUrl }) {
               numAnswers: AnswersNum(question)
             }
           ))}
+          placeholder='Filtro por texto...'
           itemProperties={{
             text: 'Texto',
             numAnswers: '#Respuestas'
