@@ -11,6 +11,7 @@ import { ShortButton } from '../ShortButton'
 import { QuestionForm } from './QuestionForm'
 import { ListOfAnswers } from '../ListOfAnswers'
 import { QuestionAnswersForm } from './QuestionAnswersForm'
+import { QuestionBatchForm } from './QuestionBatchForm'
 
 const AnswersNum = (question) => {
   return (
@@ -42,6 +43,7 @@ export default function AdminQuestions ({ apiUrl }) {
   const [topicFilter, setTopicFilter] = useState('')
   const [isEditFormOpen, setIsEditFormOpen] = useState(false)
   const [isAnswersFormOpen, setIsAnswersFormOpen] = useState(false)
+  const [isBatchFormOpen, setIsBatchFormOpen] = useState(false)
 
   const [questionsFetch, setQuestionsFetch] = useFetch()
   const [selectedQuestionFetch, setSelectedQuestionFetch] = useFetch()
@@ -50,11 +52,11 @@ export default function AdminQuestions ({ apiUrl }) {
   const pageRef = useRef(null)
 
   useEffect(() => {
-    if (!isEditFormOpen && !isAnswersFormOpen) {
+    if (!isEditFormOpen && !isAnswersFormOpen && !isBatchFormOpen) {
       pageRef.current.focus()
       doRefresh()
     }
-  }, [isEditFormOpen, isAnswersFormOpen])
+  }, [isEditFormOpen, isAnswersFormOpen, isBatchFormOpen])
 
   useEffect(() => {
     if (selectedQuestionId) {
@@ -101,16 +103,17 @@ export default function AdminQuestions ({ apiUrl }) {
     const keyName = e.key
     const ctrlKey = e.ctrlKey
     e.stopPropagation()
-    if (keyName === 'Enter' && !isEditFormOpen && !isAnswersFormOpen) {
+    if (keyName === 'Enter' && !isEditFormOpen && !isAnswersFormOpen && !isBatchFormOpen) {
       e.preventDefault()
       ctrlKey ? setIsAnswersFormOpen(true) : setIsEditFormOpen(true)
     }
-    if (keyName === 'Escape' && !isEditFormOpen && !isAnswersFormOpen) {
+    if (keyName === 'Escape' && !isEditFormOpen && !isAnswersFormOpen && !isBatchFormOpen) {
       setSelectedQuestionId(null)
       doRefresh()
     }
     if (keyName === 'Escape' && isEditFormOpen) setIsEditFormOpen(false)
     if (keyName === 'Escape' && isAnswersFormOpen) setIsAnswersFormOpen(false)
+    if (keyName === 'Escape' && isBatchFormOpen) setIsBatchFormOpen(false)
   }
 
   // TODO: implement form to add questions and answers in batch
@@ -199,7 +202,14 @@ export default function AdminQuestions ({ apiUrl }) {
           />
         </Section>
       </div>
-
+      <FullButton
+        buttonText='Insertar Preguntas en Bloque'
+        className='secondary outline'
+        onClick={() => {
+          setSelectedQuestionId(null)
+          setIsBatchFormOpen(true)
+        }}
+      />
       <ApiProvider apiUrlDefault={apiUrl}>
         <Modal
           open={isEditFormOpen}
@@ -228,6 +238,17 @@ export default function AdminQuestions ({ apiUrl }) {
             question={selectedQuestionId ? selectedQuestionFetch.data : null}
             isActive={isAnswersFormOpen}
             postSubmitActions={() => setIsAnswersFormOpen(!isAnswersFormOpen)}
+          />
+        </Modal>
+        <Modal
+          open={isBatchFormOpen}
+          handleClose={() => setIsBatchFormOpen(!isBatchFormOpen)}
+          title='Insertar Bloque de Preguntas'
+        >
+          <QuestionBatchForm
+            topicFilter={topicFilter}
+            isActive={isBatchFormOpen}
+            postSubmitActions={() => setIsBatchFormOpen(!isBatchFormOpen)}
           />
         </Modal>
       </ApiProvider>
